@@ -1,23 +1,32 @@
 import json
-import numpy as np
 import random
+import math
+import requests
+import time
+from functools import reduce
 
-f = open('../users.json', encoding='utf8')
-users = json.load(f)
+response = requests.get(
+    'https://codeforces.com/api/user.ratedList?activeOnly=true&includeRetired=false')
+users = json.loads(response.content)
 
-users_in_brackets = [random.shuffle([{
+users_in_brackets = [[{
     "handle": user["handle"],
-    "country": user["country"],
+    "country": user.get("country"),
     "officialRating": user["rating"]
 } for user in users["result"] if user["rating"] >=
-                      lower_bound and user["rating"] < lower_bound + 60]) for lower_bound in np.arange(-1000, 5000, 60)]
+    lower_bound and user["rating"] < lower_bound + 60] for lower_bound in range(-1000, 5000, 60)]
 
-users_in_brackets = [bracket[:np.sqrt(len(bracket))] for bracket in users_in_brackets]
-        
+for bracket in users_in_brackets:
+    random.shuffle(bracket)
+
+users_in_brackets = [
+    bracket[:math.floor(len(bracket) ** (3/4))] for bracket in users_in_brackets]
+
 trimmedUsers = {
     "status": "OK",
-    "result": np.array(users_in_brackets).flatten()
+    "timeOfSnapshot": int(1000 * time.mktime(time.gmtime(None))),
+    "result": reduce(lambda x, y: x + y, users_in_brackets)
 }
 
-with open("../trimmedUsers.json", "w") as outfile:
+with open("../../src/app/users/trimmedUsers.json", "w") as outfile:
     fp = json.dump(trimmedUsers, outfile)
