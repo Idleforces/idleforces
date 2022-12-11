@@ -1,38 +1,44 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { fetchUsers, fetchUsersAbortController } from "./loadUsers";
+import { CaseReducer, createSlice } from "@reduxjs/toolkit";
+import { generateUsers } from "./loadUsers";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { User } from "./loadUsers";
+import { decompressFromUTF16 } from "lz-string";
 
-export interface User {
+type SaveData = {
+  saveName: string;
   handle: string;
-}
+};
 
-type UsersSlice = Promise<Array<User>> | null;
+export type UsersSlice = {users: Array<User>, timeOfSnapshot: number} | null;
+const loadUsersFromSave: CaseReducer<UsersSlice, PayloadAction<SaveData>> = (
+  state,
+  action
+) => {
+  const savedUsers: string | null = localStorage.getItem(
+    `users-${action.payload.saveName}`
+  );
+
+  return savedUsers
+    ? JSON.parse(decompressFromUTF16(savedUsers) as string)
+    : generateUsers(action.payload.handle).users;
+};
 
 export const usersSlice = createSlice({
   name: "users",
-  initialState: null,
+  initialState: null as UsersSlice,
   reducers: {
     resetUsers: (state: UsersSlice, _action: PayloadAction<null>) => {
-        fetchUsersAbortController.abort();
-        state = null;
+      state = null;
     },
-
-    loadUsersFromSaveFile: (state: UsersSlice, action: PayloadAction<string>) => {
-        const savedUsers: string | null = localStorage.getItem(`users-${action.payload}`)
-        if (savedUsers === null) 
-            state = fetchUsers()
-        else state = new Promise((resolve, _reject) => {
-            resolve(JSON.parse(String(savedUsers)));
-        })
-    },
-
-    saveUsers: (state: UsersSlice, action: PayloadAction<string>) => {
-        state?.then(users => localStorage.setItem(`users-${action.payload}`, JSON.stringify(users)))
-    }
+    loadUsersFromSaveFile: loadUsersFromSave,
   },
 });
 
-export const { resetUsers, loadUsersFromSaveFile, saveUsers } = usersSlice.actions;
-export const selectUsers = (state: RootState) => state.users;
+export const { resetUsers, loadUsersFromSaveFile } =
+  usersSlice.actions;
+export const selectUsersWithTimeOfSnapshot = (state: RootState) => state.users;
+export const selectUsers = (state: RootState) => state.users?.users;
+export const selectTimeOfSnapshot = (state: RootState) => state.users?.timeOfSnapshot;
+export const selectPlayer = (state: RootState) => (state.users ? state.users.users[0] : null);
 export const usersReducer = usersSlice.reducer;
