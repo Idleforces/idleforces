@@ -28,5 +28,6 @@ trimmedUsers = {
     "result": reduce(lambda x, y: x + y, users_in_brackets)
 }
 
-with open("../../src/app/users/trimmedUsers.json", "w") as outfile:
-    fp = json.dump(trimmedUsers, outfile)
+with open("./src/app/users/trimmedUsers.json", "w") as outfile:
+    fp = json.dump({}, outfile)
+
