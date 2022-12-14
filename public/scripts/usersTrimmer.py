@@ -29,5 +29,4 @@ trimmedUsers = {
 }
 
 with open("./src/app/users/trimmedUsers.json", "w") as outfile:
-    fp = json.dump({}, outfile)
-
+    fp = json.dump(trimmedUsers, outfile)
