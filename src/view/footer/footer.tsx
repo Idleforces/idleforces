@@ -9,7 +9,7 @@ export const Footer = () => {
       If you have been inspired by this silly game and want to grind IRL, then Codeforces is the platform for you.
     </p>
     <p style={{fontSize: "0.75rem"}}>
-      *This game uses real Codeforces handles provided by the Codeforces API. Their performance in this game depends only on their real rating {timeOfSnapshot ? `snapshotted at ${new Date(timeOfSnapshot).toString()}` : "" }.
+      *This game uses real Codeforces handles provided by the Codeforces API. Their performance in this game depends only on their real rating{timeOfSnapshot ? ` snapshotted at ${new Date(timeOfSnapshot).toString()}` : "" }.
     </p>
     </>
   )

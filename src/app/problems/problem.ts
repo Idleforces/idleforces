@@ -21,10 +21,10 @@ import {
   PROBLEM_QUALITY_RECALL_ALPHA,
   PROBLEM_QUALITY_RECALL_BETA,
 } from "./constants";
-import { sigmoid } from "../../utils/utils";
-import { sample } from "@stdlib/random/docs/types";
+import { normalizeArray, sigmoid, sum } from "../../utils/utils";
+import { sample } from "@stdlib/random";
 
-export class Problem {
+export type Problem = {
   division: ProblemDivision;
   placement: ProblemPlacement;
   tag: ProblemTag;
@@ -50,7 +50,7 @@ export class Problem {
   implementationDeceptiveness: number;
 
   /**
-   * 0-1 (heavily skewed towards 1) determining P(correct sol. passes) / (P(incorrect sol. passes) + P(correct sol. passes)). If far from 1, round may become unrated.
+   * 0-1 (heavily skewed towards 1) determining 1 - P(incorrect sol. passes). If far from 1, round may become unrated.
    */
   qualityPrecision: number;
 
@@ -63,69 +63,85 @@ export class Problem {
    * 0-1 (skewed towards 1) determining P(incorrect sol. fails pretests). If far from 1, round may become unrated.
    */
   pretestsQuality: number;
+};
 
-  constructor(division: ProblemDivision, placement: ProblemPlacement) {
-    this.division = division;
-    this.placement = placement;
-    this.qualityPrecision = beta(
-      PROBLEM_QUALITY_PRECISION_ALPHA,
-      PROBLEM_QUALITY_PRECISION_BETA
-    );
-    this.qualityRecall = beta(
-      PROBLEM_QUALITY_RECALL_ALPHA,
-      PROBLEM_QUALITY_RECALL_BETA
-    );
-    this.pretestsQuality = beta(
-      PROBLEM_PRETESTS_QUALITY_ALPHA,
-      PROBLEM_PRETESTS_QUALITY_BETA
-    );
+export const generateProblem = (
+  division: ProblemDivision,
+  placement: ProblemPlacement
+): Problem => {
+  const qualityPrecision = beta(
+    PROBLEM_QUALITY_PRECISION_ALPHA,
+    PROBLEM_QUALITY_PRECISION_BETA
+  );
+  const qualityRecall = beta(
+    PROBLEM_QUALITY_RECALL_ALPHA,
+    PROBLEM_QUALITY_RECALL_BETA
+  );
+  const pretestsQuality = beta(
+    PROBLEM_PRETESTS_QUALITY_ALPHA,
+    PROBLEM_PRETESTS_QUALITY_BETA
+  );
 
-    const combinedPlacement =
-      placement.charCodeAt(0) - "A".charCodeAt(0) + (4 - division) * 2;
+  const combinedPlacement =
+    placement.charCodeAt(0) - "A".charCodeAt(0) + (4 - division) * 2;
 
-    this.penPaperDifficulty = sigmoid(
-      normal(
-        PROBLEM_PEN_PAPER_DIFFICULTY_MULTIPLIER *
-          (combinedPlacement - PROBLEM_PEN_PAPER_DIFFICULTY_MIDPOINT),
-        PROBLEM_PEN_PAPER_DIFFICULTY_STDEV
-      )
-    );
+  const penPaperDifficulty = sigmoid(
+    normal(
+      PROBLEM_PEN_PAPER_DIFFICULTY_MULTIPLIER *
+        (combinedPlacement - PROBLEM_PEN_PAPER_DIFFICULTY_MIDPOINT),
+      PROBLEM_PEN_PAPER_DIFFICULTY_STDEV
+    )
+  );
 
-    this.penPaperDeceptiveness = sigmoid(
-      normal(
-        PROBLEM_PEN_PAPER_DECEPTIVENESS_MULTIPLIER *
-          (combinedPlacement - PROBLEM_PEN_PAPER_DECEPTIVENESS_MIDPOINT),
-        PROBLEM_PEN_PAPER_DECEPTIVENESS_STDEV
-      )
-    );
+  const penPaperDeceptiveness = sigmoid(
+    normal(
+      PROBLEM_PEN_PAPER_DECEPTIVENESS_MULTIPLIER *
+        (combinedPlacement - PROBLEM_PEN_PAPER_DECEPTIVENESS_MIDPOINT),
+      PROBLEM_PEN_PAPER_DECEPTIVENESS_STDEV
+    )
+  );
 
-    this.implementationDifficulty = sigmoid(
-      normal(
-        PROBLEM_IMPLEMENTATION_DIFFICULTY_MULTIPLIER *
-          (combinedPlacement - PROBLEM_IMPLEMENTATION_DIFFICULTY_MIDPOINT),
-        PROBLEM_IMPLEMENTATION_DIFFICULTY_STDEV
-      )
-    );
+  const implementationDifficulty = sigmoid(
+    normal(
+      PROBLEM_IMPLEMENTATION_DIFFICULTY_MULTIPLIER *
+        (combinedPlacement - PROBLEM_IMPLEMENTATION_DIFFICULTY_MIDPOINT),
+      PROBLEM_IMPLEMENTATION_DIFFICULTY_STDEV
+    )
+  );
 
-    this.implementationDeceptiveness = sigmoid(
-      normal(
-        PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MULTIPLIER *
-          (combinedPlacement - PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MIDPOINT),
-        PROBLEM_IMPLEMENTATION_DECEPTIVENESS_STDEV
-      )
-    );
+  const implementationDeceptiveness = sigmoid(
+    normal(
+      PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MULTIPLIER *
+        (combinedPlacement - PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MIDPOINT),
+      PROBLEM_IMPLEMENTATION_DECEPTIVENESS_STDEV
+    )
+  );
 
-    this.tag = sample(Object.values(ProblemTag), {
-      size: 1,
-      probs: Object.values(ProblemTag).map((tag) =>
-        likelihoodOfAppearing(
-          tag as ProblemTag,
-          this.penPaperDifficulty,
-          this.penPaperDeceptiveness,
-          this.implementationDifficulty,
-          this.implementationDeceptiveness
-        )
-      ),
-    })[0];
-  }
-}
+  const unnormalizedLikelihoodOfAppearing = Object.values(ProblemTag).map((tag) =>
+  likelihoodOfAppearing(
+    tag as ProblemTag,
+    penPaperDifficulty,
+    penPaperDeceptiveness,
+    implementationDifficulty,
+    implementationDeceptiveness
+  ));
+  
+
+  const tag = sample(Object.values(ProblemTag), {
+    size: 1,
+    probs: normalizeArray(unnormalizedLikelihoodOfAppearing),
+  })[0];
+
+  return {
+    division,
+    placement,
+    qualityPrecision,
+    penPaperDifficulty,
+    penPaperDeceptiveness,
+    implementationDifficulty,
+    implementationDeceptiveness,
+    qualityRecall,
+    pretestsQuality,
+    tag
+  };
+};

@@ -1,0 +1,245 @@
+import { describe, expect, it, assert } from "vitest";
+import {
+  ProblemDivision,
+  ProblemPlacement,
+  ProblemTag,
+} from "../../../src/app/problems/types";
+import { zip } from "../../../src/utils/utils";
+import { generateProblem } from "../../../src/app/problems/problem";
+import stdev from "@stdlib/stats/base/stdev";
+import mean from "@stdlib/stats/base/mean";
+
+const GENERATED_PROBLEMS_LENGTH = 1000;
+
+describe("generateProblem function", () => {
+  it("generates problems with diverse attribute values", () => {
+    const placements: Array<ProblemPlacement> = ["A", "B", "D", "F"];
+    const divisions: Array<ProblemDivision> = [4, 3, 2, 1];
+
+    const penPaperDifficultyExpectedMeans = [0.16, 0.3, 0.55, 0.84];
+    const penPaperDifficultyExpectedStdevs = [0.03, 0.04, 0.05, 0.03];
+    const implementationDifficultyExpectedMeans = [0.16, 0.3, 0.55, 0.84];
+    const implementationDifficultyExpectedStdevs = [0.04, 0.06, 0.07, 0.04];
+
+    const deceptivenessExpectedMeans = [0.3, 0.4, 0.58, 0.7];
+    const deceptivenessExpectedStdevs = [0.15, 0.16, 0.16, 0.15];
+
+    const qualityPrecisionLowerBound = {
+      bound: 0.8,
+      expectedProbToBeLessThan: 0.01,
+    };
+    const qualityPrecisionUpperBound = {
+      bound: 0.99,
+      expectedProbToBeLessThan: 0.18,
+    };
+
+    const qualityRecallLowerBound = {
+      bound: 0.1,
+      expectedProbToBeLessThan: 0.001,
+    };
+    const qualityRecallUpperBound = {
+      bound: 0.9,
+      expectedProbToBeLessThan: 0.005,
+    };
+
+    const pretestsQualityLowerBound = {
+      bound: 0.8,
+      expectedProbToBeLessThan: 0.05,
+    };
+    const pretestsQualityUpperBound = {
+      bound: 0.99,
+      expectedProbToBeLessThan: 0.43,
+    };
+
+    for (const [
+      placement,
+      division,
+      penPaperDifficultyExpectedMean,
+      penPaperDifficultyExpectedStdev,
+      implementationDifficultyExpectedMean,
+      implementationDifficultyExpectedStdev,
+      deceptivenessExpectedMean,
+      deceptivenessExpectedStdev,
+    ] of zip(
+      placements,
+      divisions,
+      penPaperDifficultyExpectedMeans,
+      penPaperDifficultyExpectedStdevs,
+      implementationDifficultyExpectedMeans,
+      implementationDifficultyExpectedStdevs,
+      deceptivenessExpectedMeans,
+      deceptivenessExpectedStdevs
+    )) {
+      const problems = Array(GENERATED_PROBLEMS_LENGTH)
+        .fill(0)
+        .map((_) => generateProblem(division, placement));
+
+      const penPaperDifficultyStDev = stdev(
+        problems.length,
+        1,
+        problems.map((problem) => problem.penPaperDifficulty),
+        1
+      );
+      const penPaperDifficultyMean = mean(
+        problems.length,
+        problems.map((problem) => problem.penPaperDifficulty),
+        1
+      );
+
+      assert.closeTo(
+        penPaperDifficultyStDev,
+        penPaperDifficultyExpectedStdev,
+        0.01
+      );
+      assert.closeTo(
+        penPaperDifficultyMean,
+        penPaperDifficultyExpectedMean,
+        0.05
+      );
+
+      const implementationDifficultyStDev = stdev(
+        problems.length,
+        1,
+        problems.map((problem) => problem.implementationDifficulty),
+        1
+      );
+      const implementationDifficultyMean = mean(
+        problems.length,
+        problems.map((problem) => problem.implementationDifficulty),
+        1
+      );
+
+      assert.closeTo(
+        implementationDifficultyStDev,
+        implementationDifficultyExpectedStdev,
+        0.01
+      );
+      assert.closeTo(
+        implementationDifficultyMean,
+        implementationDifficultyExpectedMean,
+        0.05
+      );
+
+      const penPaperDeceptivenessStDev = stdev(
+        problems.length,
+        1,
+        problems.map((problem) => problem.penPaperDeceptiveness),
+        1
+      );
+      const penPaperDeceptivenessMean = mean(
+        problems.length,
+        problems.map((problem) => problem.penPaperDeceptiveness),
+        1
+      );
+      assert.closeTo(
+        penPaperDeceptivenessStDev,
+        deceptivenessExpectedStdev,
+        0.02
+      );
+      assert.closeTo(
+        penPaperDeceptivenessMean,
+        deceptivenessExpectedMean,
+        0.05
+      );
+
+      const implementationDeceptivenessStDev = stdev(
+        problems.length,
+        1,
+        problems.map((problem) => problem.implementationDeceptiveness),
+        1
+      );
+      const implementationDeceptivenessMean = mean(
+        problems.length,
+        problems.map((problem) => problem.implementationDeceptiveness),
+        1
+      );
+      assert.closeTo(
+        implementationDeceptivenessStDev,
+        deceptivenessExpectedStdev,
+        0.02
+      );
+      assert.closeTo(
+        implementationDeceptivenessMean,
+        deceptivenessExpectedMean,
+        0.05
+      );
+
+      assert.closeTo(
+        qualityPrecisionLowerBound.expectedProbToBeLessThan,
+        problems.filter(
+          (problem) =>
+            problem.qualityPrecision < qualityPrecisionLowerBound.bound
+        ).length / GENERATED_PROBLEMS_LENGTH,
+        0.01
+      );
+
+      assert.closeTo(
+        qualityPrecisionUpperBound.expectedProbToBeLessThan,
+        problems.filter(
+          (problem) =>
+            problem.qualityPrecision < qualityPrecisionUpperBound.bound
+        ).length / GENERATED_PROBLEMS_LENGTH,
+        0.03
+      );
+
+      assert.closeTo(
+        qualityRecallLowerBound.expectedProbToBeLessThan,
+        problems.filter(
+          (problem) => problem.qualityRecall < qualityRecallLowerBound.bound
+        ).length / GENERATED_PROBLEMS_LENGTH,
+        0.001
+      );
+
+      assert.closeTo(
+        qualityRecallUpperBound.expectedProbToBeLessThan,
+        problems.filter(
+          (problem) => problem.qualityRecall < qualityRecallUpperBound.bound
+        ).length / GENERATED_PROBLEMS_LENGTH,
+        0.005
+      );
+
+      assert.closeTo(
+        pretestsQualityLowerBound.expectedProbToBeLessThan,
+        problems.filter(
+          (problem) => problem.pretestsQuality < pretestsQualityLowerBound.bound
+        ).length / GENERATED_PROBLEMS_LENGTH,
+        0.02
+      );
+
+      assert.closeTo(
+        pretestsQualityUpperBound.expectedProbToBeLessThan,
+        problems.filter(
+          (problem) => problem.pretestsQuality < pretestsQualityUpperBound.bound
+        ).length / GENERATED_PROBLEMS_LENGTH,
+        0.05
+      );
+
+      const problemTags = Object.values(ProblemTag);
+      problemTags.forEach((problemTag) =>
+        assert.closeTo(
+          GENERATED_PROBLEMS_LENGTH /
+            problems.filter((problem) => problem.tag === problemTag).length,
+          problemTags.length,
+          0.5 * problemTags.length
+        )
+      );
+    }
+  });
+
+  it("generates problems with all numeric values between 0-1", () => {
+    const division = 3;
+    const placement = "E";
+    const GENERATED_PROBLEMS_LENGTH = 100;
+    const problems = Array(GENERATED_PROBLEMS_LENGTH)
+      .fill(0)
+      .map(() => generateProblem(division, placement));
+
+    problems.forEach((problem) =>
+      Object.entries(problem).forEach(([attributeName, attributeValue]) => {
+        if (typeof attributeValue === "number" && attributeName !== "division") {
+          assert.closeTo(attributeValue, 0.5, 0.5);
+        }
+      })
+    );
+  });
+});

@@ -1,12 +1,17 @@
 import { describe, it, assert, expect } from "vitest";
 import { generateUsers, User } from "../../../src/app/users/loadUsers";
-import variance from  '@stdlib/stats/base/variance';
-import { normalizeLevelOfAttribute } from '../../../src/app/users/utils';
-import { USER_ATTRIBUTES_CONSTANTS } from '../../../src/app/users/constants';
+import stdev from "@stdlib/stats/base/stdev";
+import { normalizeLevelOfAttribute } from "../../../src/app/users/utils";
+import { USER_ATTRIBUTES_CONSTANTS } from "../../../src/app/users/constants";
+import { ProblemTag } from "../../../src/app/problems/types";
+import {
+  AttributeNames,
+  NonTechnicalAttributeNames,
+} from "../../../src/app/users/types";
 
 describe("generateUsers function", () => {
   const handle = "someUnusedHandle";
-  const users = generateUsers(handle);
+  const users = generateUsers(handle).users;
   it("generates an array of users", () => {
     expect(users).toBeInstanceOf(Array<User>);
   });
@@ -28,7 +33,10 @@ describe("generateUsers function", () => {
     const npcUsers = users?.filter((user) => !user["isPlayer"]);
     const usersWithHighDP = npcUsers?.filter(
       (user) =>
-        normalizeLevelOfAttribute(user.attributes.dp as number, USER_ATTRIBUTES_CONSTANTS.dp) > 0.6
+        normalizeLevelOfAttribute(
+          user.attributes.dp as number,
+          USER_ATTRIBUTES_CONSTANTS.dp
+        ) > 0.6
     );
 
     expect(usersWithHighDP?.length).toBeGreaterThan(200);
@@ -36,21 +44,58 @@ describe("generateUsers function", () => {
 
     const usersWithLowDP = npcUsers?.filter(
       (user) =>
-      normalizeLevelOfAttribute(user.attributes.dp, USER_ATTRIBUTES_CONSTANTS.dp) < 0.2
+        normalizeLevelOfAttribute(
+          user.attributes.dp,
+          USER_ATTRIBUTES_CONSTANTS.dp
+        ) < 0.2
     );
-    
+
     expect(usersWithLowDP?.length).toBeGreaterThan(2000);
     expect(usersWithLowDP?.length).toBeLessThan(10000);
-    
-    const normalizedAttributes = npcUsers?.map(user => Object.entries(user.attributes).map(([attributeName, level]) => normalizeLevelOfAttribute(level, USER_ATTRIBUTES_CONSTANTS[attributeName])))
-    const attributeVariances = normalizedAttributes?.map(normalizedUserAttributes => variance(normalizedUserAttributes?.length, 1, normalizedUserAttributes, 1));
-    const usersWithHighStDev = (attributeVariances?.filter(variance => Math.sqrt(variance) > 0.15));
-    
+
+    const normalizedAttributes = npcUsers?.map((user) =>
+      Object.entries(user.attributes).map(([attributeName, level]) =>
+        normalizeLevelOfAttribute(
+          level,
+          USER_ATTRIBUTES_CONSTANTS[attributeName]
+        )
+      )
+    );
+    const attributeStdevs = normalizedAttributes?.map(
+      (normalizedUserAttributes) =>
+        stdev(
+          normalizedUserAttributes?.length,
+          1,
+          normalizedUserAttributes,
+          1
+        )
+    );
+    const usersWithHighStDev = attributeStdevs?.filter(
+      (stdev) => stdev > 0.15
+    );
+
     expect(usersWithHighStDev?.length).toBeGreaterThan(100);
     expect(usersWithHighStDev?.length).toBeLessThan(500);
-    
-    const usersWithLowStDev = (attributeVariances?.filter(variance => Math.sqrt(variance) < 0.05));
+
+    const usersWithLowStDev = attributeStdevs?.filter(
+      (stdev) => stdev < 0.05
+    );
     expect(usersWithLowStDev?.length).toBeGreaterThan(500);
     expect(usersWithLowStDev?.length).toBeLessThan(3000);
+  });
+
+  it("generates all attribute values between the corresponding minValue and maxValue", () => {
+    users?.forEach((user) => {
+      (Object.values(ProblemTag) as Array<AttributeNames>)
+        .concat(Object.values(NonTechnicalAttributeNames))
+        .forEach((attributeName) => {
+          expect(user.attributes[attributeName]).toBeGreaterThanOrEqual(
+            USER_ATTRIBUTES_CONSTANTS[attributeName].MIN_VALUE
+          );
+          expect(user.attributes[attributeName]).toBeLessThanOrEqual(
+            USER_ATTRIBUTES_CONSTANTS[attributeName].MAX_VALUE
+          );
+        });
+    });
   });
 });

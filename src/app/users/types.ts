@@ -7,11 +7,14 @@ export type AttributeConstant = {
   hardness: number;
 };
 
+export enum NonTechnicalAttributeNames {
+  penPaperCare = "penPaperCare",
+  implementationSpeed = "implementationSpeed",
+  implementationCare = "implementationCare",
+}
+
 export type AttributeNames =
-  | ProblemTag
-  | "penPaperCare"
-  | "implementationSpeed"
-  | "implementationCare";
+  | ProblemTag | NonTechnicalAttributeNames;
 
 export type AttributeValues = {
   [K in AttributeNames]: AttributeValue;
