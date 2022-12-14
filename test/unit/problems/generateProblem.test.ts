@@ -9,7 +9,7 @@ import { generateProblem } from "../../../src/app/problems/problem";
 import stdev from "@stdlib/stats/base/stdev";
 import mean from "@stdlib/stats/base/mean";
 
-const GENERATED_PROBLEMS_LENGTH = 1000;
+const GENERATED_PROBLEMS_LENGTH = 2000;
 
 describe("generateProblem function", () => {
   it("generates problems with diverse attribute values", () => {
@@ -18,11 +18,15 @@ describe("generateProblem function", () => {
 
     const penPaperDifficultyExpectedMeans = [0.16, 0.3, 0.55, 0.84];
     const penPaperDifficultyExpectedStdevs = [0.03, 0.04, 0.05, 0.03];
+    
     const implementationDifficultyExpectedMeans = [0.16, 0.3, 0.55, 0.84];
     const implementationDifficultyExpectedStdevs = [0.04, 0.06, 0.07, 0.04];
 
     const deceptivenessExpectedMeans = [0.3, 0.4, 0.58, 0.7];
     const deceptivenessExpectedStdevs = [0.15, 0.16, 0.16, 0.15];
+
+    const readingDifficultyExpectedMeans = [0.25, 0.35, 0.6, 0.75];
+    const readingDifficultyExpectedStdevs = [0.1, 0.11, 0.11, 0.1];
 
     const qualityPrecisionLowerBound = {
       bound: 0.8,
@@ -30,7 +34,7 @@ describe("generateProblem function", () => {
     };
     const qualityPrecisionUpperBound = {
       bound: 0.99,
-      expectedProbToBeLessThan: 0.18,
+      expectedProbToBeLessThan: 0.17,
     };
 
     const qualityRecallLowerBound = {
@@ -60,6 +64,8 @@ describe("generateProblem function", () => {
       implementationDifficultyExpectedStdev,
       deceptivenessExpectedMean,
       deceptivenessExpectedStdev,
+      readingDifficultyExpectedMean,
+      readingDifficultyExpectedStdev,
     ] of zip(
       placements,
       divisions,
@@ -68,7 +74,9 @@ describe("generateProblem function", () => {
       implementationDifficultyExpectedMeans,
       implementationDifficultyExpectedStdevs,
       deceptivenessExpectedMeans,
-      deceptivenessExpectedStdevs
+      deceptivenessExpectedStdevs,
+      readingDifficultyExpectedMeans,
+      readingDifficultyExpectedStdevs
     )) {
       const problems = Array(GENERATED_PROBLEMS_LENGTH)
         .fill(0)
@@ -161,6 +169,29 @@ describe("generateProblem function", () => {
       assert.closeTo(
         implementationDeceptivenessMean,
         deceptivenessExpectedMean,
+        0.05
+      );
+
+      const readingDifficultyStDev = stdev(
+        problems.length,
+        1,
+        problems.map((problem) => problem.readingDifficulty),
+        1
+      );
+      const readingDifficultyMean = mean(
+        problems.length,
+        problems.map((problem) => problem.readingDifficulty),
+        1
+      );
+
+      assert.closeTo(
+        readingDifficultyStDev,
+        readingDifficultyExpectedStdev,
+        0.015
+      );
+      assert.closeTo(
+        readingDifficultyMean,
+        readingDifficultyExpectedMean,
         0.05
       );
 

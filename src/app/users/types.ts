@@ -8,13 +8,13 @@ export type AttributeConstant = {
 };
 
 export enum NonTechnicalAttributeNames {
+  reading = "reading",
   penPaperCare = "penPaperCare",
   implementationSpeed = "implementationSpeed",
   implementationCare = "implementationCare",
 }
 
-export type AttributeNames =
-  | ProblemTag | NonTechnicalAttributeNames;
+export type AttributeNames = (keyof typeof ProblemTag) | (keyof typeof NonTechnicalAttributeNames);
 
 export type AttributeValues = {
   [K in AttributeNames]: AttributeValue;

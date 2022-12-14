@@ -1,5 +1,3 @@
-import { ProblemTag } from "./types";
-
 export const PROBLEM_QUALITY_PRECISION_ALPHA = 10;
 export const PROBLEM_QUALITY_PRECISION_BETA = 0.1;
 
@@ -25,57 +23,14 @@ export const PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MIDPOINT = 5.5;
 export const PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MULTIPLIER = 0.15;
 export const PROBLEM_IMPLEMENTATION_DECEPTIVENESS_STDEV = 0.75;
 
-export const likelihoodOfAppearing = (
-  tag: ProblemTag,
-  penPaperDifficulty: number,
-  penPaperDeceptiveness: number,
-  implementationDifficulty: number,
-  implementationDeceptiveness: number
-): number => {
-  switch (tag) {
-    case ProblemTag.dp:
-      return (
-        5 + (penPaperDifficulty - 0.5) + 2 * (implementationDeceptiveness - 0.5)
-      );
-    case ProblemTag.greedy:
-      return (
-        5 -
-        3 * (penPaperDifficulty - 0.5) +
-        0.5 * (penPaperDeceptiveness - 0.5) -
-        (implementationDifficulty - 0.5)
-      );
-    case ProblemTag.math:
-      return (
-        5 +
-        (penPaperDifficulty - 0.5) +
-        (penPaperDeceptiveness - 0.5) -
-        (implementationDifficulty - 0.5) -
-        (implementationDeceptiveness - 0.5)
-      );
-    case ProblemTag.graphs:
-      return (
-        5 +
-        2 * (penPaperDifficulty - 0.5) -
-        (penPaperDeceptiveness - 0.5) -
-        2 * (implementationDeceptiveness - 0.5)
-      );
-    case ProblemTag.adHoc:
-      return (
-        5 + (penPaperDifficulty - 0.5) - 2 * (implementationDifficulty - 0.5)
-      );
-    case ProblemTag.trees:
-      return (
-        5 +
-        (penPaperDifficulty - 0.5) -
-        (penPaperDeceptiveness - 0.5) -
-        2 * (implementationDeceptiveness - 0.5)
-      );
-    default:
-      console.log(
-        "Likelihood of appearing has not been implemented for the tag " +
-          tag +
-          "."
-      );
-      return 0;
-  }
-};
+export const PROBLEM_READING_DIFFICULTY_MIDPOINT = 5.5;
+export const PROBLEM_READING_DIFFICULTY_MULTIPLIER = 0.2;
+export const PROBLEM_READING_DIFFICULTY_STDEV = 0.5;
+
+export const READING_TIME_DISTRIBUTION_PRECISION = 8;
+export const READING_TIME_BASE = 200;
+export const READING_TIME_SCALING_FACTOR = Math.E;
+
+export const PEN_PAPER_SOLVING_DISTRIBUTION_PRECISION = 2;
+export const PEN_PAPER_SOLVING_TIME_BASE = 2400;
+export const PEN_PAPER_SOLVING_SCALING_FACTOR = 5;
