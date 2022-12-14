@@ -31,7 +31,7 @@ const generateUser = (
     officialRating,
     country,
     rating: USER_INITIAL_RATING,
-    ratingHistory: [{ time: Date.now(), rating: USER_INITIAL_RATING }],
+    ratingHistory: [{ time: Date.now(), rating: USER_INITIAL_RATING }] as Array<RatingPoint>,
     attributes: Object.fromEntries(
       attributeConstantsKeys.map((attributeName) => [
         attributeName,
