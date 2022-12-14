@@ -21,4 +21,4 @@ jobs:
           pip install requests
       - name: execute py script usersTrimmer.py 
         run: |
-          python /public/scripts/usersTrimmer.py
+          python ./public/scripts/usersTrimmer.py
