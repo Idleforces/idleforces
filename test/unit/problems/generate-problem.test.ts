@@ -1,11 +1,11 @@
-import { describe, expect, it, assert } from "vitest";
-import {
+import { describe, it, assert } from "vitest";
+import type {
   ProblemDivision,
   ProblemPlacement,
-  ProblemTag,
 } from "../../../src/app/problems/types";
+import { ProblemTag } from "../../../src/app/problems/types";
 import { zip } from "../../../src/utils/utils";
-import { generateProblem } from "../../../src/app/problems/problem";
+import { generateProblem } from "../../../src/app/problems/generate-problem";
 import stdev from "@stdlib/stats/base/stdev";
 import mean from "@stdlib/stats/base/mean";
 
@@ -18,12 +18,12 @@ describe("generateProblem function", () => {
 
     const penPaperDifficultyExpectedMeans = [0.16, 0.3, 0.55, 0.84];
     const penPaperDifficultyExpectedStdevs = [0.03, 0.04, 0.05, 0.03];
-    
+
     const implementationDifficultyExpectedMeans = [0.16, 0.3, 0.55, 0.84];
     const implementationDifficultyExpectedStdevs = [0.04, 0.06, 0.07, 0.04];
 
-    const deceptivenessExpectedMeans = [0.3, 0.4, 0.58, 0.7];
-    const deceptivenessExpectedStdevs = [0.15, 0.16, 0.16, 0.15];
+    const deceptivenessExpectedMeans = [0.16, 0.3, 0.55, 0.84];
+    const deceptivenessExpectedStdevs = [0.12, 0.15, 0.16, 0.12];
 
     const readingDifficultyExpectedMeans = [0.25, 0.35, 0.6, 0.75];
     const readingDifficultyExpectedStdevs = [0.1, 0.11, 0.11, 0.1];
@@ -34,7 +34,7 @@ describe("generateProblem function", () => {
     };
     const qualityPrecisionUpperBound = {
       bound: 0.99,
-      expectedProbToBeLessThan: 0.17,
+      expectedProbToBeLessThan: 0.175,
     };
 
     const qualityRecallLowerBound = {
@@ -210,7 +210,7 @@ describe("generateProblem function", () => {
           (problem) =>
             problem.qualityPrecision < qualityPrecisionUpperBound.bound
         ).length / GENERATED_PROBLEMS_LENGTH,
-        0.03
+        0.04
       );
 
       assert.closeTo(
@@ -246,14 +246,14 @@ describe("generateProblem function", () => {
       );
 
       const problemTags = Object.values(ProblemTag);
-      problemTags.forEach((problemTag) =>
+      problemTags.forEach((problemTag) => {
         assert.closeTo(
           GENERATED_PROBLEMS_LENGTH /
             problems.filter((problem) => problem.tag === problemTag).length,
           problemTags.length,
           0.5 * problemTags.length
-        )
-      );
+        );
+      });
     }
   });
 
@@ -265,12 +265,15 @@ describe("generateProblem function", () => {
       .fill(0)
       .map(() => generateProblem(division, placement));
 
-    problems.forEach((problem) =>
+    problems.forEach((problem) => {
       Object.entries(problem).forEach(([attributeName, attributeValue]) => {
-        if (typeof attributeValue === "number" && attributeName !== "division") {
+        if (
+          typeof attributeValue === "number" &&
+          attributeName !== "division"
+        ) {
           assert.closeTo(attributeValue, 0.5, 0.5);
         }
-      })
-    );
+      });
+    });
   });
 });
