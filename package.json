@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "lint": "npx eslint ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
@@ -29,14 +30,24 @@
     "redux": "^4.2.0"
   },
   "devDependencies": {
+    "@stdlib/types": "^0.0.14",
     "@types/hash-sum": "^1.0.0",
     "@types/lz-string": "^1.3.34",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@types/react-router": "^5.1.19",
     "@types/react-router-dom": "^5.3.3",
+    "@types/sinon": "^10.0.13",
+    "@typescript-eslint/eslint-plugin": "^5.47.0",
+    "@typescript-eslint/parser": "^5.47.0",
     "@vitejs/plugin-react": "^2.2.0",
     "@vitest/coverage-c8": "^0.25.5",
+    "dependency-cruiser": "^12.2.0",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react": "^7.31.11",
+    "prettier": "^2.8.1",
+    "sinon": "^15.0.1",
     "typescript": "^4.6.4",
     "vite": "^3.2.3",
     "vitest": "^0.25.5"
