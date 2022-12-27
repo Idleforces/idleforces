@@ -1,0 +1,67 @@
+{
+  "env": {
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier",
+    "plugin:react/jsx-runtime"
+  ],
+  "ignorePatterns": ["dist", "node_modules", "coverage"],
+  "overrides": [],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "tsconfigRootDir": "",
+    "project": ["./tsconfig.json"],
+    "sourceType": "module"
+  },
+  "plugins": ["react", "@typescript-eslint"],
+  "rules": {
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "double"],
+    "semi": ["error", "always"],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "generic",
+        "readonly": "generic"
+      }
+    ],
+    "@typescript-eslint/consistent-indexed-object-style": "warn",
+    "@typescript-eslint/consistent-type-assertions": "warn",
+    "@typescript-eslint/consistent-type-exports": "warn",
+    "@typescript-eslint/consistent-type-imports": "warn",
+    "@typescript-eslint/no-confusing-void-expression": "warn",
+    "@typescript-eslint/no-invalid-void-type": "warn",
+    "@typescript-eslint/no-meaningless-void-operator": "warn",
+    "@typescript-eslint/no-redundant-type-constituents": "warn",
+    "@typescript-eslint/no-require-imports": "warn",
+    "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
+    "@typescript-eslint/no-unnecessary-condition": "warn",
+    "@typescript-eslint/no-unnecessary-type-arguments": "warn",
+    "@typescript-eslint/no-unused-expressions": "warn",
+    "@typescript-eslint/no-useless-empty-export": "warn",
+    "@typescript-eslint/prefer-for-of": "warn",
+    "@typescript-eslint/prefer-function-type": "warn",
+    "@typescript-eslint/prefer-includes": "warn",
+    "@typescript-eslint/prefer-nullish-coalescing": "warn",
+    "@typescript-eslint/prefer-optional-chain": "warn",
+    "@typescript-eslint/strict-boolean-expressions": "warn"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
