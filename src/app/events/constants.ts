@@ -1,0 +1,1 @@
+export const BASE_EVENT_PROBABILITY = 0.00002;

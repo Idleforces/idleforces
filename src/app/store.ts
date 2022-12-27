@@ -1,6 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { saveReducer } from "./save/saveSlice";
-import { usersReducer } from "./users/usersSlice";
+
+import { eventsReducer } from "./events/events-slice";
+import { saveReducer } from "./save/save-slice";
+import { usersReducer } from "./users/users-slice";
+import { contestReducer } from "./contest/contest-slice";
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -9,5 +12,7 @@ export const store = configureStore({
   reducer: {
     save: saveReducer,
     users: usersReducer,
+    events: eventsReducer,
+    contest: contestReducer,
   },
 });

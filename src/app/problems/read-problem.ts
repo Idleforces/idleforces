@@ -1,13 +1,11 @@
-import { User } from "../users/loadUsers";
+import type { User } from "../users/types";
 import {
   READING_TIME_BASE,
   READING_TIME_DISTRIBUTION_PRECISION,
   READING_TIME_SCALING_FACTOR,
 } from "./constants";
-import { startPenPaperSolving } from "./pen-paper-solve";
-import {
+import type {
   Problem,
-  ProblemSolveStatusDuringPenPaperSolving,
   ProblemSolveStatusDuringReading,
 } from "./types";
 import { betaPrimeAltParam, computeExpectancyMultiplier } from "./utils";
@@ -23,27 +21,15 @@ export const startReadingProblem = (
     READING_TIME_SCALING_FACTOR
   );
 
+  const progress = 0;
+  const increment = 1 / (READING_TIME_BASE *
+    readingTimeExpectancyMultiplier *
+    betaPrimeAltParam(1, READING_TIME_DISTRIBUTION_PRECISION));
+
   return {
-    ticksToFinishReading:
-      READING_TIME_BASE *
-      readingTimeExpectancyMultiplier *
-      betaPrimeAltParam(1, READING_TIME_DISTRIBUTION_PRECISION),
+    progress,
+    increment,
     phase: "during-reading",
+    submissions: [],
   };
-};
-
-export const processReadingProblemTick = (
-  user: User,
-  problem: Problem,
-  problemSolveStatus: ProblemSolveStatusDuringReading
-): ProblemSolveStatusDuringReading | ProblemSolveStatusDuringPenPaperSolving => {
-  if (problemSolveStatus.ticksToFinishReading > 1)
-    return {
-      ...problemSolveStatus,
-      ticksToFinishReading: problemSolveStatus.ticksToFinishReading - 1,
-    };
-
-  else {
-    return startPenPaperSolving(user, problem);
-  }
 };
