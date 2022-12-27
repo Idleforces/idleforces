@@ -5,9 +5,10 @@ import { Game } from "./view/game/game";
 import { Dashboard } from "./view/game/pages/dashboard";
 import { Header } from "./view/header/header";
 import { useAppDispatch } from "./app/hooks";
-import { resetUsers } from "./app/users/usersSlice";
-import { resetSaveData } from "./app/save/saveSlice";
+import { resetUsers } from "./app/users/users-slice";
+import { resetSaveData } from "./app/save/save-slice";
 import { Footer } from "./view/footer/footer";
+import { Loading } from "./view/loading/loading";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -31,7 +32,11 @@ function App() {
           <Route path="*" element={<Dashboard/>} />
         </Route>
         <Route
-          path="/"
+          path="/loading"
+          element={<Loading/>}
+        />
+        <Route
+          path="/*"
           element={<Index/>}
         />
       </Routes>

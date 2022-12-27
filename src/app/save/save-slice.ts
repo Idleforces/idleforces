@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../store";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { RootState } from "../store";
 
 export type SaveSlice = {
   handle: string;
@@ -11,11 +12,11 @@ const saveSlice = createSlice({
   name: "save",
   initialState: null as SaveSlice,
   reducers: {
-    setSaveData (state: SaveSlice, action: PayloadAction<SaveSlice>) {
+    setSaveData (_state: SaveSlice, action: PayloadAction<SaveSlice>) {
       return action.payload;
     },
 
-    resetSaveData (state: SaveSlice, action: PayloadAction<null>) {
+    resetSaveData (_state: SaveSlice, _action: PayloadAction<null>) {
       return null;
     }
   },

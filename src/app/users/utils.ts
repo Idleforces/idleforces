@@ -1,4 +1,4 @@
-import { AttributeConstant } from "./types";
+import type { AttributeConstant } from "./types";
 export const XPToLevel = (
   XP: number,
   attributeConstant: AttributeConstant
@@ -7,7 +7,7 @@ export const XPToLevel = (
   const maxValue = attributeConstant.MAX_VALUE;
   const hardness = attributeConstant.hardness;
   if (XP < 0 || hardness <= 0) {
-    console.log("Function XPToLevel received invalid input.");
+    console.warn("Function XPToLevel received invalid input.");
     return 0;
   }
 
@@ -26,7 +26,7 @@ export const levelToXP = (
   const maxValue = attributeConstant.MAX_VALUE;
   const hardness = attributeConstant.hardness;
   if (level < minValue || level > maxValue || hardness <= 0) {
-    console.log("Function levelToXP received invalid input.");
+    console.warn("Function levelToXP received invalid input.");
     return 0;
   }
 
@@ -50,7 +50,7 @@ export const normalizeLevelOfAttribute = (
     level < attributeConstant.MIN_VALUE ||
     level > attributeConstant.MAX_VALUE
   ) {
-    console.log("Bad input to normalizeLevelOfAttribute function");
+    console.warn("Bad input to normalizeLevelOfAttribute function");
     return 0;
   }
   return (

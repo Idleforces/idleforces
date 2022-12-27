@@ -1,6 +1,6 @@
 import { compressToUTF16 } from "lz-string";
 import { safeSetLocalStorageValue } from "../../utils/utils";
-import { UsersSlice } from "./usersSlice";
+import type { UsersSlice } from "./users-slice";
 
 export const saveUsers = (state: UsersSlice, saveName: string, leaveGame: () => void) => {
   if (state) {

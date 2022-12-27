@@ -25,20 +25,20 @@ export const RatingStyled = (props: {
           rating >= 2600
             ? "#f33"
             : rating >= 2400
-            ? "#f77"
-            : rating >= 2300
-            ? "#fb5"
-            : rating >= 2100
-            ? "#fc8"
-            : rating >= 1900
-            ? "#f8f"
-            : rating >= 1600
-            ? "#aaf"
-            : rating >= 1400
-            ? "#7db"
-            : rating >= 1200
-            ? "#7f7"
-            : "#ccc",
+              ? "#f77"
+              : rating >= 2300
+                ? "#fb5"
+                : rating >= 2100
+                  ? "#fc8"
+                  : rating >= 1900
+                    ? "#f8f"
+                    : rating >= 1600
+                      ? "#aaf"
+                      : rating >= 1400
+                        ? "#7db"
+                        : rating >= 1200
+                          ? "#7f7"
+                          : "#ccc",
       }}
     >
       {stringToStyle}

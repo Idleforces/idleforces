@@ -1,13 +1,13 @@
 import hash_sum from "hash-sum";
 import { useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
-import { saveUsers } from "../../app/users/saveUsers";
-import { selectUsersWithTimeOfSnapshot } from "../../app/users/usersSlice";
+import { saveUsers } from "../../app/users/save-users";
+import { selectUsersWithTimeOfSnapshot } from "../../app/users/users-slice";
 import { safeSetLocalStorageValue } from "../../utils/utils";
-import { LocalStorageSavesValue } from "./types";
+import type { LocalStorageSavesValue } from "./types";
 import { Outlet } from "react-router-dom";
 import { NavBar } from "./navbar";
-import { selectSaveData } from "../../app/save/saveSlice";
+import { selectSaveData } from "../../app/save/save-slice";
 
 export const Game = (props: { leaveGame: () => void }) => {
   const startingTimestamp = useMemo(() => Date.now(), []);
@@ -18,55 +18,57 @@ export const Game = (props: { leaveGame: () => void }) => {
 
   const handleTick = () => {
     const hash = hash_sum(usersWithTimestamp);
-    const localStorageGameSaveValue = localStorage.getItem(
-      `__${saveData?.saveName}`
-    );
-    if (
-      !localStorageGameSaveValue ||
-      hash !== JSON.parse(localStorageGameSaveValue)
-    ) {
-      saveUsers(usersWithTimestamp, saveData?.saveName as string, leaveGame);
-    }
-
-    const savesJSON = localStorage.getItem("saves");
-    if (!savesJSON) {
-      safeSetLocalStorageValue(
-        "saves",
-        JSON.stringify([
-          {
-            rating: saveData?.rating,
-            hash,
-            saveName: saveData?.saveName,
-            handle: saveData?.handle,
-          },
-        ]),
-        leaveGame
+    if (saveData) {
+      const localStorageGameSaveValue = localStorage.getItem(
+        `__${saveData.saveName}`
       );
-    } else {
-      const saves = JSON.parse(savesJSON) as LocalStorageSavesValue;
       if (
-        saves.filter((save) => save.saveName === saveData?.saveName).length ===
-        0
+        localStorageGameSaveValue === null ||
+        hash !== JSON.parse(localStorageGameSaveValue)
       ) {
+        saveUsers(usersWithTimestamp, saveData.saveName, leaveGame);
+      }
+
+      const savesJSON = localStorage.getItem("saves") as string;
+      if (!savesJSON) {
         safeSetLocalStorageValue(
           "saves",
           JSON.stringify([
-            ...saves,
             {
-              rating: saveData?.rating,
+              rating: saveData.rating,
               hash,
-              saveName: saveData?.saveName,
-              handle: saveData?.handle,
+              saveName: saveData.saveName,
+              handle: saveData.handle,
             },
           ]),
           leaveGame
         );
+      } else {
+        const saves = JSON.parse(savesJSON) as LocalStorageSavesValue;
+        if (
+          saves.filter((save) => save.saveName === saveData.saveName)
+            .length === 0
+        ) {
+          safeSetLocalStorageValue(
+            "saves",
+            JSON.stringify([
+              ...saves,
+              {
+                rating: saveData.rating,
+                hash,
+                saveName: saveData.saveName,
+                handle: saveData.handle,
+              },
+            ]),
+            leaveGame
+          );
+        }
       }
     }
   };
 
   useEffect(() => {
-    new Promise((resolve, _reject) => {
+    void new Promise((resolve, _reject) => {
       setTimeout(() => {
         handleTick();
         setTicksPassed((prev) => (prev += 1));

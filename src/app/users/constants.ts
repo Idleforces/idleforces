@@ -1,4 +1,4 @@
-import { AttributeConstants } from './types';
+import type { AttributeConstants } from "./types";
 
 export const USER_INITIAL_RATING = 1500;
 export const ATTRIBUTE_GENERATION_OFFICIAL_RATING_MIDPOINT = 2000;
@@ -10,7 +10,7 @@ export const USER_ATTRIBUTES_CONSTANTS: AttributeConstants = Object.freeze({
     MIN_VALUE: 0,
     hardness: 1,
   },
-  
+
   dp: {
     MAX_VALUE: 50,
     MIN_VALUE: 0,

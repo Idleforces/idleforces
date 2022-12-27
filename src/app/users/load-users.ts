@@ -7,31 +7,37 @@ import {
 } from "./constants";
 import usersJSON from "./trimmedUsers.json" assert { type: "json" };
 import { normal } from "@stdlib/random/base";
-import { AttributeValues, AttributeConstants, AttributeValue } from "./types";
+import type {
+  AttributeValues,
+  AttributeConstants,
+  User,
+  UserCore,
+} from "./types";
 import { sigmoid } from "../../utils/utils";
+import { betaPrimeAltParam } from "../problems/utils";
 
 export type RatingPoint = {
-  time: number;
+  timestamp: number;
   rating: number;
 };
 
-const generateUser = (
+export const generateUser = (
   handle: string,
   officialRating: number,
   country: string | null,
-  isPlayer: Boolean
-) => {
+  isPlayer: boolean
+): User => {
   const attributeConstantsKeys = Object.keys(
     USER_ATTRIBUTES_CONSTANTS
   ) as Array<keyof AttributeConstants>;
 
-  return {
-    isPlayer,
+  const userCore: UserCore = {
     handle,
     officialRating,
     country,
-    rating: USER_INITIAL_RATING,
-    ratingHistory: [{ time: Date.now(), rating: USER_INITIAL_RATING }] as Array<RatingPoint>,
+    ratingHistory: [
+      { timestamp: Date.now(), rating: USER_INITIAL_RATING },
+    ] as Array<RatingPoint>,
     attributes: Object.fromEntries(
       attributeConstantsKeys.map((attributeName) => [
         attributeName,
@@ -53,28 +59,46 @@ const generateUser = (
             ) / 100,
       ])
     ) as AttributeValues,
-    likelihoodOfCompeting: Math.round(100 * sigmoid(normal(-0.5, 0.5))) / 100,
   };
-};
 
-export type User = ReturnType<typeof generateUser>;
+  if (!isPlayer) {
+    return {
+      ...userCore,
+      isPlayer,
+      likelihoodOfCompeting:
+        Math.round(100 * sigmoid(normal(-0.8, 0.75))) / 100,
+      willingnessToTryHarderProblems:
+        Math.round(100 * 0.25 * betaPrimeAltParam(1, 0.5)) / 100,
+      expectedTimeMultiplierToSwitchToADifferentProblem:
+        Math.round(100 * 3.5 * betaPrimeAltParam(1, 16)) / 100,
+    };
+  } else {
+    return {
+      ...userCore,
+      isPlayer,
+    };
+  }
+};
 
 export const fetchUsers = () => {
   const timeOfSnapshot = usersJSON.timeOfSnapshot;
   const users = usersJSON.result;
-  return {users, timeOfSnapshot};
+  return { users, timeOfSnapshot };
 };
 
-export const generateUsers = (playerHandle: string): {users: Array<User> | null, timeOfSnapshot: number} => {
+export const generateUsers = (
+  playerHandle: string
+): { users: Array<User>; timeOfSnapshot: number } => {
   const NPCsWithTimeOfSnapshot = fetchUsers();
   const NPCs = NPCsWithTimeOfSnapshot.users.map((user) =>
     generateUser(user.handle, user.officialRating, user.country, false)
   );
 
   const usersWithTimeOfSnapshot = {
-    users:  [generateUser(playerHandle, USER_INITIAL_RATING, null, true)].concat(
-      NPCs.filter((user) => user.handle !== playerHandle)),
-    timeOfSnapshot: NPCsWithTimeOfSnapshot.timeOfSnapshot
+    users: [generateUser(playerHandle, USER_INITIAL_RATING, null, true)].concat(
+      NPCs.filter((user) => user.handle !== playerHandle)
+    ),
+    timeOfSnapshot: NPCsWithTimeOfSnapshot.timeOfSnapshot,
   };
 
   return usersWithTimeOfSnapshot;
