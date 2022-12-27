@@ -1,6 +1,6 @@
 import { describe, it, assert } from "vitest";
 import { levelToXP, XPToLevel } from "../../../src/app/users/utils";
-import { AttributeConstant } from '../../../src/app/users/types';
+import type { AttributeConstant } from "../../../src/app/users/types";
 
 describe("XPToLevelFunction and levelToXPFunction", () => {
   const mockAttributeConstant: AttributeConstant = { hardness: 3.14, MIN_VALUE: 30, MAX_VALUE: 50 };
