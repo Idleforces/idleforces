@@ -1,20 +1,13 @@
-import type {
-  AnyAction,
-  PayloadAction,
-  ThunkAction,
-  ThunkDispatch,
-} from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { BreakDataWithProblemPlacementAndUserContestIndex } from "../events/types";
 import type { ProblemDivision } from "../problems/types";
 import type { RootState } from "../store";
 import { generateContest } from "./generate-contest";
 import { processSystests } from "./process-systests";
-import { processTickOfContest } from "./process-tick";
-import type { ContestSlice } from "./types";
+import type { ContestSlice, ContestUserData } from "./types";
 import { recalculateRatings } from "./recalculate-ratings";
 import type { User } from "../users/types";
-import type { MockDispatch } from "../types";
 
 export const contestSlice = createSlice({
   name: "contest",
@@ -25,6 +18,7 @@ export const contestSlice = createSlice({
       action: PayloadAction<{
         division: ProblemDivision;
         playerParticipating: boolean;
+        numberOfMergedTicks: number;
         users: Array<User> | null;
       }>
     ) => {
@@ -37,43 +31,25 @@ export const contestSlice = createSlice({
       return generateContest(
         action.payload.division,
         action.payload.playerParticipating,
+        action.payload.numberOfMergedTicks,
         users
       );
     },
 
-    updateContestSliceAfterTickOfContest: <RootStateType>(
+    updateContestUserData: (
       state: ContestSlice,
       action: PayloadAction<{
-        numberOfMergedTicks: number;
-        users: Array<User> | null;
-        dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch;
+        newContestUsersData: Array<ContestUserData>;
       }>
     ) => {
-      const dispatch = action.payload.dispatch;
-      const users = action.payload.users;
-      if (!users || !state) {
-        console.warn(
-          "Tried to process a tick of contest whenever there were no users or no contest."
-        );
+      if (!state) {
+        console.warn("Tried to update contest data when there was no contest");
         return null;
       }
 
-      const { newContestUsersData, breaksToAddToStore } =
-        processTickOfContest<RootStateType>(
-          state,
-          action.payload.numberOfMergedTicks,
-          users,
-          state.ticksSinceBeginning,
-          dispatch
-        );
-
-      dispatch(addBreaks(breaksToAddToStore));
-
       return {
         ...state,
-        ticksSinceBeginning:
-          state.ticksSinceBeginning + action.payload.numberOfMergedTicks,
-        contestUsersData: newContestUsersData,
+        contestUsersData: action.payload.newContestUsersData,
       };
     },
 
@@ -105,6 +81,9 @@ export const contestSlice = createSlice({
     },
 
     resetContest: (_state: ContestSlice, _action: PayloadAction<null>) => null,
+
+    setContest: (_state: ContestSlice, action: PayloadAction<ContestSlice>) =>
+      action.payload,
 
     addBreaks: (
       state: ContestSlice,
@@ -145,28 +124,16 @@ export const contestSlice = createSlice({
 
 export const {
   startContest,
-  updateContestSliceAfterTickOfContest,
+  updateContestUserData,
   resetContest,
+  setContest,
   addBreaks,
   setNextEventIn,
   processSystestsAndRecalculateRatings,
 } = contestSlice.actions;
+
 export const selectTicksSinceBeginning = (state: RootState) =>
   state.contest ? state.contest.ticksSinceBeginning : null;
-export const contestReducer = contestSlice.reducer;
+export const selectContest = (state: RootState) => state.contest;
 
-export const getTicksSinceBeginning = (): ThunkAction<
-  number,
-  RootState,
-  undefined,
-  AnyAction
-> => {
-  return function getTicksSinceBeginningThunk(_dispatch, getState) {
-    const contest = getState().contest;
-    if (contest) return contest.ticksSinceBeginning;
-    else {
-      console.warn("Bad input passed to getTicksSinceBeginning function");
-      return 0;
-    }
-  };
-};
+export const contestReducer = contestSlice.reducer;
