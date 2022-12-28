@@ -1,4 +1,4 @@
-import { describe, it, assert } from "vitest";
+import { describe, it } from "vitest";
 import { generateProblem } from "../../../src/app/problems/generate-problem";
 import {
   computeIfImplementationCorrect,
@@ -6,6 +6,7 @@ import {
 } from "../../../src/app/problems/implement";
 import type { ProblemSolveStatusDuringImplementing } from "../../../src/app/problems/types";
 import { generateUser } from "../../../src/app/users/load-users";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("startImplementing function", () => {
   it("returns reasonable increments", () => {
@@ -21,9 +22,9 @@ describe("startImplementing function", () => {
       .map((problemSolveStatus) => problemSolveStatus.increment)
       .sort((a, b) => b - a);
 
-    assert.closeTo(increments[500], 1 / 1700, 1 / 10000);
-    assert.closeTo(increments[100], 1 / 500, 1 / 2000);
-    assert.closeTo(increments[900], 1 / 5000, 1 / 30000);
+    assertProbabilisticCloseTo(increments[500], 1 / 1700, 1 / 10000);
+    assertProbabilisticCloseTo(increments[100], 1 / 500, 1 / 2000);
+    assertProbabilisticCloseTo(increments[900], 1 / 5000, 1 / 30000);
   });
 });
 
@@ -47,13 +48,13 @@ describe("computeIfImplementationCorrect function", () => {
       );
     }
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       areImplementationCorrectNoSubmissions.filter((x) => x).length,
       900,
       20
     );
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       areImplementationCorrectWithSubmissions.filter((x) => x).length,
       660,
       45

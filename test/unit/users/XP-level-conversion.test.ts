@@ -1,27 +1,31 @@
 import { describe, it, assert } from "vitest";
 import { levelToXP, XPToLevel } from "../../../src/app/users/utils";
 import type { AttributeConstant } from "../../../src/app/users/types";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("XPToLevelFunction and levelToXPFunction", () => {
-  const mockAttributeConstant: AttributeConstant = { hardness: 3.14, MIN_VALUE: 30, MAX_VALUE: 50 };
-  const mockBadHardnessAttributeConstant: AttributeConstant = { hardness: -3.14, MIN_VALUE: 30, MAX_VALUE: 50 };
+  const mockAttributeConstant: AttributeConstant = {
+    hardness: 3.14,
+    MIN_VALUE: 30,
+    MAX_VALUE: 50,
+  };
+  const mockBadHardnessAttributeConstant: AttributeConstant = {
+    hardness: -3.14,
+    MIN_VALUE: 30,
+    MAX_VALUE: 50,
+  };
   const level = 42;
   const XP = 1729;
 
   it("are inverses of each other", () => {
-    assert.closeTo(
-      XPToLevel(
-        levelToXP(level, mockAttributeConstant), mockAttributeConstant
-      ),
+    assertProbabilisticCloseTo(
+      XPToLevel(levelToXP(level, mockAttributeConstant), mockAttributeConstant),
       level,
       0.001
     );
 
-    assert.closeTo(
-      levelToXP(
-        XPToLevel(XP, mockAttributeConstant),
-        mockAttributeConstant
-      ),
+    assertProbabilisticCloseTo(
+      levelToXP(XPToLevel(XP, mockAttributeConstant), mockAttributeConstant),
       XP,
       1
     );

@@ -2,6 +2,7 @@ import { describe, it, assert } from "vitest";
 import { computeActiveProblemPosition } from "../../../src/app/contest/active-problem";
 import { generateUser } from "../../../src/app/users/load-users";
 import type { NPC } from "../../../src/app/users/types";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("computeActiveProblemPosition function", () => {
   it("returns null whenever there is no active position", () => {
@@ -29,19 +30,19 @@ describe("computeActiveProblemPosition function", () => {
   });
 
   it("returns easier problems more often", () => {
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       activeProblemPositions.filter((x) => x === 0).length,
       820,
       35
     );
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       activeProblemPositions.filter((x) => x === 3).length,
       140,
       30
     );
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       activeProblemPositions.filter((x) => x === 5).length,
       40,
       10

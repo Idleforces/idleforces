@@ -9,6 +9,7 @@ import {
 import type { ProblemSolveStatuses } from "../../../src/app/contest/types";
 import { sum } from "../../../src/utils/utils";
 import { computeMockSubmission } from "../../mocks/mock-submission";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("computeSeed function", () => {
   it("computes reasonable seeds", () => {
@@ -126,8 +127,8 @@ describe("computeNewRatings function", () => {
 
   it("computes new ratings", () => {
     let newRatings = computeNewRatings(contestUsersStatsSortedByRankArray[0]);
-    assert.closeTo(newRatings.tourist.rating, 3700, 0.01);
-    assert.closeTo(newRatings.fourist.rating, 0, 0.01);
+    assertProbabilisticCloseTo(newRatings.tourist.rating, 3700, 0.01);
+    assertProbabilisticCloseTo(newRatings.fourist.rating, 0, 0.01);
 
     newRatings = computeNewRatings(contestUsersStatsSortedByRankArray[1]);
     assert.equal(newRatings.chad.rating, 2862.637365932204);

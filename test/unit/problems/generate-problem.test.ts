@@ -1,4 +1,4 @@
-import { describe, it, assert } from "vitest";
+import { describe, it } from "vitest";
 import type {
   ProblemDivision,
   ProblemPlacement,
@@ -8,6 +8,7 @@ import { zip } from "../../../src/utils/utils";
 import { generateProblem } from "../../../src/app/problems/generate-problem";
 import stdev from "@stdlib/stats/base/stdev";
 import mean from "@stdlib/stats/base/mean";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 const GENERATED_PROBLEMS_LENGTH = 2000;
 
@@ -94,12 +95,12 @@ describe("generateProblem function", () => {
         1
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         penPaperDifficultyStDev,
         penPaperDifficultyExpectedStdev,
         0.01
       );
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         penPaperDifficultyMean,
         penPaperDifficultyExpectedMean,
         0.05
@@ -117,12 +118,12 @@ describe("generateProblem function", () => {
         1
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         implementationDifficultyStDev,
         implementationDifficultyExpectedStdev,
         0.01
       );
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         implementationDifficultyMean,
         implementationDifficultyExpectedMean,
         0.05
@@ -139,12 +140,12 @@ describe("generateProblem function", () => {
         problems.map((problem) => problem.penPaperDeceptiveness),
         1
       );
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         penPaperDeceptivenessStDev,
         deceptivenessExpectedStdev,
         0.02
       );
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         penPaperDeceptivenessMean,
         deceptivenessExpectedMean,
         0.05
@@ -161,12 +162,12 @@ describe("generateProblem function", () => {
         problems.map((problem) => problem.implementationDeceptiveness),
         1
       );
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         implementationDeceptivenessStDev,
         deceptivenessExpectedStdev,
         0.02
       );
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         implementationDeceptivenessMean,
         deceptivenessExpectedMean,
         0.05
@@ -184,18 +185,18 @@ describe("generateProblem function", () => {
         1
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         readingDifficultyStDev,
         readingDifficultyExpectedStdev,
         0.015
       );
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         readingDifficultyMean,
         readingDifficultyExpectedMean,
         0.05
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         qualityPrecisionLowerBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) =>
@@ -204,7 +205,7 @@ describe("generateProblem function", () => {
         0.01
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         qualityPrecisionUpperBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) =>
@@ -213,7 +214,7 @@ describe("generateProblem function", () => {
         0.04
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         qualityRecallLowerBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) => problem.qualityRecall < qualityRecallLowerBound.bound
@@ -221,7 +222,7 @@ describe("generateProblem function", () => {
         0.001
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         qualityRecallUpperBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) => problem.qualityRecall < qualityRecallUpperBound.bound
@@ -229,7 +230,7 @@ describe("generateProblem function", () => {
         0.005
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         pretestsQualityLowerBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) => problem.pretestsQuality < pretestsQualityLowerBound.bound
@@ -237,7 +238,7 @@ describe("generateProblem function", () => {
         0.02
       );
 
-      assert.closeTo(
+      assertProbabilisticCloseTo(
         pretestsQualityUpperBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) => problem.pretestsQuality < pretestsQualityUpperBound.bound
@@ -247,7 +248,7 @@ describe("generateProblem function", () => {
 
       const problemTags = Object.values(ProblemTag);
       problemTags.forEach((problemTag) => {
-        assert.closeTo(
+        assertProbabilisticCloseTo(
           GENERATED_PROBLEMS_LENGTH /
             problems.filter((problem) => problem.tag === problemTag).length,
           problemTags.length,
@@ -271,7 +272,7 @@ describe("generateProblem function", () => {
           typeof attributeValue === "number" &&
           attributeName !== "division"
         ) {
-          assert.closeTo(attributeValue, 0.5, 0.5);
+          assertProbabilisticCloseTo(attributeValue, 0.5, 0.5);
         }
       });
     });

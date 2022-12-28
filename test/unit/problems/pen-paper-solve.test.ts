@@ -1,4 +1,4 @@
-import { describe, it, assert } from "vitest";
+import { describe, it } from "vitest";
 import { generateProblem } from "../../../src/app/problems/generate-problem";
 import {
   computeIfPenPaperCorrect,
@@ -7,6 +7,7 @@ import {
 import type { ProblemSolveStatusDuringPenPaperSolving } from "../../../src/app/problems/types";
 import { generateUser } from "../../../src/app/users/load-users";
 import { computeMockSubmission } from "../../mocks/mock-submission";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("startPenPaperSolving function", () => {
   it("returns reasonable increments", () => {
@@ -22,9 +23,9 @@ describe("startPenPaperSolving function", () => {
       .map((problemSolveStatus) => problemSolveStatus.increment)
       .sort((a, b) => b - a);
 
-    assert.closeTo(increments[500], 1 / 1700, 1 / 10000);
-    assert.closeTo(increments[100], 1 / 500, 1 / 2000);
-    assert.closeTo(increments[900], 1 / 5000, 1 / 20000);
+    assertProbabilisticCloseTo(increments[500], 1 / 1700, 1 / 10000);
+    assertProbabilisticCloseTo(increments[100], 1 / 500, 1 / 2000);
+    assertProbabilisticCloseTo(increments[900], 1 / 5000, 1 / 20000);
   });
 });
 
@@ -56,13 +57,13 @@ describe("computeIfPenPaperCorrect function", () => {
       );
     }
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       arePenPaperCorrectNoSubmissions.filter((x) => x).length,
       775,
       40
     );
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       arePenPaperCorrectWithSubmissions.filter((x) => x).length,
       720,
       40

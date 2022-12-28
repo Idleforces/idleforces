@@ -7,6 +7,7 @@ import { ProblemTag } from "../../../src/app/problems/types";
 import type { AttributeNames } from "../../../src/app/users/types";
 import { NonTechnicalAttributeNames } from "../../../src/app/users/types";
 import { generateUsers } from "../../../src/app/users/load-users";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("generateUsers function", () => {
   const users = generateUsers("tourist").users;
@@ -106,12 +107,12 @@ describe("generateUsers function", () => {
       (NPC) => NPC.likelihoodOfCompeting
     ).sort((a, b) => a - b);
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       likelihoodsOfCompeting[Math.floor(NPCsLength / 6)],
       0.18,
       0.025
     );
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       likelihoodsOfCompeting[Math.floor((5 * NPCsLength) / 6)],
       0.5,
       0.035
@@ -121,13 +122,13 @@ describe("generateUsers function", () => {
       (NPC) => NPC.willingnessToTryHarderProblems
     ).sort((a, b) => a - b);
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       willingnessToTryHarderProblemsArray[Math.floor(NPCsLength / 6)],
       0.04,
       0.015
     );
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       willingnessToTryHarderProblemsArray[Math.floor((5 * NPCsLength) / 6)],
       0.4,
       0.035
@@ -137,7 +138,7 @@ describe("generateUsers function", () => {
       (NPC) => NPC.expectedTimeMultiplierToSwitchToADifferentProblem
     ).sort((a, b) => a - b);
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       expectedTimeMultipliersToSwitchToADifferentProblem[
         Math.floor(NPCsLength / 6)
       ],
@@ -145,7 +146,7 @@ describe("generateUsers function", () => {
       0.1
     );
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       expectedTimeMultipliersToSwitchToADifferentProblem[
         Math.floor((5 * NPCsLength) / 6)
       ],

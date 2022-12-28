@@ -1,9 +1,10 @@
-import { describe, it, assert } from "vitest";
+import { describe, it } from "vitest";
 import { EVENTS } from "../../../src/app/events/events";
 import { computeProbabilitiesOfEvents } from "../../../src/app/events/process-event";
 import type { EventProbabilityParams } from "../../../src/app/events/types";
 import { sum } from "../../../src/utils/utils";
 import { computeMockSubmission } from "../../mocks/mock-submission";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("computeProbabilitiesOfEvents function", () => {
   it("computes reasonable probabilities reasonably responding to submissions, progress and increment change", () => {
@@ -34,7 +35,15 @@ describe("computeProbabilitiesOfEvents function", () => {
     const firstProbabilitiesOfEventsSum = sum(firstProbabilitiesOfEvents);
     const secondProbabilitiesOfEventsSum = sum(secondProbabilitiesOfEvents);
 
-    assert.closeTo(firstProbabilitiesOfEventsSum, 1 / 1800, 1 / 5000);
-    assert.closeTo(secondProbabilitiesOfEventsSum, 1 / 1000, 1 / 3000);
+    assertProbabilisticCloseTo(
+      firstProbabilitiesOfEventsSum,
+      1 / 1800,
+      1 / 5000
+    );
+    assertProbabilisticCloseTo(
+      secondProbabilitiesOfEventsSum,
+      1 / 1000,
+      1 / 3000
+    );
   });
 });

@@ -1,9 +1,10 @@
-import { describe, it, assert, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   declareRecordByInitializer,
   sample,
   zip,
 } from "../../../src/utils/utils";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("sample function", () => {
   it("samples almost uniformly from array", () => {
@@ -23,7 +24,11 @@ describe("sample function", () => {
       sampledExpectedCounts,
       sampledDeltas
     )) {
-      assert.closeTo(sampledCount, sampledExpectedCount, sampledDelta);
+      assertProbabilisticCloseTo(
+        sampledCount,
+        sampledExpectedCount,
+        sampledDelta
+      );
     }
   });
 

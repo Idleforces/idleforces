@@ -1,5 +1,5 @@
 import stdev from "@stdlib/stats/base/stdev";
-import { describe, it, assert } from "vitest";
+import { describe, it } from "vitest";
 import { EXPECTED_PROBLEM_SCORE } from "../../../src/app/contest/constants";
 import {
   computeProblemScore,
@@ -9,6 +9,7 @@ import { generateProblem } from "../../../src/app/problems/generate-problem";
 import type { Problem } from "../../../src/app/problems/types";
 import { sum, zip } from "../../../src/utils/utils";
 import pcorr from "@stdlib/stats/incr/pcorr";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("computeProblemScores function", () => {
   const problemScoresPlacementA: Array<number> = [];
@@ -24,7 +25,7 @@ describe("computeProblemScores function", () => {
   }
 
   it("computes problem scores with expectation close to respective base score", () => {
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       sum(problemScoresPlacementA) / problemScoresPlacementA.length,
       EXPECTED_PROBLEM_SCORE("A"),
       20
@@ -32,7 +33,7 @@ describe("computeProblemScores function", () => {
   });
 
   it("computes higher variance scores for higher placed problems", () => {
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       stdev(problemScoresPlacementF.length, 1, problemScoresPlacementF, 1) /
         stdev(problemScoresPlacementA.length, 1, problemScoresPlacementA, 1),
       1.9,
@@ -58,6 +59,6 @@ describe("computeProblemScores function", () => {
       ) as number;
     }
 
-    assert.closeTo(difficultiesScoresCorr, 0.19, 0.03);
+    assertProbabilisticCloseTo(difficultiesScoresCorr, 0.2, 0.04);
   });
 });

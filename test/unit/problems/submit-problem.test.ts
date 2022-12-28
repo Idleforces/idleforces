@@ -8,6 +8,7 @@ import type {
 import { USER_INITIAL_RATING } from "../../../src/app/users/constants";
 import { generateUser } from "../../../src/app/users/load-users";
 import { mockStore } from "../../mocks/mock-store";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("submitProblem function", () => {
   afterEach(() => {
@@ -42,7 +43,7 @@ describe("submitProblem function", () => {
     );
 
     const correctCount = correctProblemSolveStatusArray.length;
-    assert.closeTo(correctCount, 995, 5);
+    assertProbabilisticCloseTo(correctCount, 995, 5);
   });
 
   it("mostly rejects wrong submissions", () => {
@@ -70,7 +71,7 @@ describe("submitProblem function", () => {
     );
 
     const wrongCount = wrongProblemSolveStatusArray.length;
-    assert.closeTo(wrongCount, 990, 8);
+    assertProbabilisticCloseTo(wrongCount, 990, 8);
   });
 
   it("returns reasonable increments if the submission is wrong, ", () => {
@@ -108,7 +109,7 @@ describe("submitProblem function", () => {
         b.penPaperProgressIncrement.increment
     );
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       wrongProblemSolveStatuses[3750].penPaperProgressIncrement.increment,
       1 / 700,
       1 / 7000
@@ -120,7 +121,7 @@ describe("submitProblem function", () => {
         b.implementationProgressIncrement.increment
     );
 
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       wrongProblemSolveStatuses[3750].implementationProgressIncrement.increment,
       1 / 1700,
       1 / 16000
@@ -165,17 +166,17 @@ describe("submitProblem function", () => {
       wrongVerdicts.filter((verdict) => verdict === "Pretests passed").length,
       0
     );
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       wrongVerdicts.filter((verdict) => verdict === "Wrong answer").length,
       580,
       50
     );
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       wrongVerdicts.filter((verdict) => verdict === "Runtime error").length,
       160,
       25
     );
-    assert.closeTo(
+    assertProbabilisticCloseTo(
       wrongVerdicts.filter((verdict) => verdict === "Time limit exceeded")
         .length,
       190,

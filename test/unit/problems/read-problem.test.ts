@@ -1,8 +1,9 @@
-import { describe, it, assert } from "vitest";
+import { describe, it } from "vitest";
 import { generateProblem } from "../../../src/app/problems/generate-problem";
 import { startReadingProblem } from "../../../src/app/problems/read-problem";
 import type { ProblemSolveStatusDuringReading } from "../../../src/app/problems/types";
 import { generateUser } from "../../../src/app/users/load-users";
+import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("startReadingProblem function", () => {
   it("returns reasonable increments", () => {
@@ -17,8 +18,8 @@ describe("startReadingProblem function", () => {
       .map((problemSolveStatus) => problemSolveStatus.increment)
       .sort((a, b) => b - a);
 
-    assert.closeTo(increments[500], 1 / 280, 1 / 1200);
-    assert.closeTo(increments[100], 1 / 150, 1 / 800);
-    assert.closeTo(increments[900], 1 / 600, 1 / 2000);
+    assertProbabilisticCloseTo(increments[500], 1 / 280, 1 / 1200);
+    assertProbabilisticCloseTo(increments[100], 1 / 150, 1 / 800);
+    assertProbabilisticCloseTo(increments[900], 1 / 600, 1 / 2000);
   });
 });
