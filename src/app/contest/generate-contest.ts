@@ -24,6 +24,19 @@ import type {
 } from "./types";
 import type { NPC, User } from "../users/types";
 
+const isWithinRatingBound = (rating: number, division: ProblemDivision) => {
+  switch (division) {
+    case 1:
+      return rating >= 1900;
+    case 2:
+      return rating <= 2100;
+    case 3:
+      return rating <= 1600;
+    case 4:
+      return rating <= 1400;
+  }
+};
+
 export const generateContest = (
   division: ProblemDivision,
   playerParticipating: boolean,
@@ -38,7 +51,10 @@ export const generateContest = (
     computeProblemScoreDecrementsPerMinute(problemScores);
 
   const NPCsParticipating = users.filter(
-    (user) => !user.isPlayer && Math.random() < user.likelihoodOfCompeting
+    (user) =>
+      !user.isPlayer &&
+      Math.random() < user.likelihoodOfCompeting &&
+      isWithinRatingBound(user.ratingHistory.slice(-1)[0].rating, division)
   ) as Array<NPC>;
 
   const contestNPCData: Array<ContestNPCData> = NPCsParticipating.map((NPC) => {
