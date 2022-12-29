@@ -13,6 +13,7 @@ import { resetContest } from "./app/contest/contest-slice";
 import { resetEvents } from "./app/events/events-slice";
 import type { ContestTypeRunning } from "./view/game/types";
 import { useRef, useState } from "react";
+import { Contests } from "./view/game/pages/contests";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -48,12 +49,26 @@ function App() {
             />
           }
         >
+          <Route
+            path="contests"
+            element={
+              <Contests
+                setContestTypeRunning={setContestTypeRunning}
+                contestTypeRunning={contestTypeRunning}
+              />
+            }
+          />
           <Route path="*" element={<Dashboard />} />
         </Route>
         <Route path="/loading" element={<Loading />} />
         <Route
           path="/*"
-          element={<Index setContestTypeRunning={setContestTypeRunning} leaveGameRef={leaveGameRef}/>}
+          element={
+            <Index
+              setContestTypeRunning={setContestTypeRunning}
+              leaveGameRef={leaveGameRef}
+            />
+          }
         />
       </Routes>
       <Footer />

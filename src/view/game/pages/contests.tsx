@@ -14,6 +14,8 @@ import { selectUsers } from "../../../app/users/users-slice";
 import { convertSecondsToHHMM } from "../../../utils/time-format";
 import type { ContestTypeRunning } from "../types";
 import { DataTable } from "../utils/datatable";
+import "./contests.css";
+import "../utils/datatable.css";
 
 const handleContestStart = (
   playerParticipating: boolean,
@@ -31,6 +33,7 @@ const handleContestStart = (
       users,
     })
   );
+
   setContestTypeRunning({
     playerParticipating,
     numberOfMergedTicks:
@@ -49,7 +52,7 @@ export const Contests = (props: {
 
   if (contestTypeRunning)
     return (
-      <div id="contests-page" style={{ fontSize: "2rem" }}>
+      <div id="contests-page" style={{ fontSize: "1.5rem" }}>
         <div>A contest is running.</div>
         <a href="/game/contest/dashboard">Return to contest page.</a>
       </div>
@@ -70,6 +73,7 @@ export const Contests = (props: {
           )}
         </>,
         <a
+        className="dark-red-link"
           onClick={() => {
             handleContestStart(
               true,
@@ -83,6 +87,7 @@ export const Contests = (props: {
           Enter
         </a>,
         <a
+          className="dark-red-link"
           onClick={() => {
             handleContestStart(
               false,
@@ -107,6 +112,13 @@ export const Contests = (props: {
     );
 
   return (
-    <DataTable contents={dataTableContents} extraClassNames={extraClassNames} />
+    <div id="contests-page">
+      <DataTable
+        contents={dataTableContents}
+        extraClassNames={extraClassNames}
+        containerBorderRadiusPx={6}
+        topText={"Current or upcoming contests"}
+      />
+    </div>
   );
 };
