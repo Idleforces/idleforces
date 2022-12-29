@@ -55,12 +55,12 @@ export const contestSlice = createSlice({
 
     processSystestsAndRecalculateRatings: (
       state: ContestSlice,
-      action: PayloadAction<Array<User> | null>
+      action: PayloadAction<Array<User>>
     ) => {
       const users = action.payload;
-      if (!state || !users) {
+      if (!state) {
         console.warn(
-          "Tried to process systests on a contest that does not exist yet or whenever users are not defined."
+          "Tried to process systests on a contest that does not exist."
         );
         return null;
       }

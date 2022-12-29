@@ -1,29 +1,44 @@
-import type { FormEvent} from "react";
+import type { Dispatch, FormEvent, SetStateAction } from "react";
 import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { loadUsersFromSaveFile, selectUsers } from "../app/users/users-slice";
-import type { LocalStorageSaveData, LocalStorageSavesValue } from "./game/types";
+import { useAppDispatch } from "../app/hooks";
+import { setUsers } from "../app/users/users-slice";
+import type {
+  ContestTypeRunning,
+  LocalStorageSaveData,
+  LocalStorageSavesValue,
+} from "./game/types";
 import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { RatingStyled } from "./game/utils/styled-rating";
 import { setSaveData } from "../app/save/save-slice";
 import { USER_INITIAL_RATING } from "../app/users/constants";
-import { CONTEST_LENGTH, INITIAL_CONTESTS_COUNT, INITIAL_CONTESTS_MERGE_TICKS_COUNT } from "../app/contest/constants";
-import { processSystestsAndRecalculateRatings, resetContest, startContest, updateContestSliceAfterTickOfContest } from "../app/contest/contest-slice";
+import { setContest } from "../app/contest/contest-slice";
+import type { ContestSlice } from "../app/contest/types";
+import { setEvents } from "../app/events/events-slice";
+import type { EventsSlice } from "../app/events/types";
+import { saveGameData } from "./persist-data";
+import { loadOrGenerateUsers } from "../app/users/load-users";
 
 const getSavesFromLocalStorage = (): LocalStorageSavesValue => {
   const savesJSON = localStorage.getItem("saves");
-  return savesJSON !== null ? (JSON.parse(savesJSON) as LocalStorageSavesValue) : [];
+  return savesJSON !== null
+    ? (JSON.parse(savesJSON) as LocalStorageSavesValue)
+    : [];
 };
 
-export const Index = () => {
+export const Index = (props: {
+  setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
+  leaveGameRef: React.MutableRefObject<() => void>;
+}) => {
   const [handle, setHandle] = useState("");
   const [newSaveName, setNewSaveName] = useState("");
-  const navigate = useNavigate();
-  const users = useAppSelector(selectUsers);
-
   const [saves, setSaves] = useState(getSavesFromLocalStorage);
+
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const leaveGame = props.leaveGameRef.current;
+  const setContestTypeRunning = props.setContestTypeRunning;
 
   const allowedToMakeASave =
     !saves.some((save) => save.saveName === newSaveName) &&
@@ -33,34 +48,21 @@ export const Index = () => {
   const handleNewSaveSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!saves.some((save) => save.saveName === newSaveName)) {
-      dispatch(
-        loadUsersFromSaveFile({
-          saveName: newSaveName,
-          handle,
-        })
-      );
-      dispatch(
-        setSaveData({
-          handle,
-          saveName: newSaveName,
-          rating: USER_INITIAL_RATING,
-        })
+      const newUsersWithTimeOfSnapshot = loadOrGenerateUsers(
+        newSaveName,
+        handle
       );
 
-      navigate("/loading");
+      const saveData = {
+        handle,
+        saveName: newSaveName,
+        rating: USER_INITIAL_RATING,
+        inContest: false,
+      };
+      dispatch(setSaveData(saveData));
+      dispatch(setUsers(newUsersWithTimeOfSnapshot));
 
-      const numberOfMergedTicks = INITIAL_CONTESTS_MERGE_TICKS_COUNT;
-      for (let _ = 0; _<INITIAL_CONTESTS_COUNT; _++) {
-        dispatch(startContest({division: 1, playerParticipating: false, users}));
-
-        for (let __ = 0; __<CONTEST_LENGTH / numberOfMergedTicks; __++) {
-          dispatch(updateContestSliceAfterTickOfContest({numberOfMergedTicks, users, dispatch}));
-        }
-
-        dispatch(processSystestsAndRecalculateRatings(null));
-        dispatch(resetContest(null));
-      }
-
+      saveGameData(newUsersWithTimeOfSnapshot, null, null, saveData, leaveGame);
       navigate("/game/dashboard");
     } else {
       alert("Please choose a save name different from the previous ones.");
@@ -68,9 +70,34 @@ export const Index = () => {
     }
   };
 
-  const loadSave = (save: LocalStorageSaveData) => {
-    loadUsersFromSaveFile(save);
-    setSaveData(save);
+  const loadSave = (saveData: LocalStorageSaveData) => {
+    const saveName = saveData.saveName;
+    const usersWithTimeOfSnapshot = loadOrGenerateUsers(
+      saveName,
+      saveData.handle
+    );
+    dispatch(setSaveData(saveData));
+    dispatch(setUsers(usersWithTimeOfSnapshot));
+
+    if (saveData.inContest) {
+      const contest = JSON.parse(
+        localStorage.getItem(`contest-${saveName}`) as string
+      ) as ContestSlice;
+
+      if (contest) {
+        setContestTypeRunning({
+          playerParticipating: true,
+          numberOfMergedTicks: contest.numberOfMergedTicks,
+        });
+        dispatch(setContest(contest));
+      }
+
+      const events = JSON.parse(
+        localStorage.getItem(`events-${saveName}`) as string
+      ) as EventsSlice;
+      dispatch(setEvents(events));
+    }
+
     navigate("/game/dashboard");
   };
 
@@ -86,6 +113,8 @@ export const Index = () => {
     );
 
     localStorage.removeItem(`users-${deletedSave.saveName}`);
+    localStorage.removeItem(`events-${deletedSave.saveName}`);
+    localStorage.removeItem(`contest-${deletedSave.saveName}`);
   };
 
   return (
@@ -101,14 +130,17 @@ export const Index = () => {
             programmers featuring real-time events
           </li>
           <li>
-            The game uses autosave, so don&apos;`t worry about losing your progress.
+            The game uses autosave, so don&apos;`t worry about losing your
+            progress.
           </li>
         </ul>
       </div>
       <form
         id="new-save-form"
         autoComplete="off"
-        onSubmit={(e) => { handleNewSaveSubmit(e); }}
+        onSubmit={(e) => {
+          handleNewSaveSubmit(e);
+        }}
       >
         <div className="new-save-form-text-row">
           <div className="new-save-form-field">
@@ -117,7 +149,9 @@ export const Index = () => {
               className="text-input"
               type="text"
               value={newSaveName}
-              onChange={(e) => { setNewSaveName(e.target.value); }}
+              onChange={(e) => {
+                setNewSaveName(e.target.value);
+              }}
               autoComplete="off"
               name="game-save-name-input"
               maxLength={20}
@@ -131,7 +165,9 @@ export const Index = () => {
               className="text-input"
               type="text"
               value={handle}
-              onChange={(e) => { setHandle(e.target.value); }}
+              onChange={(e) => {
+                setHandle(e.target.value);
+              }}
               autoComplete="off"
               name="handle-input"
               maxLength={20}
@@ -175,7 +211,9 @@ export const Index = () => {
                 <div
                   className="save-box-button-container"
                   aria-label="Load this save"
-                  onClick={(_e) => { loadSave(save); }}
+                  onClick={(_e) => {
+                    loadSave(save);
+                  }}
                 >
                   <i
                     className="fa-solid fa-right-to-bracket "

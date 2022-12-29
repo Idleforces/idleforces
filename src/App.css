@@ -9,3 +9,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}

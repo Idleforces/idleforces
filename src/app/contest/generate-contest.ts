@@ -40,6 +40,7 @@ const isWithinRatingBound = (rating: number, division: ProblemDivision) => {
 export const generateContest = (
   division: ProblemDivision,
   playerParticipating: boolean,
+  numberOfMergedTicks: number,
   users: Array<User>
 ): ContestSlice => {
   const problems: ContestProblems = Object.values(ProblemPlacements).map(
@@ -114,6 +115,7 @@ export const generateContest = (
 
   return {
     ticksSinceBeginning: 0,
+    numberOfMergedTicks,
     nextEventIn: resetNextEventIn(0),
     division,
     problems,

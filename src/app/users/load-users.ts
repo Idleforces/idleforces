@@ -15,6 +15,8 @@ import type {
 } from "./types";
 import { sigmoid } from "../../utils/utils";
 import { betaPrimeAltParam } from "../problems/utils";
+import type { UsersSlice } from "./users-slice";
+import { decompressFromUTF16 } from "lz-string";
 
 export type RatingPoint = {
   timestamp: number;
@@ -102,4 +104,21 @@ export const generateUsers = (
   };
 
   return usersWithTimeOfSnapshot;
+};
+
+export const loadOrGenerateUsers = (
+  saveName: string,
+  handle: string
+): Exclude<UsersSlice, null> => {
+  const savedUsersJSON: string | null = localStorage.getItem(
+    `users-${saveName}`
+  );
+  if (savedUsersJSON === null) return generateUsers(handle);
+
+  const savedUsers = JSON.parse(
+    decompressFromUTF16(savedUsersJSON) as string
+  ) as UsersSlice;
+  if (!savedUsers) return generateUsers(handle);
+
+  return savedUsers;
 };

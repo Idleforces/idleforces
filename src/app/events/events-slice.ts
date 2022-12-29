@@ -8,6 +8,8 @@ export const eventsSlice = createSlice({
   initialState: null as EventsSlice,
   reducers: {
     resetEvents: (_state: EventsSlice, _action: PayloadAction<null>) => null,
+    setEvents: (_state: EventsSlice, action: PayloadAction<EventsSlice>) =>
+      action.payload,
     setEventsToEmptyArray: (
       _state: EventsSlice,
       _action: PayloadAction<null>
@@ -17,7 +19,7 @@ export const eventsSlice = createSlice({
   },
 });
 
-export const { resetEvents, setEventsToEmptyArray, addEvent } =
+export const { resetEvents, setEvents, setEventsToEmptyArray, addEvent } =
   eventsSlice.actions;
 export const selectEvents = (state: RootState) => state.events;
 export const eventsReducer = eventsSlice.reducer;

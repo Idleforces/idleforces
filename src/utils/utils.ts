@@ -38,6 +38,14 @@ export function* zip<T extends Array<any>>( // eslint-disable-line @typescript-e
   }
 }
 
+export const sleep = (ms: number) => {
+  return new Promise<void>((resolve) =>
+    setTimeout(() => {
+      resolve();
+    }, ms)
+  );
+};
+
 /**
  *
  * @param array Array of elements to sample from.

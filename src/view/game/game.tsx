@@ -1,86 +1,174 @@
-import hash_sum from "hash-sum";
 import { useEffect, useMemo, useState } from "react";
-import { useAppSelector } from "../../app/hooks";
-import { saveUsers } from "../../app/users/save-users";
-import { selectUsersWithTimeOfSnapshot } from "../../app/users/users-slice";
-import { safeSetLocalStorageValue } from "../../utils/utils";
-import type { LocalStorageSavesValue } from "./types";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import {
+  selectUsersWithTimeOfSnapshot,
+  setUsers,
+} from "../../app/users/users-slice";
+import type { UsersSlice } from "../../app/users/users-slice";
+import { sleep } from "../../utils/utils";
+import type { ContestTypeRunning } from "./types";
 import { Outlet } from "react-router-dom";
 import { NavBar } from "./navbar";
 import { selectSaveData } from "../../app/save/save-slice";
+import {
+  addBreaks,
+  processSystestsAndRecalculateRatings,
+  selectContest,
+  updateContestUserData,
+} from "../../app/contest/contest-slice";
+import { selectEvents } from "../../app/events/events-slice";
+import { CONTEST_LENGTH } from "../../app/contest/constants";
+import { processTickOfContest } from "../../app/contest/process-tick";
+import { saveGameData } from "../persist-data";
+import { loadOrGenerateUsers } from "../../app/users/load-users";
 
-export const Game = (props: { leaveGame: () => void }) => {
-  const startingTimestamp = useMemo(() => Date.now(), []);
-  const [ticksPassed, setTicksPassed] = useState(0);
-  const usersWithTimestamp = useAppSelector(selectUsersWithTimeOfSnapshot);
+export const Game = (props: {
+  leaveGameRef: React.MutableRefObject<() => void>;
+  contestTypeRunning: ContestTypeRunning;
+  noPlayerContestSimSpeed: number;
+}) => {
+  const contestTypeRunning = props.contestTypeRunning;
+  const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
+  const leaveGame = props.leaveGameRef.current;
+
+  const gameLoadTimestamp = useMemo(() => Date.now(), []);
+  const [ticksPassedSinceGameLoad, setTicksPassedSinceGameLoad] = useState(0);
+  const [gameSaving, setGameSaving] = useState(false);
+
+  const usersWithTimeOfSnapshot = useAppSelector(selectUsersWithTimeOfSnapshot);
+  const contest = useAppSelector(selectContest);
+  const contestTicksPassed = contest ? contest.ticksSinceBeginning : 0;
+  const events = useAppSelector(selectEvents);
   const saveData = useAppSelector(selectSaveData);
-  const leaveGame = props.leaveGame;
-
-  const handleTick = () => {
-    const hash = hash_sum(usersWithTimestamp);
-    if (saveData) {
-      const localStorageGameSaveValue = localStorage.getItem(
-        `__${saveData.saveName}`
-      );
-      if (
-        localStorageGameSaveValue === null ||
-        hash !== JSON.parse(localStorageGameSaveValue)
-      ) {
-        saveUsers(usersWithTimestamp, saveData.saveName, leaveGame);
-      }
-
-      const savesJSON = localStorage.getItem("saves") as string;
-      if (!savesJSON) {
-        safeSetLocalStorageValue(
-          "saves",
-          JSON.stringify([
-            {
-              rating: saveData.rating,
-              hash,
-              saveName: saveData.saveName,
-              handle: saveData.handle,
-            },
-          ]),
-          leaveGame
-        );
-      } else {
-        const saves = JSON.parse(savesJSON) as LocalStorageSavesValue;
-        if (
-          saves.filter((save) => save.saveName === saveData.saveName)
-            .length === 0
-        ) {
-          safeSetLocalStorageValue(
-            "saves",
-            JSON.stringify([
-              ...saves,
-              {
-                rating: saveData.rating,
-                hash,
-                saveName: saveData.saveName,
-                handle: saveData.handle,
-              },
-            ]),
-            leaveGame
-          );
-        }
-      }
-    }
-  };
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    let ignore = false;
+    const persistDataDuringTick = () => {
+      if (saveData) {
+        const savesJSON = localStorage.getItem("saves");
+        if (savesJSON === null) {
+          localStorage.clear();
+          leaveGame();
+          return;
+        }
+
+        let newUsersWithTimeOfSnapshot: UsersSlice = usersWithTimeOfSnapshot;
+        if (!usersWithTimeOfSnapshot) {
+          newUsersWithTimeOfSnapshot = loadOrGenerateUsers(saveData.saveName, saveData.handle);
+          dispatch(
+            setUsers(newUsersWithTimeOfSnapshot)
+          );
+        }
+
+        if (ticksPassedSinceGameLoad % 60 === 0) {
+          setGameSaving(true);
+          saveGameData(
+            newUsersWithTimeOfSnapshot,
+            contest,
+            events,
+            saveData,
+            leaveGame
+          );
+          setGameSaving(false);
+        }
+      } else {
+        leaveGame();
+      }
+    };
+
     void new Promise((resolve, _reject) => {
       setTimeout(() => {
-        handleTick();
-        setTicksPassed((prev) => (prev += 1));
-        resolve("DONE");
-      }, Math.max(startingTimestamp - Date.now() + 1000 * (ticksPassed + 1), 500));
+        if (!ignore) {
+          persistDataDuringTick();
+          setTicksPassedSinceGameLoad((prev) => (prev += 1));
+          resolve("DONE");
+        } else resolve("IGNORED");
+      }, Math.max(gameLoadTimestamp - Date.now() + 1000 * (ticksPassedSinceGameLoad + 1), 500));
     });
-  }, [ticksPassed]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [
+    ticksPassedSinceGameLoad,
+    gameLoadTimestamp,
+    leaveGame,
+    contest,
+    dispatch,
+    events,
+    usersWithTimeOfSnapshot,
+    saveData,
+  ]);
+
+  useEffect(() => {
+    if (!contest || !contestTypeRunning || !usersWithTimeOfSnapshot) {
+      console.warn(
+        "Tried to process a tick of contest when there was data missing."
+      );
+      return;
+    }
+    if (!contestTypeRunning.playerParticipating) {
+      const numberOfMergedTicks = contestTypeRunning.numberOfMergedTicks;
+
+      if (contestTicksPassed < CONTEST_LENGTH && noPlayerContestSimSpeed) {
+        sleep(Math.min(1000, 1 / noPlayerContestSimSpeed))
+          .then(() => {
+            const { newContestUsersData, breaksToAddToStore } =
+              processTickOfContest(
+                contest,
+                numberOfMergedTicks,
+                usersWithTimeOfSnapshot.users,
+                contestTicksPassed,
+                dispatch
+              );
+
+            dispatch(updateContestUserData({ newContestUsersData }));
+            dispatch(addBreaks(breaksToAddToStore));
+          }) // eslint-disable-next-line @typescript-eslint/no-empty-function
+          .catch(() => {});
+      } else if (contestTicksPassed >= CONTEST_LENGTH) {
+        dispatch(
+          processSystestsAndRecalculateRatings(usersWithTimeOfSnapshot.users)
+        );
+      }
+    }
+  }, [
+    contestTypeRunning,
+    contestTicksPassed,
+    contest,
+    dispatch,
+    noPlayerContestSimSpeed,
+    usersWithTimeOfSnapshot,
+  ]);
 
   return (
     <>
-      <NavBar />
+      <NavBar gameSaving={gameSaving} />
       <Outlet />
     </>
   );
 };
+
+/*
+
+const numberOfMergedTicks = INITIAL_CONTESTS_MERGE_TICKS_COUNT;
+      for (let _ = 0; _ < INITIAL_CONTESTS_COUNT; _++) {
+        dispatch(
+          startContest({ division: 1, playerParticipating: false, users })
+        );
+
+        for (let __ = 0; __ < CONTEST_LENGTH / numberOfMergedTicks; __++) {
+          dispatch(
+            updateContestSliceAfterTickOfContest({
+              numberOfMergedTicks,
+              users,
+              dispatch,
+            })
+          );
+        }
+
+        dispatch(processSystestsAndRecalculateRatings(null));
+        dispatch(resetContest(null));
+
+*/

@@ -9,38 +9,54 @@ import { resetUsers } from "./app/users/users-slice";
 import { resetSaveData } from "./app/save/save-slice";
 import { Footer } from "./view/footer/footer";
 import { Loading } from "./view/loading/loading";
+import { resetContest } from "./app/contest/contest-slice";
+import { resetEvents } from "./app/events/events-slice";
+import type { ContestTypeRunning } from "./view/game/types";
+import { useRef, useState } from "react";
 
 function App() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const [contestTypeRunning, setContestTypeRunning] =
+    useState<ContestTypeRunning>(null);
+  const [noPlayerContestSimSpeed, setNoPlayerContestSimSpeed] = useState(0);
+
   const resetData = () => {
     dispatch(resetUsers(null));
     dispatch(resetSaveData(null));
+    dispatch(resetContest(null));
+    dispatch(resetEvents(null));
   };
 
-  const leaveGame = () => {
+  const leaveGameRef = useRef(() => {
     resetData();
     navigate("/");
-  };
+  });
 
   return (
     <>
-      <Header leaveGame={leaveGame}/>
+      <Header leaveGameRef={leaveGameRef} />
       <Routes>
-        <Route path="/game/*" element={<Game leaveGame={leaveGame}/>}>
-          <Route path="*" element={<Dashboard/>} />
-        </Route>
         <Route
-          path="/loading"
-          element={<Loading/>}
-        />
+          path="/game/*"
+          element={
+            <Game
+              leaveGameRef={leaveGameRef}
+              contestTypeRunning={contestTypeRunning}
+              noPlayerContestSimSpeed={noPlayerContestSimSpeed}
+            />
+          }
+        >
+          <Route path="*" element={<Dashboard />} />
+        </Route>
+        <Route path="/loading" element={<Loading />} />
         <Route
           path="/*"
-          element={<Index/>}
+          element={<Index setContestTypeRunning={setContestTypeRunning} leaveGameRef={leaveGameRef}/>}
         />
       </Routes>
-      <Footer/>
+      <Footer />
     </>
   );
 }

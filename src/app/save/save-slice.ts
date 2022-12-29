@@ -6,6 +6,7 @@ export type SaveSlice = {
   handle: string;
   rating: number;
   saveName: string;
+  inContest: boolean;
 } | null;
 
 const saveSlice = createSlice({
