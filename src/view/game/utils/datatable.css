@@ -1,0 +1,39 @@
+.datatable table {
+  width: 100%;
+}
+
+.datatable td {
+  width: auto !important;
+  max-width: 20em !important;
+  overflow: auto;
+}
+
+.datatable td,
+.datatable th {
+  border-top: 1px solid #e1e1e1;
+  border-right: 1px solid #e1e1e1;
+  padding: 0.4em;
+  font-size: 1.3rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.datatable .dark {
+  background-color: #f8f8f8;
+}
+
+.datatable .left {
+  border-left: none;
+}
+
+.datatable .right {
+  border-right: none;
+}
+
+.datatable .top {
+  border-top: none;
+}
+
+.datatable .bottom {
+  border-bottom: none;
+}
