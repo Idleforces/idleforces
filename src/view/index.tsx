@@ -103,14 +103,16 @@ export const Index = (props: {
 
   const deleteSave = (deletedSave: LocalStorageSaveData) => {
     const savesJSON = localStorage.getItem("saves");
-    localStorage.setItem(
-      "saves",
-      JSON.stringify(
-        (JSON.parse(savesJSON as string) as LocalStorageSavesValue).filter(
-          (save) => save.saveName !== deletedSave.saveName
+    if (savesJSON !== null) {
+      localStorage.setItem(
+        "saves",
+        JSON.stringify(
+          (JSON.parse(savesJSON) as LocalStorageSavesValue).filter(
+            (save) => save.saveName !== deletedSave.saveName
+          )
         )
-      )
-    );
+      );
+    }
 
     localStorage.removeItem(`users-${deletedSave.saveName}`);
     localStorage.removeItem(`events-${deletedSave.saveName}`);

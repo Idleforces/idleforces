@@ -37,13 +37,17 @@ const updateLocalStorageSavesValue = (
     );
   } else {
     const saves = JSON.parse(savesJSON) as LocalStorageSavesValue;
-    if (!saves.some((save) => save.saveName === saveData.saveName)) {
-      safeSetLocalStorageValue(
-        "saves",
-        JSON.stringify([...saves, localStorageGameSaveValue]),
-        leaveGame
-      );
-    }
+    safeSetLocalStorageValue(
+      "saves",
+      JSON.stringify([
+        ...saves.filter(
+          (localStorageSaveData) =>
+            localStorageSaveData.saveName !== saveData.saveName
+        ),
+        localStorageGameSaveValue,
+      ]),
+      leaveGame
+    );
   }
 };
 
@@ -95,7 +99,7 @@ export const saveGameData = (
   ) {
     safeSetLocalStorageValue(
       `events-${saveName}`,
-      JSON.stringify(contest),
+      JSON.stringify(events),
       leaveGame
     );
   }

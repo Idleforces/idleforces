@@ -61,7 +61,7 @@ export const Game = (props: {
           );
         }
 
-        if (ticksPassedSinceGameLoad % 60 === 0) {
+        if (ticksPassedSinceGameLoad % 60 === 30) {
           setGameSaving(true);
           saveGameData(
             newUsersWithTimeOfSnapshot,

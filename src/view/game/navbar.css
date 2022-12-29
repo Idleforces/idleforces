@@ -1,16 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Cuprum&display=swap");
 
 nav {
-  margin: 0.3125rem 5%;
+  margin: 0.3125rem 10%;
   border: 1px solid gray;
   border-radius: 0.3125rem;
   line-height: 2.5rem;
-  width: 90%;
+  width: 80%;
   height: 2.5rem;
   padding: 0 0.3125rem;
 
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -33,9 +33,10 @@ nav a {
   float: left;
   height: 20px;
   overflow: hidden;
-  margin: 0 5px;
+  margin: 0 10px;
   line-height: 22px;
   font-family: "Cuprum", sans-serif;
+  border-bottom: 3px solid white;
 }
 
 nav a:hover {

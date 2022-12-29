@@ -3,7 +3,7 @@ import "./navbar.css";
 
 export const NavBar = (props: { gameSaving: boolean }) => {
   const location = useLocation();
-  const pages = ["dashboard"];
+  const pages = ["dashboard", "contests"];
 
   return (
     <nav>
@@ -24,7 +24,7 @@ export const NavBar = (props: { gameSaving: boolean }) => {
           <span>Loading...</span>
         </>
       ) : (
-        <></>
+        <div></div>
       )}
     </nav>
   );
