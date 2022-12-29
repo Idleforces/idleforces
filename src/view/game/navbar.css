@@ -1,40 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Cuprum&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cuprum&display=swap");
 
 nav {
-    margin: 5px 5%;
-    border: 1px solid gray;
-    border-radius: 5px;
-    line-height: 2.5rem;
-    width: 90%;
-    height: 2.5rem;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding-left: 5px;
+  margin: 0.3125rem 5%;
+  border: 1px solid gray;
+  border-radius: 0.3125rem;
+  line-height: 2.5rem;
+  width: 90%;
+  height: 2.5rem;
+  padding: 0 0.3125rem;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#navlinks-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 nav a {
-    font-weight: 400;
-    font-size: 1.3rem;
-    text-decoration: none;
-    color: #000;
-    outline: none;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0;
-    display: block;
-    float: left;
-    height: 20px;
-    overflow: hidden;
-    margin: 0 5px;
-    line-height: 22px;
-    font-family: 'Cuprum' ,sans-serif;
+  font-weight: 400;
+  font-size: 1.3rem;
+  text-decoration: none;
+  color: #000;
+  outline: none;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  display: block;
+  float: left;
+  height: 20px;
+  overflow: hidden;
+  margin: 0 5px;
+  line-height: 22px;
+  font-family: "Cuprum", sans-serif;
 }
 
 nav a:hover {
-    color: #222;
+  color: #222;
 }
 
 nav a.current {
-    border-bottom: 3px solid #3b5998;
+  border-bottom: 3px solid #3b5998;
 }
