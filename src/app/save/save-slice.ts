@@ -13,16 +13,17 @@ const saveSlice = createSlice({
   name: "save",
   initialState: null as SaveSlice,
   reducers: {
-    setSaveData (_state: SaveSlice, action: PayloadAction<SaveSlice>) {
+    setSaveData(_state: SaveSlice, action: PayloadAction<SaveSlice>) {
       return action.payload;
     },
 
-    resetSaveData (_state: SaveSlice, _action: PayloadAction<null>) {
+    resetSaveData(_state: SaveSlice, _action: PayloadAction<null>) {
       return null;
-    }
+    },
   },
 });
 
-export const {setSaveData, resetSaveData} = saveSlice.actions;
+export const { setSaveData, resetSaveData } = saveSlice.actions;
 export const selectSaveData = (state: RootState) => state.save;
+export const selectHandle = (state: RootState) => state.save?.handle;
 export const saveReducer = saveSlice.reducer;
