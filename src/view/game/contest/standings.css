@@ -1,9 +1,17 @@
-#standing-page-links-container span {
+#standings-page-links-container {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+#standings-page-links-container a {
   color: gray;
-  padding: 20px 5px;
+  margin: 0 0.5rem;
   cursor: pointer;
 }
 
-#standing-page-links-container span::hover {
+#standings-page-links-container a:hover {
   color: darkgrey;
 }
