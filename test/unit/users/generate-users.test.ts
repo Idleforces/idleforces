@@ -3,9 +3,9 @@ import type { NPC, User } from "../../../src/app/users/types";
 import stdev from "@stdlib/stats/base/stdev";
 import { normalizeLevelOfAttribute } from "../../../src/app/users/utils";
 import { USER_ATTRIBUTES_CONSTANTS } from "../../../src/app/users/constants";
-import { ProblemTag } from "../../../src/app/problems/types";
+import { problemTags } from "../../../src/app/problems/types";
 import type { AttributeNames } from "../../../src/app/users/types";
-import { NonTechnicalAttributeNames } from "../../../src/app/users/types";
+import { nonTechnicalAttributeNames } from "../../../src/app/users/types";
 import { generateUsers } from "../../../src/app/users/load-users";
 import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
@@ -86,8 +86,8 @@ describe("generateUsers function", () => {
 
   it("generates all attribute values between the corresponding minValue and maxValue", () => {
     users.forEach((user) => {
-      (Object.values(ProblemTag) as Array<AttributeNames>)
-        .concat(Object.values(NonTechnicalAttributeNames))
+      ([...problemTags] as Array<AttributeNames>)
+        .concat(nonTechnicalAttributeNames)
         .forEach((attributeName) => {
           expect(user.attributes[attributeName]).toBeGreaterThanOrEqual(
             USER_ATTRIBUTES_CONSTANTS[attributeName].MIN_VALUE

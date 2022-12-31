@@ -4,7 +4,7 @@ import { normalizeLevelOfAttribute } from "../users/utils";
 import logit from "@stdlib/math/base/special/logit";
 import { betaprime } from "@stdlib/random/base";
 import type { ProblemDivision, ProblemPlacement, ProblemTag } from "./types";
-import { ProblemPlacements } from "./types";
+import { problemPlacements } from "./types";
 import type { User } from "../users/types";
 import {
   IMPLEMENTATION_SCALING_FACTOR,
@@ -89,7 +89,7 @@ export const computeProblemPlacementFromProblemPosition = (
   position: number
 ): ProblemPlacement => {
   let problemPlacement: ProblemPlacement = "A";
-  Object.values(ProblemPlacements).forEach((placement) => {
+  problemPlacements.forEach((placement) => {
     if (computeProblemPositionFromProblemPlacement(placement) === position) {
       problemPlacement = placement;
       return;

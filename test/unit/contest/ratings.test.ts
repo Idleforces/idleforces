@@ -2,8 +2,8 @@ import { describe, it, assert } from "vitest";
 import { CONTEST_LENGTH } from "../../../src/app/contest/constants";
 import { computeProblemScoreDecrementsPerMinute } from "../../../src/app/contest/problem-scores";
 import {
-  computeContestScoresAndNumberOfWrongSubmissions,
-  computeNewRatings,
+  computeSubmissionsStats,
+  computeNewRatingsSlice,
   computeSeed,
 } from "../../../src/app/contest/recalculate-ratings";
 import type { ProblemSolveStatuses } from "../../../src/app/contest/types";
@@ -80,9 +80,9 @@ describe("computeContestScoresAndNumberOfWrongSubmissions function", () => {
     },
   };
 
-  it("computes correct scores and wrong submission counts after systests", () => {
-    const { scores, wrongSubmissionCounts } =
-      computeContestScoresAndNumberOfWrongSubmissions(
+  it("computes correct scores and wrong submission counts and submission ticksSinceBeginnings after systests", () => {
+    const { scores, wrongSubmissionCounts, correctSubmissionTimestamps } =
+      computeSubmissionsStats(
         problemScores,
         problemScoreDecrementsPerMinute,
         problemSolveStatuses,
@@ -91,11 +91,19 @@ describe("computeContestScoresAndNumberOfWrongSubmissions function", () => {
 
     assert.deepEqual(scores, [0, 0, 0, 1429.861111111111, 0, 700]);
     assert.deepEqual(wrongSubmissionCounts, [1, 5, 3, 3, 0, 10]);
+    assert.deepEqual(correctSubmissionTimestamps, [
+      null,
+      null,
+      null,
+      1000,
+      null,
+      CONTEST_LENGTH,
+    ]);
   });
 
-  it("computes correct scores and wrong submission counts after pretests", () => {
-    const { scores, wrongSubmissionCounts } =
-      computeContestScoresAndNumberOfWrongSubmissions(
+  it("computes correct scores and wrong submission counts and submission ticksSinceBeginnings after pretests", () => {
+    const { scores, wrongSubmissionCounts, correctSubmissionTimestamps } =
+      computeSubmissionsStats(
         problemScores,
         problemScoreDecrementsPerMinute,
         problemSolveStatuses,
@@ -104,33 +112,39 @@ describe("computeContestScoresAndNumberOfWrongSubmissions function", () => {
 
     assert.deepEqual(scores, [0, 287.5, 0, 0, 0, 0]);
     assert.deepEqual(wrongSubmissionCounts, [1, 4, 3, 4, 0, 11]);
+    assert.deepEqual(correctSubmissionTimestamps, [
+      null,
+      CONTEST_LENGTH / 2,
+      null,
+      null,
+      null,
+      null,
+    ]);
   });
 });
 
-describe("computeNewRatings function", () => {
-  const contestUsersStatsSortedByRankArray: Array<
-    Array<{ handle: string; oldRating: number }>
-  > = [
+describe("computeNewRatingsSlice function", () => {
+  const contestUsersStatsArray = [
     [
-      { handle: "tourist", oldRating: 3700 },
-      { handle: "fourist", oldRating: 0 },
+      { handle: "tourist", oldRating: 3700, rank: 1 },
+      { handle: "fourist", oldRating: 0, rank: 2 },
     ],
 
     [
-      { handle: "chad", oldRating: 2500 },
-      { handle: "tourist", oldRating: 3700 },
-      { handle: "normalHandle", oldRating: 1400 },
-      { handle: "virgin", oldRating: 500 },
-      { handle: "fourist", oldRating: 0 },
+      { handle: "chad", oldRating: 2500, rank: 1 },
+      { handle: "tourist", oldRating: 3700, rank: 2 },
+      { handle: "normalHandle", oldRating: 1400, rank: 3 },
+      { handle: "virgin", oldRating: 500, rank: 4 },
+      { handle: "fourist", oldRating: 0, rank: 5 },
     ],
   ];
 
   it("computes new ratings", () => {
-    let newRatings = computeNewRatings(contestUsersStatsSortedByRankArray[0]);
+    let newRatings = computeNewRatingsSlice(contestUsersStatsArray[0]);
     assertProbabilisticCloseTo(newRatings.tourist.rating, 3700, 0.01);
     assertProbabilisticCloseTo(newRatings.fourist.rating, 0, 0.01);
 
-    newRatings = computeNewRatings(contestUsersStatsSortedByRankArray[1]);
+    newRatings = computeNewRatingsSlice(contestUsersStatsArray[1]);
     assert.equal(newRatings.chad.rating, 2862.637365932204);
     assert.equal(newRatings.tourist.rating, 3462.245519683324);
     assert.equal(newRatings.normalHandle.rating, 1359.1538140509278);
@@ -139,11 +153,23 @@ describe("computeNewRatings function", () => {
   });
 
   it("produces zero-mean rating differences", () => {
-    const newRatings = computeNewRatings(contestUsersStatsSortedByRankArray[1]);
+    const newRatings = computeNewRatingsSlice(contestUsersStatsArray[1]);
     assert.equal(
       sum(Object.values(newRatings).map((ratingPoint) => ratingPoint.rating)),
       sum(
-        Object.values(contestUsersStatsSortedByRankArray[1]).map(
+        Object.values(contestUsersStatsArray[1]).map(
+          (contestUserStats) => contestUserStats.oldRating
+        )
+      )
+    );
+  });
+
+  it("ignores zero-mean correction if given a slice", () => {
+    const newRatings = computeNewRatingsSlice(contestUsersStatsArray[1], 0, 5);
+    assert.notEqual(
+      sum(Object.values(newRatings).map((ratingPoint) => ratingPoint.rating)),
+      sum(
+        Object.values(contestUsersStatsArray[1]).map(
           (contestUserStats) => contestUserStats.oldRating
         )
       )

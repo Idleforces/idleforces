@@ -1,5 +1,5 @@
 import type { ProblemDivision, ProblemPlacement } from "./types";
-import { ProblemTag } from "./types";
+import { problemTags } from "./types";
 import { beta, normal } from "@stdlib/random/base";
 import {
   PROBLEM_IMPLEMENTATION_DECEPTIVENESS_STDEV,
@@ -107,7 +107,7 @@ export const generateProblem = (
     )
   );
 
-  const likelihoodsOfAppearing = Object.values(ProblemTag).map((tag) =>
+  const likelihoodsOfAppearing = problemTags.map((tag) =>
     likelihoodOfAppearing(
       tag,
       penPaperDifficulty,
@@ -117,7 +117,8 @@ export const generateProblem = (
     )
   );
 
-  const tag = sample(Object.values(ProblemTag), likelihoodsOfAppearing);
+  const mutableProblemTags = [...problemTags];
+  const tag = sample(mutableProblemTags, likelihoodsOfAppearing);
 
   return {
     division,

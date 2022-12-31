@@ -76,37 +76,33 @@ export function sample<T>(
 }
 
 /**
- * Declares a variable of type `Record<T, U>` from an initializer without listing all properties. This function is not type-safe -- if the below assumptions don't hold, there is no guarantee that the resulting type will be correct.
- * @param indexObject Object whose keys are exactly the string literals from the union type `T`.
+ * Declares a variable of type `Record<T, U>` from an initializer without listing all properties.
+ * @param indexObject Readonly array of string literals from the union type `T`.
  * @param initializer A function from a string literal in `T` to `U`.
  * @returns A variable `newVar` of type `Record<T, U>` such that for any `key in T`, `newVar[key] = initializer(key)`.
  * @example
- * enum ourEnum {
- *   key1 = "key1",
- *   key2 = "key2",
- * }
- * type OurEnumType = keyof typeof ourEnum;
+ * const stringLiteralConstArray = ["key1", "key2"] as const;
+ * type StringLiteralUnionType = typeof stringLiteralConstArray[number];
  *
- * const initializer = (ourEnum: OurEnumType): number => {
- *   switch (ourEnum) {
+ * const initializer = (stringLiteral: StringLiteralUnionType): number => {
+ *   switch (stringLiteral) {
  *     case "key1":
  *       return 1;
  *     case "key2":
  *       return 2;
  *   }
  * };
- *
  * console.log(declareRecordByInitializer(ourEnum, initializer));
  * // prints {key1: 1, key2: 2}
  */
 
 export function declareRecordByInitializer<T extends string, U>(
-  indexObject: { [K in T]: any }, // eslint-disable-line @typescript-eslint/no-explicit-any
-  initializer: (propName: keyof typeof indexObject) => U
+  indexArray: Readonly<Array<T>>,
+  initializer: (index: T) => U
 ): Record<T, U> {
   const returnRecord: Partial<Record<T, U>> = {};
-  for (const key of Object.keys(indexObject) as Array<T>) {
-    returnRecord[key] = initializer(key);
+  for (const index of indexArray) {
+    returnRecord[index] = initializer(index);
   }
 
   return returnRecord as Record<T, U>;

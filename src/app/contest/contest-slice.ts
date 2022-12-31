@@ -4,9 +4,7 @@ import type { BreakDataWithProblemPlacementAndUserContestIndex } from "../events
 import type { ProblemDivision } from "../problems/types";
 import type { RootState } from "../store";
 import { generateContest } from "./generate-contest";
-import { processSystests } from "./process-systests";
 import type { ContestSlice, ContestUserData } from "./types";
-import { recalculateRatings } from "./recalculate-ratings";
 import type { User } from "../users/types";
 
 export const contestSlice = createSlice({
@@ -53,37 +51,14 @@ export const contestSlice = createSlice({
       };
     },
 
-    processSystestsAndRecalculateRatings: (
-      state: ContestSlice,
-      action: PayloadAction<Array<User>>
-    ) => {
-      const users = action.payload;
-      if (!state) {
-        console.warn(
-          "Tried to process systests on a contest that does not exist."
-        );
-        return null;
-      }
-
-      const problems = state.problems;
-      const contestUsersData = state.contestUsersData;
-      const problemScores = state.problemScores;
-      const problemScoreDecrementsPerMinute =
-        state.problemScoreDecrementsPerMinute;
-
-      const newContestUsersData = processSystests(problems, contestUsersData);
-      recalculateRatings(
-        newContestUsersData,
-        problemScores,
-        problemScoreDecrementsPerMinute,
-        users
-      );
-    },
-
     resetContest: (_state: ContestSlice, _action: PayloadAction<null>) => null,
 
     setContest: (_state: ContestSlice, action: PayloadAction<ContestSlice>) =>
       action.payload,
+
+    setContestFinished: (state: ContestSlice, _action: PayloadAction<null>) => {
+      return state ? { ...state, finished: true } : null;
+    },
 
     addBreaks: (
       state: ContestSlice,
@@ -127,9 +102,9 @@ export const {
   updateContestUserData,
   resetContest,
   setContest,
+  setContestFinished,
   addBreaks,
   setNextEventIn,
-  processSystestsAndRecalculateRatings,
 } = contestSlice.actions;
 
 export const selectTicksSinceBeginning = (state: RootState) =>

@@ -50,14 +50,11 @@ describe("sample function", () => {
 
 describe("declareRecordByInitializer function", () => {
   it("generates a record with all properties from indexObject", () => {
-    enum ourEnum {
-      key1 = "key1",
-      key2 = "key2",
-    }
-    type OurEnumType = keyof typeof ourEnum;
+    const stringLiteralConstArray = ["key1", "key2"] as const;
+    type StringLiteralUnionType = typeof stringLiteralConstArray[number];
 
-    const initializer = (ourEnum: OurEnumType): number => {
-      switch (ourEnum) {
+    const initializer = (stringLiteral: StringLiteralUnionType): number => {
+      switch (stringLiteral) {
         case "key1":
           return 1;
         case "key2":
@@ -65,7 +62,9 @@ describe("declareRecordByInitializer function", () => {
       }
     };
 
-    expect(declareRecordByInitializer(ourEnum, initializer)).toMatchObject({
+    expect(
+      declareRecordByInitializer(stringLiteralConstArray, initializer)
+    ).toMatchObject({
       key1: 1,
       key2: 2,
     });

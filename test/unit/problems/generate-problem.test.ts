@@ -3,7 +3,7 @@ import type {
   ProblemDivision,
   ProblemPlacement,
 } from "../../../src/app/problems/types";
-import { ProblemTag } from "../../../src/app/problems/types";
+import { problemTags } from "../../../src/app/problems/types";
 import { zip } from "../../../src/utils/utils";
 import { generateProblem } from "../../../src/app/problems/generate-problem";
 import stdev from "@stdlib/stats/base/stdev";
@@ -53,7 +53,7 @@ describe("generateProblem function", () => {
     };
     const pretestsQualityUpperBound = {
       bound: 0.99,
-      expectedProbToBeLessThan: 0.43,
+      expectedProbToBeLessThan: 0.42,
     };
 
     for (const [
@@ -197,56 +197,55 @@ describe("generateProblem function", () => {
       );
 
       assertProbabilisticCloseTo(
-        qualityPrecisionLowerBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) =>
             problem.qualityPrecision < qualityPrecisionLowerBound.bound
         ).length / GENERATED_PROBLEMS_LENGTH,
+        qualityPrecisionLowerBound.expectedProbToBeLessThan,
         0.01
       );
 
       assertProbabilisticCloseTo(
-        qualityPrecisionUpperBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) =>
             problem.qualityPrecision < qualityPrecisionUpperBound.bound
         ).length / GENERATED_PROBLEMS_LENGTH,
+        qualityPrecisionUpperBound.expectedProbToBeLessThan,
         0.04
       );
 
       assertProbabilisticCloseTo(
-        qualityRecallLowerBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) => problem.qualityRecall < qualityRecallLowerBound.bound
         ).length / GENERATED_PROBLEMS_LENGTH,
+        qualityRecallLowerBound.expectedProbToBeLessThan,
         0.001
       );
 
       assertProbabilisticCloseTo(
-        qualityRecallUpperBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) => problem.qualityRecall < qualityRecallUpperBound.bound
         ).length / GENERATED_PROBLEMS_LENGTH,
+        qualityRecallUpperBound.expectedProbToBeLessThan,
         0.005
       );
 
       assertProbabilisticCloseTo(
-        pretestsQualityLowerBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) => problem.pretestsQuality < pretestsQualityLowerBound.bound
         ).length / GENERATED_PROBLEMS_LENGTH,
+        pretestsQualityLowerBound.expectedProbToBeLessThan,
         0.02
       );
 
       assertProbabilisticCloseTo(
-        pretestsQualityUpperBound.expectedProbToBeLessThan,
         problems.filter(
           (problem) => problem.pretestsQuality < pretestsQualityUpperBound.bound
         ).length / GENERATED_PROBLEMS_LENGTH,
+        pretestsQualityUpperBound.expectedProbToBeLessThan,
         0.05
       );
 
-      const problemTags = Object.values(ProblemTag);
       problemTags.forEach((problemTag) => {
         assertProbabilisticCloseTo(
           GENERATED_PROBLEMS_LENGTH /

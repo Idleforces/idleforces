@@ -3,7 +3,7 @@ import { resetNextEventIn } from "../events/next-event";
 import { generateProblem } from "../problems/generate-problem";
 import { generateInitialProblemSolveStatus } from "../problems/solve-problem";
 import type { ProblemDivision, ProblemPlacement } from "../problems/types";
-import { ProblemPlacements } from "../problems/types";
+import { problemPlacements } from "../problems/types";
 import {
   computeProblemPlacementFromProblemPosition,
   computeProblemPositionFromProblemPlacement,
@@ -23,19 +23,7 @@ import type {
   ContestUserData,
 } from "./types";
 import type { NPC, User } from "../users/types";
-
-const isWithinRatingBound = (rating: number, division: ProblemDivision) => {
-  switch (division) {
-    case 1:
-      return rating >= 1900;
-    case 2:
-      return rating <= 2100;
-    case 3:
-      return rating <= 1600;
-    case 4:
-      return rating <= 1400;
-  }
-};
+import { filterUsersSatisfyingRatingBound } from "./rating-bounds";
 
 export const generateContest = (
   division: ProblemDivision,
@@ -43,19 +31,19 @@ export const generateContest = (
   numberOfMergedTicks: number,
   users: Array<User>
 ): ContestSlice => {
-  const problems: ContestProblems = Object.values(ProblemPlacements).map(
-    (placement) => generateProblem(division, placement)
+  const problems: ContestProblems = problemPlacements.map((placement) =>
+    generateProblem(division, placement)
   );
   const problemScores: ContestProblemNumberValues =
     computeContestProblemScores(problems);
   const problemScoreDecrementsPerMinute: ContestProblemNumberValues =
     computeProblemScoreDecrementsPerMinute(problemScores);
 
-  const NPCsParticipating = users.filter(
-    (user) =>
-      !user.isPlayer &&
-      Math.random() < user.likelihoodOfCompeting &&
-      isWithinRatingBound(user.ratingHistory.slice(-1)[0].rating, division)
+  const NPCsParticipating = filterUsersSatisfyingRatingBound(
+    users,
+    division
+  ).filter(
+    (user) => !user.isPlayer && Math.random() < user.likelihoodOfCompeting
   ) as Array<NPC>;
 
   const contestNPCData: Array<ContestNPCData> = NPCsParticipating.map((NPC) => {
@@ -71,11 +59,11 @@ export const generateContest = (
       handle: NPC.handle,
       blockingBreak: null,
       nonBlockingBreaks: declareRecordByInitializer(
-        ProblemPlacements,
+        problemPlacements,
         (_placement) => null
       ),
       problemSolveStatuses: declareRecordByInitializer(
-        ProblemPlacements,
+        problemPlacements,
         (_placement) => generateInitialProblemSolveStatus()
       ),
       activeProblemPlacement,
@@ -100,11 +88,11 @@ export const generateContest = (
           handle: users[0].handle,
           blockingBreak: null,
           nonBlockingBreaks: declareRecordByInitializer(
-            ProblemPlacements,
+            problemPlacements,
             (_placement) => null
           ),
           problemSolveStatuses: declareRecordByInitializer(
-            ProblemPlacements,
+            problemPlacements,
             (_placement) => generateInitialProblemSolveStatus()
           ),
           activeProblemPlacement: "A",
@@ -117,6 +105,7 @@ export const generateContest = (
     ticksSinceBeginning: 0,
     numberOfMergedTicks,
     nextEventIn: resetNextEventIn(0),
+    finished: false,
     division,
     problems,
     problemScores,

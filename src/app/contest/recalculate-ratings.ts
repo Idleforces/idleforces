@@ -1,4 +1,4 @@
-import { ProblemPlacements } from "../problems/types";
+import { problemPlacements } from "../problems/types";
 import { computeProblemPositionFromProblemPlacement } from "../problems/utils";
 import type { User } from "../users/types";
 import type {
@@ -38,7 +38,7 @@ export const computeSeed = (
   );
 };
 
-export const computeContestScoresAndNumberOfWrongSubmissions = (
+export const computeSubmissionsStats = (
   problemScores: ContestProblemNumberValues,
   problemScoreDecrementsPerMinute: ContestProblemNumberValues,
   problemSolveStatuses: ProblemSolveStatuses,
@@ -46,11 +46,13 @@ export const computeContestScoresAndNumberOfWrongSubmissions = (
 ): {
   scores: Array<number>;
   wrongSubmissionCounts: Array<number>;
+  correctSubmissionTimestamps: Array<number | null>;
 } => {
   const scores: Array<number> = [];
   const wrongSubmissionCounts: Array<number> = [];
+  const correctSubmissionTimestamps: Array<number | null> = [];
 
-  Object.values(ProblemPlacements).forEach((placement) => {
+  problemPlacements.forEach((placement) => {
     const problemPosition =
       computeProblemPositionFromProblemPlacement(placement);
     const problemScore = problemScores[problemPosition];
@@ -77,7 +79,9 @@ export const computeContestScoresAndNumberOfWrongSubmissions = (
       ) {
         score =
           problemScore -
-          (problemScoreDecrementPerMinute * submission.timestamp) / 60;
+          (problemScoreDecrementPerMinute * submission.ticksSinceBeginning) /
+            60;
+        correctSubmissionTimestamps.push(submission.ticksSinceBeginning);
         submissionFound = true;
       } else wrongSubmissionCount++;
     }
@@ -90,9 +94,10 @@ export const computeContestScoresAndNumberOfWrongSubmissions = (
 
     scores.push(score);
     wrongSubmissionCounts.push(wrongSubmissionCount);
+    if (!submissionFound) correctSubmissionTimestamps.push(null);
   });
 
-  return { scores, wrongSubmissionCounts };
+  return { scores, wrongSubmissionCounts, correctSubmissionTimestamps };
 };
 
 export const computeContestUsersStatsSortedByRank = (
@@ -103,46 +108,97 @@ export const computeContestUsersStatsSortedByRank = (
   problemScoreDecrementsPerMinute: ContestProblemNumberValues
 ): Array<ContestUserStats> => {
   let userContestIndex = 0;
-  return contestUsersData
-    .map((contestUserData) => {
-      const handle = contestUserData.handle;
-      while (users[userContestIndex].handle !== handle) userContestIndex++;
-      const oldRating =
-        users[userContestIndex].ratingHistory.slice(-1)[0].rating;
-      const country = users[userContestIndex].country;
+  return computeUserRanksConsideringTies(
+    contestUsersData
+      .map((contestUserData) => {
+        const handle = contestUserData.handle;
+        while (users[userContestIndex].handle !== handle) userContestIndex++;
+        const oldRating =
+          users[userContestIndex].ratingHistory.slice(-1)[0].rating;
+        const country = users[userContestIndex].country;
 
-      const { scores, wrongSubmissionCounts } =
-        computeContestScoresAndNumberOfWrongSubmissions(
-          problemScores,
-          problemScoreDecrementsPerMinute,
-          contestUserData.problemSolveStatuses,
-          useScoresAfterSystests
-        );
+        const { scores, wrongSubmissionCounts, correctSubmissionTimestamps } =
+          computeSubmissionsStats(
+            problemScores,
+            problemScoreDecrementsPerMinute,
+            contestUserData.problemSolveStatuses,
+            useScoresAfterSystests
+          );
 
-      return {
-        handle,
-        scores,
-        oldRating,
-        wrongSubmissionCounts,
-        country,
-      };
-    })
-    .sort((a, b) => sum(b.scores) - sum(a.scores));
+        return {
+          handle,
+          scores,
+          oldRating,
+          failedAtSystests: problemPlacements.map(
+            (placement) =>
+              contestUserData.problemSolveStatuses[placement].phase ===
+              "after-failing-systests"
+          ),
+          submissions: problemPlacements.map(
+            (placement) =>
+              contestUserData.problemSolveStatuses[placement].submissions
+          ),
+          correctSubmissionTimestamps,
+          wrongSubmissionCounts,
+          country,
+        };
+      })
+      .sort((a, b) => sum(b.scores) - sum(a.scores))
+  );
 };
 
-export const computeNewRatings = (
-  contestUsersStatsSortedByRank: Array<{ handle: string; oldRating: number }>
+export const computeUserRanksConsideringTies = <
+  T extends { scores: Array<number> }
+>(
+  contestUsersStats: Array<T>
+): Array<T & { rank: number }> => {
+  let curRank = 1;
+  let lastScore = 999999;
+
+  return contestUsersStats.map((contestUserStats, index) => {
+    if (Math.floor(lastScore) !== Math.floor(sum(contestUserStats.scores))) {
+      curRank = index + 1;
+      lastScore = Math.floor(sum(contestUserStats.scores));
+    }
+
+    return {
+      ...contestUserStats,
+      rank: curRank,
+    };
+  });
+};
+
+export const computeNewRatingsSlice = (
+  contestUsersStats: Array<{
+    handle: string;
+    oldRating: number;
+    rank: number;
+  }>,
+  min?: number,
+  max?: number
 ): RatingPoints => {
-  const oldRatings = contestUsersStatsSortedByRank.map(
+  const opponentRatings = contestUsersStats.map(
     (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.oldRating
   );
-  const handles = contestUsersStatsSortedByRank.map(
+
+  const userRatings = contestUsersStats
+    .slice(min, max)
+    .map(
+      (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.oldRating
+    );
+
+  const handles = contestUsersStats.map(
     (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.handle
   );
-  const seeds = oldRatings.map((rating) => computeSeed(rating, oldRatings));
+  const ranks = contestUsersStats.map(
+    (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.rank
+  );
+  const seeds = userRatings.map((rating) =>
+    computeSeed(rating, opponentRatings)
+  );
 
-  const seedRankGeomeans = seeds.map((_, index) =>
-    Math.sqrt((index + 1) * seeds[index])
+  const seedRankGeomeans = seeds.map((seed, index) =>
+    Math.sqrt(ranks[index] * seed)
   );
 
   const performancesOfUsersSeededAsGeomeans = seedRankGeomeans.map(
@@ -153,7 +209,10 @@ export const computeNewRatings = (
       for (let _ = 0; _ < 30; _++) {
         const PERFORMANCE_MIDPOINT =
           (PERFORMANCE_LOWER_BOUND + PERFORMANCE_UPPER_BOUND) / 2;
-        const seedAtMidpoint = computeSeed(PERFORMANCE_MIDPOINT, oldRatings);
+        const seedAtMidpoint = computeSeed(
+          PERFORMANCE_MIDPOINT,
+          opponentRatings
+        );
         if (seedAtMidpoint < seedRankGeomean)
           PERFORMANCE_UPPER_BOUND = PERFORMANCE_MIDPOINT;
         else PERFORMANCE_LOWER_BOUND = PERFORMANCE_MIDPOINT;
@@ -164,13 +223,15 @@ export const computeNewRatings = (
   );
 
   const zeroMeanCorrection =
-    (sum(performancesOfUsersSeededAsGeomeans) - sum(oldRatings)) /
-    oldRatings.length;
+    min !== undefined || max !== undefined
+      ? 0
+      : (sum(performancesOfUsersSeededAsGeomeans) - sum(userRatings)) /
+        userRatings.length;
 
   const ratingPoints: RatingPoints = {};
   const now = Date.now();
-  oldRatings.forEach((oldRating, index) => {
-    ratingPoints[handles[index]] = {
+  userRatings.forEach((oldRating, index) => {
+    ratingPoints[handles[min !== undefined ? min + index : index]] = {
       rating:
         (oldRating +
           performancesOfUsersSeededAsGeomeans[index] -
@@ -196,7 +257,7 @@ export const recalculateRatings = (
   problemScoreDecrementsPerMinute: Array<number>,
   users: Array<User>
 ): RatingPoints => {
-  const contestUsersStatsSortedByRank = computeContestUsersStatsSortedByRank(
+  const contestUsersStats = computeContestUsersStatsSortedByRank(
     contestUsersData,
     users,
     true,
@@ -204,5 +265,5 @@ export const recalculateRatings = (
     problemScoreDecrementsPerMinute
   );
 
-  return computeNewRatings(contestUsersStatsSortedByRank);
+  return computeNewRatingsSlice(contestUsersStats);
 };

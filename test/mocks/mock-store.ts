@@ -2,9 +2,8 @@ import type { AnyAction } from "@reduxjs/toolkit";
 import { assert } from "vitest";
 import type { ContestEvent } from "../../src/app/events/types";
 
-export enum mockActionTypes {
-  addEvent = "events/addEvent",
-}
+const mockActionTypes = ["events/addEvent"] as const;
+export type MockActionTypes = typeof mockActionTypes[number];
 
 export const mockStore = {
   events: [] as Array<ContestEvent>,
@@ -17,7 +16,7 @@ export const mockStore = {
       } in the mock store.`
     );
 
-    switch (action.type as mockActionTypes) {
+    switch (action.type as MockActionTypes) {
       case "events/addEvent":
         mockStore.events.push(action.payload as ContestEvent);
         break;

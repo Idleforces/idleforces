@@ -1,33 +1,21 @@
 import type { ProblemSolvingPhases } from "../events/types";
 import type { generateProblem } from "./generate-problem";
-/*
-export type ProblemPlacement = "A" | "B" | "C" | "D" | "E" | "F";
-export const problemPlacements: Readonly<Array<ProblemPlacement>> = Object.freeze(["A", "B", "C", "D", "E", "F"]);
-*/
 
-export enum ProblemPlacements {
-  A = "A",
-  B = "B",
-  C = "C",
-  D = "D",
-  E = "E",
-  F = "F",
-}
-export type ProblemPlacement = keyof typeof ProblemPlacements;
+export const problemPlacements = ["A", "B", "C", "D", "E", "F"] as const;
+export type ProblemPlacement = typeof problemPlacements[number];
 
-export type ProblemDivision = 1 | 2 | 3 | 4;
-export const problemDivisions: Readonly<Array<ProblemDivision>> = Object.freeze(
-  [1, 2, 3, 4]
-);
+export const problemDivisions = [1, 2, 3, 4] as const;
+export type ProblemDivision = typeof problemDivisions[number];
 
-export enum ProblemTag {
-  dp = "dp",
-  greedy = "greedy",
-  math = "math",
-  graphs = "graphs",
-  adHoc = "adHoc",
-  trees = "trees",
-}
+export const problemTags = [
+  "dp",
+  "greedy",
+  "math",
+  "graphs",
+  "adHoc",
+  "trees",
+] as const;
+export type ProblemTag = typeof problemTags[number];
 
 export type ContestSubmissionVerdict =
   | "Wrong answer"
@@ -42,7 +30,7 @@ export type ContestSubmission = {
   penPaperCorrect: boolean;
   implementationCorrect: boolean;
   verdict: ContestSubmissionVerdict;
-  timestamp: number;
+  ticksSinceBeginning: number;
 };
 
 export type Problem = ReturnType<typeof generateProblem>;

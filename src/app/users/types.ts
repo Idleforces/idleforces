@@ -8,16 +8,16 @@ export type AttributeConstant = {
   hardness: number;
 };
 
-export enum NonTechnicalAttributeNames {
-  reading = "reading",
-  penPaperCare = "penPaperCare",
-  implementationSpeed = "implementationSpeed",
-  implementationCare = "implementationCare",
-}
+export const nonTechnicalAttributeNames = [
+  "reading",
+  "penPaperCare",
+  "implementationSpeed",
+  "implementationCare",
+] as const;
+export type NonTechnicalAttributeNames =
+  typeof nonTechnicalAttributeNames[number];
 
-export type AttributeNames =
-  | keyof typeof ProblemTag
-  | keyof typeof NonTechnicalAttributeNames;
+export type AttributeNames = ProblemTag | NonTechnicalAttributeNames;
 
 export type AttributeValues = {
   [K in AttributeNames]: AttributeValue;
