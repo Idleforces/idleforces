@@ -2,10 +2,10 @@ export const DataTable = (props: {
   topText?: string;
   containerBorderRadiusPx?: number;
   contents: Array<Array<JSX.Element>>;
-  extraClassNames: Array<Array<string>>;
+  classNames: Array<Array<string>>;
 }) => {
   const contents = props.contents;
-  const extraClassNames = props.extraClassNames;
+  const classNames = props.classNames;
   const topText = props.topText;
   const containerBorderRadiusPx = props.containerBorderRadiusPx ?? 0;
 
@@ -31,7 +31,7 @@ export const DataTable = (props: {
             {contents[0].map((cellContent, columnIndex) => (
               <th
                 key={columnIndex}
-                className={`top ${extraClassNames[0][columnIndex]} ${
+                className={`top ${classNames[0][columnIndex]} ${
                   columnIndex === 0 ? "left" : ""
                 } ${columnIndex === contents[0].length - 1 ? "right" : ""}`}
               >
@@ -46,7 +46,7 @@ export const DataTable = (props: {
               {rowContents.map((cellContent, columnIndex) => (
                 <td
                   key={columnIndex}
-                  className={`${extraClassNames[rowIndex][columnIndex]} ${
+                  className={`${classNames[rowIndex + 1][columnIndex]} ${
                     columnIndex === 0 ? "left" : ""
                   } ${columnIndex === rowContents.length - 1 ? "right" : ""}
                   ${rowIndex === contents.length - 1 ? "down" : ""}

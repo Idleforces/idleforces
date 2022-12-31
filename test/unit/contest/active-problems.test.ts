@@ -32,20 +32,20 @@ describe("computeActiveProblemPosition function", () => {
   it("returns easier problems more often", () => {
     assertProbabilisticCloseTo(
       activeProblemPositions.filter((x) => x === 0).length,
-      820,
+      825,
       35
     );
 
     assertProbabilisticCloseTo(
       activeProblemPositions.filter((x) => x === 3).length,
-      140,
+      145,
       30
     );
 
     assertProbabilisticCloseTo(
       activeProblemPositions.filter((x) => x === 5).length,
-      40,
-      10
+      30,
+      12
     );
   });
 });
