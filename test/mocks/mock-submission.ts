@@ -5,7 +5,7 @@ export const computeMockSubmission = (
   generateWrong = false,
   generatePretestPassing = false,
   generateSystestsPassing = false,
-  timestamp: number | null = null
+  ticksSinceBeginning: number | null = null
 ): ContestSubmission => {
   const randomNumber = Math.random();
   const penPaperCorrect =
@@ -33,6 +33,7 @@ export const computeMockSubmission = (
       : Math.random() < 0.5
       ? "Runtime error"
       : "Memory limit exceeded",
-    timestamp: timestamp ?? Math.floor(Math.random() * CONTEST_LENGTH),
+    ticksSinceBeginning:
+      ticksSinceBeginning ?? Math.floor(Math.random() * CONTEST_LENGTH),
   };
 };

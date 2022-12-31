@@ -64,7 +64,7 @@ export const submitProblem = <RootStateType>(
           penPaperCorrect,
           implementationCorrect,
           verdict: "Pretests passed",
-          timestamp: ticksSinceBeginning,
+          ticksSinceBeginning: ticksSinceBeginning,
         },
       ],
     };
@@ -163,7 +163,7 @@ export const submitProblem = <RootStateType>(
         penPaperCorrect,
         implementationCorrect,
         verdict,
-        timestamp: ticksSinceBeginning,
+        ticksSinceBeginning: ticksSinceBeginning,
       },
     ],
     penPaperProgressIncrement,
