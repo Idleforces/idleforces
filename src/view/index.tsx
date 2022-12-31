@@ -86,7 +86,7 @@ export const Index = (props: {
 
       if (contest) {
         setContestTypeRunning({
-          playerParticipating: true,
+          playerParticipating: contest.contestUsersData[0].isPlayer,
           numberOfMergedTicks: contest.numberOfMergedTicks,
         });
         dispatch(setContest(contest));
