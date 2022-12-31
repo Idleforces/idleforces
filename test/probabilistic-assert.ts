@@ -9,7 +9,7 @@ import { assert } from "vitest";
  *
  *@param actual - Actual value.
  *@param expected - Potential expected value.
- *@param delta - Heuristically, this should be set to something (2 + \epsilon) standard deviations, but since we're humans, we should just be eyeballing with `weak` turned off.
+ *@param delta - Heuristically, this should be set to something like (2 + \epsilon) standard deviations, but since we're humans, we should just be eyeballing with `weak` turned off.
  *@param message - Message to display on error.
  */
 export const assertProbabilisticCloseTo = (
@@ -18,7 +18,7 @@ export const assertProbabilisticCloseTo = (
   delta: number,
   message?: string
 ): void => {
-  const weak = false;
+  const weak = true;
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (weak) assert.closeTo(actual, expected, 2 * delta, message);
