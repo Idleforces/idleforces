@@ -22,7 +22,6 @@
     "src/**/*",
     "test/**/*",
     "./vite.config.ts",
-    "./typings/country-flags-svg/index.d.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
