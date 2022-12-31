@@ -142,7 +142,7 @@ describe("generateUsers function", () => {
       expectedTimeMultipliersToSwitchToADifferentProblem[
         Math.floor(NPCsLength / 6)
       ],
-      2.38,
+      1.7,
       0.1
     );
 
@@ -150,7 +150,7 @@ describe("generateUsers function", () => {
       expectedTimeMultipliersToSwitchToADifferentProblem[
         Math.floor((5 * NPCsLength) / 6)
       ],
-      4.65,
+      3.27,
       0.12
     );
   });

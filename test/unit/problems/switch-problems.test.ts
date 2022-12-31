@@ -32,18 +32,18 @@ describe("computeTimeToSwitchToAnotherProblem function", () => {
     timesToSwitchHighRatedZeroSubmissions.sort((a, b) => a - b);
     assertProbabilisticCloseTo(
       timesToSwitchHighRatedZeroSubmissions[5000],
-      5000,
+      3600,
       250
     );
     assertProbabilisticCloseTo(
       timesToSwitchHighRatedZeroSubmissions[1000],
-      2100,
+      1500,
       100
     );
     assertProbabilisticCloseTo(
       timesToSwitchHighRatedZeroSubmissions[9000],
-      12800,
-      1000
+      9000,
+      700
     );
   });
 });

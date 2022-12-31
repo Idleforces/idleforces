@@ -72,7 +72,7 @@ export const generateUser = (
       willingnessToTryHarderProblems:
         Math.round(100 * 0.25 * betaPrimeAltParam(1, 0.5)) / 100,
       expectedTimeMultiplierToSwitchToADifferentProblem:
-        Math.round(100 * 3.5 * betaPrimeAltParam(1, 16)) / 100,
+        Math.round(100 * 2.5 * betaPrimeAltParam(1, 16)) / 100,
     };
   } else {
     return {
