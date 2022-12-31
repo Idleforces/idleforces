@@ -1,0 +1,9 @@
+#standing-page-links-container span {
+  color: gray;
+  padding: 20px 5px;
+  cursor: pointer;
+}
+
+#standing-page-links-container span::hover {
+  color: darkgrey;
+}

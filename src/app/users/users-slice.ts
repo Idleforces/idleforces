@@ -25,7 +25,7 @@ export const usersSlice = createSlice({
   },
 });
 
-export const { resetUsers, setUsers } = usersSlice.actions;
+export const { resetUsers, setUsers, updateRatings } = usersSlice.actions;
 
 export const selectUsersWithTimeOfSnapshot = (state: RootState) => state.users;
 export const selectUsers = (state: RootState) =>

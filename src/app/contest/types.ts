@@ -1,5 +1,6 @@
 import type { BreakDataWithProblemPlacement } from "../events/types";
 import type {
+  ContestSubmission,
   Problem,
   ProblemDivision,
   ProblemPlacement,
@@ -38,6 +39,7 @@ export type ContestUserData = ContestNPCData | ContestPlayerData;
 export type ContestSlice = {
   ticksSinceBeginning: number;
   numberOfMergedTicks: number;
+  finished: boolean;
   division: ProblemDivision;
   nextEventIn: number;
   problems: ContestProblems;
@@ -49,9 +51,13 @@ export type ContestSlice = {
 export type ContestUserStats = {
   handle: string;
   scores: Array<number>;
+  correctSubmissionTimestamps: Array<number | null>;
   wrongSubmissionCounts: Array<number>;
+  failedAtSystests: Array<boolean>;
+  submissions: Array<Array<ContestSubmission>>;
   oldRating: number;
   country: string | null;
+  rank: number;
 };
 
 /**

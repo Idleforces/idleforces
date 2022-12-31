@@ -14,6 +14,9 @@ import { resetEvents } from "./app/events/events-slice";
 import type { ContestTypeRunning } from "./view/game/types";
 import { useRef, useState } from "react";
 import { Contests } from "./view/game/pages/contests";
+import { Contest } from "./view/game/contest/contest";
+import { Standings } from "./view/game/contest/standings";
+import { Problems } from "./view/game/contest/problems";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -58,6 +61,13 @@ function App() {
               />
             }
           />
+          <Route path="contest/" element={<Contest
+            noPlayerContestSimSpeed={noPlayerContestSimSpeed}
+            setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
+          />}>
+            <Route path="standings" element={<Standings/>}/>
+            <Route path="*" element={<Problems />}/>
+          </Route>
           <Route path="*" element={<Dashboard />} />
         </Route>
         <Route path="/loading" element={<Loading />} />
