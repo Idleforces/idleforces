@@ -18,6 +18,6 @@
     "jsx": "react-jsx",
     "importsNotUsedAsValues": "error"
   },
-  "include": ["src/**/*", "test/**/*", "./vite.config.ts"],
+  "include": ["src/**/*", "test/**/*", "./vite.config.ts", "node_modules/@types/country-flags-svg/flag.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
