@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   selectUsersWithTimeOfSnapshot,
   setUsers,
+  updateRatings,
 } from "../../app/users/users-slice";
 import type { UsersSlice } from "../../app/users/users-slice";
 import { sleep } from "../../utils/utils";
@@ -12,8 +13,8 @@ import { NavBar } from "./navbar";
 import { selectSaveData } from "../../app/save/save-slice";
 import {
   addBreaks,
-  processSystestsAndRecalculateRatings,
   selectContest,
+  setContestFinished,
   updateContestUserData,
 } from "../../app/contest/contest-slice";
 import { selectEvents } from "../../app/events/events-slice";
@@ -21,6 +22,8 @@ import { CONTEST_LENGTH } from "../../app/contest/constants";
 import { processTickOfContest } from "../../app/contest/process-tick";
 import { saveGameData } from "../persist-data";
 import { loadOrGenerateUsers } from "../../app/users/load-users";
+import { processSystests } from "../../app/contest/process-systests";
+import { recalculateRatings } from "../../app/contest/recalculate-ratings";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
@@ -55,10 +58,11 @@ export const Game = (props: {
 
         let newUsersWithTimeOfSnapshot: UsersSlice = usersWithTimeOfSnapshot;
         if (!usersWithTimeOfSnapshot) {
-          newUsersWithTimeOfSnapshot = loadOrGenerateUsers(saveData.saveName, saveData.handle);
-          dispatch(
-            setUsers(newUsersWithTimeOfSnapshot)
+          newUsersWithTimeOfSnapshot = loadOrGenerateUsers(
+            saveData.saveName,
+            saveData.handle
           );
+          dispatch(setUsers(newUsersWithTimeOfSnapshot));
         }
 
         if (ticksPassedSinceGameLoad % 60 === 30) {
@@ -127,10 +131,19 @@ export const Game = (props: {
             dispatch(addBreaks(breaksToAddToStore));
           }) // eslint-disable-next-line @typescript-eslint/no-empty-function
           .catch(() => {});
-      } else if (contestTicksPassed >= CONTEST_LENGTH) {
-        dispatch(
-          processSystestsAndRecalculateRatings(usersWithTimeOfSnapshot.users)
+      } else if (contestTicksPassed >= CONTEST_LENGTH && !contest.finished) {
+        const newContestUsersData = processSystests(
+          contest.problems,
+          contest.contestUsersData
         );
+        const newRatingPoints = recalculateRatings(
+          newContestUsersData,
+          contest.problemScores,
+          contest.problemScoreDecrementsPerMinute,
+          usersWithTimeOfSnapshot.users
+        );
+        dispatch(updateRatings(newRatingPoints));
+        dispatch(setContestFinished(null));
       }
     }
   }, [
