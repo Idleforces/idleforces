@@ -11,11 +11,17 @@ import type {
 import { MIN_RATIO_OF_MAX_SCORE, WRONG_SUBMISSION_PENALTY } from "./constants";
 import { sum } from "../../utils/utils";
 
+const probabilitiesOfWinningByRatingDiff = Array(10000)
+  .fill(0)
+  .map((_, index) => 1 / (1 + Math.pow(10, (index - 5000) / 400)));
+
 const computeProbabilityRatingABeastRatingB = (
   ratingA: number,
   ratingB: number
 ) => {
-  return 1 / (1 + Math.pow(10, (ratingB - ratingA) / 400));
+  return probabilitiesOfWinningByRatingDiff[
+    5000 + Math.round(ratingB - ratingA)
+  ];
 };
 
 /**
@@ -206,7 +212,7 @@ export const computeNewRatingsSlice = (
       let PERFORMANCE_LOWER_BOUND = -999;
       let PERFORMANCE_UPPER_BOUND = 4999;
 
-      for (let _ = 0; _ < 30; _++) {
+      for (let _ = 0; _ < 15; _++) {
         const PERFORMANCE_MIDPOINT =
           (PERFORMANCE_LOWER_BOUND + PERFORMANCE_UPPER_BOUND) / 2;
         const seedAtMidpoint = computeSeed(

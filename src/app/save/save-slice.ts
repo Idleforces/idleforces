@@ -20,10 +20,14 @@ const saveSlice = createSlice({
     resetSaveData(_state: SaveSlice, _action: PayloadAction<null>) {
       return null;
     },
+
+    setInContest(state: SaveSlice, action: PayloadAction<boolean>) {
+      return state ? { ...state, inContest: action.payload } : null;
+    },
   },
 });
 
-export const { setSaveData, resetSaveData } = saveSlice.actions;
+export const { setSaveData, resetSaveData, setInContest } = saveSlice.actions;
 export const selectSaveData = (state: RootState) => state.save;
 export const selectHandle = (state: RootState) => state.save?.handle;
 export const saveReducer = saveSlice.reducer;

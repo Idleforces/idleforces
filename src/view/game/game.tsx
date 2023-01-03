@@ -13,8 +13,10 @@ import { NavBar } from "./navbar";
 import { selectSaveData } from "../../app/save/save-slice";
 import {
   addBreaks,
+  incrementTicksSinceBeginning,
   selectContest,
   setContestFinished,
+  setNextEventIn,
   updateContestUserData,
 } from "../../app/contest/contest-slice";
 import { selectEvents } from "../../app/events/events-slice";
@@ -118,15 +120,16 @@ export const Game = (props: {
       if (contestTicksPassed < CONTEST_LENGTH && noPlayerContestSimSpeed) {
         sleep(Math.min(1000, 1 / noPlayerContestSimSpeed))
           .then(() => {
-            const { newContestUsersData, breaksToAddToStore } =
+            const { newContestUsersData, breaksToAddToStore, nextEventIn } =
               processTickOfContest(
                 contest,
                 numberOfMergedTicks,
                 usersWithTimeOfSnapshot.users,
-                contestTicksPassed,
                 dispatch
               );
 
+            dispatch(incrementTicksSinceBeginning(null));
+            dispatch(setNextEventIn(nextEventIn));
             dispatch(updateContestUserData({ newContestUsersData }));
             dispatch(addBreaks(breaksToAddToStore));
           }) // eslint-disable-next-line @typescript-eslint/no-empty-function

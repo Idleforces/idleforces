@@ -94,6 +94,19 @@ export const contestSlice = createSlice({
     setNextEventIn: (state: ContestSlice, action: PayloadAction<number>) => {
       return state ? { ...state, nextEventIn: action.payload } : null;
     },
+
+    incrementTicksSinceBeginning: (
+      state: ContestSlice,
+      _action: PayloadAction<null>
+    ) => {
+      return state
+        ? {
+            ...state,
+            ticksSinceBeginning:
+              state.numberOfMergedTicks + state.ticksSinceBeginning,
+          }
+        : null;
+    },
   },
 });
 
@@ -105,6 +118,7 @@ export const {
   setContestFinished,
   addBreaks,
   setNextEventIn,
+  incrementTicksSinceBeginning,
 } = contestSlice.actions;
 
 export const selectTicksSinceBeginning = (state: RootState) =>

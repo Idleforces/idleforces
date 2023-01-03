@@ -20,7 +20,8 @@ import "./contests.css";
 import "../utils/datatable.css";
 import { setEventsToEmptyArray } from "../../../app/events/events-slice";
 import { filterUsersSatisfyingRatingBound } from "../../../app/contest/rating-bounds";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { setInContest } from "../../../app/save/save-slice";
 
 const handleContestStart = (
   playerParticipating: boolean,
@@ -40,6 +41,8 @@ const handleContestStart = (
     })
   );
   dispatch(setEventsToEmptyArray(null));
+
+  dispatch(setInContest(true));
   setContestTypeRunning({
     playerParticipating,
     numberOfMergedTicks: playerParticipating
@@ -54,7 +57,10 @@ export const Contests = (props: {
 }) => {
   const contestTypeRunning = props.contestTypeRunning;
   const setContestTypeRunning = props.setContestTypeRunning;
+
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const users = useAppSelector(selectUsers) ?? [];
   const usersSatisfyingRatingBoundsCounts = (
     [4, 3, 2, 1] as Array<ProblemDivision>
@@ -84,6 +90,8 @@ export const Contests = (props: {
             users,
             setContestTypeRunning
           );
+
+          navigate(playerParticipating ? "/game/contest/problems" : "/game/contest/standings");
         }}
       >
         {playerParticipating ? "Register" : "Simulate"}

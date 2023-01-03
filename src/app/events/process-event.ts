@@ -135,16 +135,28 @@ export const processEventsAndIncrementProgress = <RootStateType>(
     (event) => event.phases === "all" || event.phases.includes(phase)
   );
 
-  const progressIncrement =
+  let progressIncrement: ProblemProgressIncrement;
+  if (
     phase === "during-searching-for-mistake" &&
     Math.floor(ticksSinceBeginning / numberOfMergedTicks) % 2 > 0
-      ? problemSolveStatus.penPaperProgressIncrement
-      : phase === "during-searching-for-mistake"
-      ? problemSolveStatus.implementationProgressIncrement
-      : {
-          progress: problemSolveStatus.progress,
-          increment: problemSolveStatus.increment,
-        };
+  ) {
+    progressIncrement = problemSolveStatus.penPaperProgressIncrement;
+    problemSolveStatus.penPaperProgressIncrement.progress +=
+      numberOfMergedTicks *
+      problemSolveStatus.penPaperProgressIncrement.increment;
+  } else if (phase === "during-searching-for-mistake") {
+    progressIncrement = problemSolveStatus.implementationProgressIncrement;
+    problemSolveStatus.implementationProgressIncrement.progress +=
+      numberOfMergedTicks *
+      problemSolveStatus.implementationProgressIncrement.increment;
+  } else {
+    progressIncrement = {
+      progress: problemSolveStatus.progress,
+      increment: problemSolveStatus.increment,
+    };
+    problemSolveStatus.progress +=
+      problemSolveStatus.increment * numberOfMergedTicks;
+  }
 
   const eventProbabilities = computeProbabilitiesOfEvents(
     events,
@@ -176,9 +188,6 @@ export const processEventsAndIncrementProgress = <RootStateType>(
       );
     }
   }
-
-  progressIncrement.progress +=
-    progressIncrement.increment * numberOfMergedTicks;
 
   return {
     problemSolveStatus,

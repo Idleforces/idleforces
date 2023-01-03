@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { Outlet } from "react-router";
 import { ContestNavBar } from "./contest-navbar";
 import { SpeedSimSlider } from "./speed-sim-slider";
+import { TimeLeft } from "./time-left";
 
 export const Contest = (props: {
   noPlayerContestSimSpeed: number;
@@ -17,6 +18,7 @@ export const Contest = (props: {
         noPlayerContestSimSpeed={noPlayerContestSimSpeed}
         setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
       />
+      <TimeLeft />
       <Outlet />
     </>
   );

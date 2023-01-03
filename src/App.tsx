@@ -31,6 +31,8 @@ function App() {
     dispatch(resetSaveData(null));
     dispatch(resetContest(null));
     dispatch(resetEvents(null));
+    setContestTypeRunning(null);
+    setNoPlayerContestSimSpeed(0);
   };
 
   const leaveGameRef = useRef(() => {

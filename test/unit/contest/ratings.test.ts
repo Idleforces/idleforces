@@ -141,15 +141,15 @@ describe("computeNewRatingsSlice function", () => {
 
   it("computes new ratings", () => {
     let newRatings = computeNewRatingsSlice(contestUsersStatsArray[0]);
-    assertProbabilisticCloseTo(newRatings.tourist.rating, 3700, 0.01);
-    assertProbabilisticCloseTo(newRatings.fourist.rating, 0, 0.01);
+    assertProbabilisticCloseTo(newRatings.tourist.rating, 3700, 1);
+    assertProbabilisticCloseTo(newRatings.fourist.rating, 0, 1);
 
     newRatings = computeNewRatingsSlice(contestUsersStatsArray[1]);
-    assert.equal(newRatings.chad.rating, 2862.637365932204);
-    assert.equal(newRatings.tourist.rating, 3462.245519683324);
-    assert.equal(newRatings.normalHandle.rating, 1359.1538140509278);
-    assert.equal(newRatings.virgin.rating, 465.27533593177793);
-    assert.equal(newRatings.fourist.rating, -49.312035598233344);
+    assert.equal(newRatings.chad.rating, 2862.668145751953);
+    assert.equal(newRatings.tourist.rating, 3462.2105346679687);
+    assert.equal(newRatings.normalHandle.rating, 1359.1896911621093);
+    assert.equal(newRatings.virgin.rating, 465.2154174804688);
+    assert.equal(newRatings.fourist.rating, -49.2837890625);
   });
 
   it("produces zero-mean rating differences", () => {

@@ -22,6 +22,7 @@
     "@stdlib/stats": "^0.0.13",
     "country-flags-svg": "^1.1.7",
     "hash-sum": "^2.0.0",
+    "lodash": "^4.17.21",
     "lz-string": "^1.4.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@stdlib/types": "^0.0.14",
     "@types/hash-sum": "^1.0.0",
+    "@types/lodash": "^4.14.191",
     "@types/lz-string": "^1.3.34",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",

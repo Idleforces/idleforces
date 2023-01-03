@@ -132,7 +132,7 @@ export const Index = (props: {
             programmers featuring real-time events
           </li>
           <li>
-            The game uses autosave, so don&apos;`t worry about losing your
+            The game uses autosave, so don&apos;t worry about losing your
             progress.
           </li>
         </ul>

@@ -15,4 +15,9 @@ export const store = configureStore({
     events: eventsReducer,
     contest: contestReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    }),
 });

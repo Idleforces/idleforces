@@ -78,7 +78,6 @@ export const Standings = () => {
       : Math.ceil(handleIndex / USERS_NO_ON_STANDINGS_PAGE);
   const ticksSinceBeginning = contest ? contest.ticksSinceBeginning : 0;
 
-  const [ratingsRecomputedCount, setRatingsRecomputedCount] = useState(-1);
   const [selectedPage, setSelectedPage] = useState(preloadedPage);
   const minIndex = (selectedPage - 1) * USERS_NO_ON_STANDINGS_PAGE;
   const maxIndex = selectedPage * USERS_NO_ON_STANDINGS_PAGE;
@@ -93,17 +92,27 @@ export const Standings = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ticksSinceBeginningAtMount = useRef(ticksSinceBeginning);
+  const [ratingsRecomputedCount, setRatingsRecomputedCount] = useState(-1);
+
+  const [previousContestUsersStats, setPreviousContestUsersStats] =
+    useState<Array<ContestUserStats> | null>(() => null);
+  if (
+    JSON.stringify(contestUsersStats) !==
+    JSON.stringify(previousContestUsersStats)
+  )
+    setRatingsRecomputedCount(-1);
 
   const newRatings: RatingPoints = useMemo(() => {
     if (!contestUsersStats) return {};
     else if (ratingsRecomputedCount === -1) {
-      const newRatingsPartial: RatingPoints = {};
+      setPreviousContestUsersStats(contestUsersStats);
 
-      contestUsersStats.slice(minIndex, maxIndex).forEach(
+      const newRatingsPartial: RatingPoints = {};
+      contestUsersStats.forEach(
         (contestUserStats) =>
           (newRatingsPartial[contestUserStats.handle] = {
             rating: contestUserStats.oldRating,
-            timestamp: 0,
+            timestamp: 0, // will be ignored
           })
       );
 

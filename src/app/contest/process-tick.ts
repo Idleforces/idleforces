@@ -18,6 +18,7 @@ import type { MockDispatch } from "../types";
 import type { NPC, User } from "../users/types";
 import { computeActiveProblemPosition } from "./active-problem";
 import type { ContestSlice, ContestUserData } from "./types";
+import { cloneDeep } from "lodash";
 
 const automaticallySwitchToAnotherProblem = (
   contestUserData: ContestUserData,
@@ -76,19 +77,21 @@ export const processTickOfContest = <RootStateType>(
   contestSlice: Exclude<ContestSlice, null>,
   numberOfMergedTicks: number,
   users: Array<User>,
-  ticksSinceBeginning: number,
   dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch
 ): {
   newContestUsersData: Array<ContestUserData>;
   breaksToAddToStore: Array<BreakDataWithProblemPlacementAndUserContestIndex>;
+  nextEventIn: number;
 } => {
   let nextEventIn = contestSlice.nextEventIn;
+  const ticksSinceBeginning = contestSlice.ticksSinceBeginning;
   let userSliceIndex = 0;
   const breaksToAddToStore: Array<BreakDataWithProblemPlacementAndUserContestIndex> =
     [];
 
-  const newContestUsersData = contestSlice.contestUsersData.map(
-    (contestUserData, userContestIndex) => {
+  const newContestUsersData = contestSlice.contestUsersData
+    .map((contestUserData) => cloneDeep(contestUserData))
+    .map((contestUserData, userContestIndex) => {
       while (users[userSliceIndex].handle !== contestUserData.handle)
         userSliceIndex++;
       const user = users[userSliceIndex];
@@ -142,55 +145,58 @@ export const processTickOfContest = <RootStateType>(
       }
 
       const problemSolveStatuses = contestUserData.problemSolveStatuses;
-      let activeProblemProblemSolveStatus =
+      const activeProblemProblemSolveStatus =
         problemSolveStatuses[activeProblemPlacement];
       const problems = contestSlice.problems;
 
-      if (isActiveProblemSolveStatus(activeProblemProblemSolveStatus)) {
-        if (
-          !contestUserData.isPlayer &&
-          contestUserData.remainingTicksToSwitchToAnotherProblem <= 0
-        ) {
-          automaticallySwitchToAnotherProblem(
-            contestUserData,
-            contestSlice.division,
-            contestSlice.problems,
-            activeProblemPlacement,
-            user
-          );
-          return contestUserData;
-        }
-
-        if (!contestUserData.isPlayer) {
-          contestUserData.remainingTicksToSwitchToAnotherProblem -=
-            numberOfMergedTicks;
-        }
-
-        const newProblemSolveStatusWithNextEventInAndBreaks =
-          processTickOfProblemSolving<RootStateType>(
-            user,
-            userContestIndex,
-            problems[
-              computeProblemPositionFromProblemPlacement(activeProblemPlacement)
-            ],
-            activeProblemProblemSolveStatus,
-            nextEventIn,
-            numberOfMergedTicks,
-            ticksSinceBeginning,
-            dispatch
-          );
-        nextEventIn = newProblemSolveStatusWithNextEventInAndBreaks.nextEventIn;
-        if (nextEventIn <= 0) nextEventIn = resetNextEventIn(nextEventIn);
-        activeProblemProblemSolveStatus =
-          newProblemSolveStatusWithNextEventInAndBreaks.newProblemSolveStatus;
-
-        breaksToAddToStore.concat(
-          newProblemSolveStatusWithNextEventInAndBreaks.breaksToAddToStore
+      if (
+        (!contestUserData.isPlayer &&
+          contestUserData.remainingTicksToSwitchToAnotherProblem <= 0) ||
+        activeProblemProblemSolveStatus.phase === "after-passing-pretests" ||
+        activeProblemProblemSolveStatus.phase === "after-passing-systests" ||
+        activeProblemProblemSolveStatus.phase === "after-failing-systests"
+      ) {
+        automaticallySwitchToAnotherProblem(
+          contestUserData,
+          contestSlice.division,
+          contestSlice.problems,
+          activeProblemPlacement,
+          user
         );
+        return contestUserData;
       }
-      return contestUserData;
-    }
-  );
 
-  return { newContestUsersData, breaksToAddToStore };
+      if (!contestUserData.isPlayer) {
+        contestUserData.remainingTicksToSwitchToAnotherProblem -=
+          numberOfMergedTicks;
+      }
+
+      const newProblemSolveStatusWithNextEventInAndBreaks =
+        processTickOfProblemSolving<RootStateType>(
+          user,
+          userContestIndex,
+          problems[
+            computeProblemPositionFromProblemPlacement(activeProblemPlacement)
+          ],
+          activeProblemProblemSolveStatus,
+          nextEventIn,
+          numberOfMergedTicks,
+          ticksSinceBeginning,
+          dispatch
+        );
+
+      nextEventIn = newProblemSolveStatusWithNextEventInAndBreaks.nextEventIn;
+      if (nextEventIn <= 0) nextEventIn = resetNextEventIn(nextEventIn);
+
+      contestUserData.problemSolveStatuses[activeProblemPlacement] =
+        newProblemSolveStatusWithNextEventInAndBreaks.newProblemSolveStatus;
+
+      breaksToAddToStore.concat(
+        newProblemSolveStatusWithNextEventInAndBreaks.breaksToAddToStore
+      );
+
+      return contestUserData;
+    });
+
+  return { newContestUsersData, breaksToAddToStore, nextEventIn };
 };
