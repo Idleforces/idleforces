@@ -1,5 +1,5 @@
 import { describe, it, assert, expect } from "vitest";
-import usersJSON from "../../../src/app/users/trimmedUsers.json" assert { type: "json" };
+import usersJSON from "../../../src/app/users/trimmed-users.json" assert { type: "json" };
 
 describe("trimmedUsers.json file", () => {
   it("has status OK", () => {
