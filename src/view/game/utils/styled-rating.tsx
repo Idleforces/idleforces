@@ -11,7 +11,7 @@ export const RatingStyled = (props: {
         <span style={{ fontWeight: 600, color: "black" }}>
           {stringToStyle[0]}
         </span>
-        <span style={{ fontWeight: 600, color: "#ff3333" }}>
+        <span style={{ fontWeight: 600, color: "red" }}>
           {stringToStyle.slice(1)}
         </span>
       </>
@@ -22,23 +22,21 @@ export const RatingStyled = (props: {
       style={{
         fontWeight: 600,
         color:
-          rating >= 2600
-            ? "#f33"
-            : rating >= 2400
-              ? "#f77"
-              : rating >= 2300
-                ? "#fb5"
-                : rating >= 2100
-                  ? "#fc8"
-                  : rating >= 1900
-                    ? "#f8f"
-                    : rating >= 1600
-                      ? "#aaf"
-                      : rating >= 1400
-                        ? "#7db"
-                        : rating >= 1200
-                          ? "#7f7"
-                          : "#ccc",
+          rating >= 2400
+            ? "red"
+            : rating >= 2300
+            ? "#fb5"
+            : rating >= 2100
+            ? "#ff8c00"
+            : rating >= 1900
+            ? "#a0a"
+            : rating >= 1600
+            ? "blue"
+            : rating >= 1400
+            ? "#03a89e"
+            : rating >= 1200
+            ? "green"
+            : "gray",
       }}
     >
       {stringToStyle}
