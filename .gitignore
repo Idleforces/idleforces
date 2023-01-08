@@ -26,5 +26,5 @@ dist-ssr
 *.sw?
 
 # Misc
-public/trimmedUsers.json
+public/trimmed-users.json
 dependency-graph.svg
