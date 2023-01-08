@@ -49,7 +49,7 @@ export const computeProbabilitiesOfEvents = (
   );
 };
 
-const processEventAndReturnBreaks = <RootStateType>(
+const processEventAndReturnBreakData = <RootStateType>(
   event: ContestEventBlueprint,
   user: User,
   userContestIndex: number,
@@ -57,7 +57,7 @@ const processEventAndReturnBreaks = <RootStateType>(
   progressIncrement: ProblemProgressIncrement,
   ticksSinceBeginning: number,
   dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch
-): Array<BreakDataWithProblemPlacementAndUserContestIndex> => {
+): BreakDataWithProblemPlacementAndUserContestIndex | null => {
   const problemPlacement = event.isGlobal ? "global" : problem.placement;
 
   if (user.isPlayer)
@@ -90,8 +90,7 @@ const processEventAndReturnBreaks = <RootStateType>(
 
   if (event.setBreakInTicks) {
     if (event.setBreakInTicks instanceof Function) {
-      return [
-        {
+      return {
           ...event.setBreakInTicks({
             tag: problem.tag,
             user,
@@ -100,19 +99,16 @@ const processEventAndReturnBreaks = <RootStateType>(
           }),
           problemPlacement: problem.placement,
           userContestIndex,
-        },
-      ];
+        };
     } else
-      return [
-        {
+      return {
           ...event.setBreakInTicks,
           problemPlacement: problem.placement,
           userContestIndex,
-        },
-      ];
+        };
   }
 
-  return [];
+  return null;
 };
 
 export const processEventsAndIncrementProgress = <RootStateType>(
@@ -128,7 +124,7 @@ export const processEventsAndIncrementProgress = <RootStateType>(
 ): {
   problemSolveStatus: ProblemSolveStatusWhileActive;
   nextEventIn: number;
-  breaksToAddToStore: Array<BreakDataWithProblemPlacementAndUserContestIndex>;
+  breakData: BreakDataWithProblemPlacementAndUserContestIndex | null;
 } => {
   const phase = problemSolveStatus.phase;
   events = events.filter(
@@ -168,23 +164,20 @@ export const processEventsAndIncrementProgress = <RootStateType>(
   );
 
   let eventFired = false;
-  const breaksToAddToStore: Array<BreakDataWithProblemPlacementAndUserContestIndex> =
-    [];
+  let breakData: BreakDataWithProblemPlacementAndUserContestIndex | null = null;
 
   for (const [event, eventProbability] of zip(events, eventProbabilities)) {
     nextEventIn -= eventProbability * numberOfMergedTicks;
     if (nextEventIn < 0 && !eventFired) {
       eventFired = true;
-      breaksToAddToStore.concat(
-        processEventAndReturnBreaks(
-          event,
-          user,
-          indexOfUser,
-          problem,
-          progressIncrement,
-          ticksSinceBeginning,
-          dispatch
-        )
+      breakData = processEventAndReturnBreakData(
+        event,
+        user,
+        indexOfUser,
+        problem,
+        progressIncrement,
+        ticksSinceBeginning,
+        dispatch
       );
     }
   }
@@ -192,6 +185,6 @@ export const processEventsAndIncrementProgress = <RootStateType>(
   return {
     problemSolveStatus,
     nextEventIn,
-    breaksToAddToStore,
+    breakData,
   };
 };

@@ -43,17 +43,17 @@ export const processTickOfProblemSolving = <RootStateType>(
     | ProblemSolveStatusWhileActive
     | ProblemSolveStatusAfterPassingPretests;
   nextEventIn: number;
-  breaksToAddToStore: Array<BreakDataWithProblemPlacementAndUserContestIndex>;
+  breakData: BreakDataWithProblemPlacementAndUserContestIndex | null;
 } => {
   if (problemSolveStatus.phase === "before-reading")
     return {
       newProblemSolveStatus: startReadingProblem(user, problem),
       nextEventIn,
-      breaksToAddToStore: [],
+      breakData: null,
     };
 
-  let breaksToAddToStore: Array<BreakDataWithProblemPlacementAndUserContestIndex>;
-  ({ problemSolveStatus, nextEventIn, breaksToAddToStore } =
+  let breakData: BreakDataWithProblemPlacementAndUserContestIndex | null;
+  ({ problemSolveStatus, nextEventIn, breakData } =
     processEventsAndIncrementProgress(
       EVENTS,
       user,
@@ -76,7 +76,7 @@ export const processTickOfProblemSolving = <RootStateType>(
             problemSolveStatus.submissions
           ),
           nextEventIn,
-          breaksToAddToStore,
+          breakData,
         };
       break;
 
@@ -105,7 +105,7 @@ export const processTickOfProblemSolving = <RootStateType>(
             problemSolveStatus.submissions
           ),
           nextEventIn,
-          breaksToAddToStore,
+          breakData,
         };
       }
       break;
@@ -129,7 +129,7 @@ export const processTickOfProblemSolving = <RootStateType>(
             dispatch
           ),
           nextEventIn,
-          breaksToAddToStore,
+          breakData,
         };
       }
       break;
@@ -152,7 +152,7 @@ export const processTickOfProblemSolving = <RootStateType>(
             problemSolveStatus.submissions
           ),
           nextEventIn,
-          breaksToAddToStore,
+          breakData,
         };
       }
 
@@ -175,7 +175,7 @@ export const processTickOfProblemSolving = <RootStateType>(
             problemSolveStatus.submissions
           ),
           nextEventIn,
-          breaksToAddToStore,
+          breakData,
         };
       }
   }
@@ -183,6 +183,6 @@ export const processTickOfProblemSolving = <RootStateType>(
   return {
     newProblemSolveStatus: problemSolveStatus,
     nextEventIn,
-    breaksToAddToStore,
+    breakData,
   };
 };
