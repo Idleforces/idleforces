@@ -18,10 +18,7 @@
     "jsx": "react-jsx",
     "importsNotUsedAsValues": "error"
   },
-  "include": [
-    "src/**/*",
-    "test/**/*",
-    "./vite.config.ts",
-  ],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src/**/*", "test/**/*", "./vite.config.ts", "./typings/country-flags-svg/index.d.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "typeRoots": ["./typings", "./node_modules/@types"]
 }
