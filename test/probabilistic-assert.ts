@@ -1,4 +1,5 @@
 import { assert } from "vitest";
+import { loadEnv } from "vite";
 
 /**Asserts that the target is equal to expected, usually within a +/- delta range.
  * Configure `weak` value so that:
@@ -18,9 +19,9 @@ export const assertProbabilisticCloseTo = (
   delta: number,
   message?: string
 ): void => {
-  const weak = true;
+  const env = loadEnv("", process.cwd(), "");
+  const weak = env.VITE_weak === "true" ? true : false;
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (weak) assert.closeTo(actual, expected, 2 * delta, message);
   else assert.closeTo(actual, expected, delta, message);
 };
