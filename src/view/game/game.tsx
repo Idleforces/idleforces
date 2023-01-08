@@ -12,12 +12,8 @@ import { Outlet } from "react-router-dom";
 import { NavBar } from "./navbar";
 import { selectSaveData } from "../../app/save/save-slice";
 import {
-  addBreaks,
-  incrementTicksSinceBeginning,
+  updateContestSlice,
   selectContest,
-  setContestFinished,
-  setNextEventIn,
-  updateContestUserData,
 } from "../../app/contest/contest-slice";
 import { selectEvents } from "../../app/events/events-slice";
 import { CONTEST_LENGTH } from "../../app/contest/constants";
@@ -108,30 +104,38 @@ export const Game = (props: {
   ]);
 
   useEffect(() => {
+    let ignore = false;
     if (!contest || !contestTypeRunning || !usersWithTimeOfSnapshot) {
       console.warn(
         "Tried to process a tick of contest when there was data missing."
       );
-      return;
+      return () => {
+        ignore = true;
+      };
     }
+
     if (!contestTypeRunning.playerParticipating) {
-      const numberOfMergedTicks = contestTypeRunning.numberOfMergedTicks;
+      const numberOfMergedTicks = Math.ceil(
+        100 * Math.pow(noPlayerContestSimSpeed, 2)
+      );
 
       if (contestTicksPassed < CONTEST_LENGTH && noPlayerContestSimSpeed) {
-        sleep(Math.min(1000, 1 / noPlayerContestSimSpeed))
+        sleep(40) // To prevent React complaining about infinite loop of rerenders.
           .then(() => {
-            const { newContestUsersData, breaksToAddToStore, nextEventIn } =
-              processTickOfContest(
-                contest,
-                numberOfMergedTicks,
-                usersWithTimeOfSnapshot.users,
-                dispatch
+            const { newContestUsersData, nextEventIn } = processTickOfContest(
+              contest,
+              numberOfMergedTicks,
+              usersWithTimeOfSnapshot.users,
+              dispatch
+            );
+            if (!ignore)
+              dispatch(
+                updateContestSlice({
+                  nextEventIn,
+                  newContestUsersData,
+                  numberOfTicksSimulated: numberOfMergedTicks,
+                })
               );
-
-            dispatch(incrementTicksSinceBeginning(null));
-            dispatch(setNextEventIn(nextEventIn));
-            dispatch(updateContestUserData({ newContestUsersData }));
-            dispatch(addBreaks(breaksToAddToStore));
           }) // eslint-disable-next-line @typescript-eslint/no-empty-function
           .catch(() => {});
       } else if (contestTicksPassed >= CONTEST_LENGTH && !contest.finished) {
@@ -139,16 +143,29 @@ export const Game = (props: {
           contest.problems,
           contest.contestUsersData
         );
+
+        dispatch(
+          updateContestSlice({
+            nextEventIn: NaN,
+            newContestUsersData,
+            numberOfTicksSimulated: numberOfMergedTicks,
+            finished: true,
+          }));
+
         const newRatingPoints = recalculateRatings(
           newContestUsersData,
           contest.problemScores,
           contest.problemScoreDecrementsPerMinute,
           usersWithTimeOfSnapshot.users
         );
+
         dispatch(updateRatings(newRatingPoints));
-        dispatch(setContestFinished(null));
       }
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [
     contestTypeRunning,
     contestTicksPassed,
@@ -165,26 +182,3 @@ export const Game = (props: {
     </>
   );
 };
-
-/*
-
-const numberOfMergedTicks = INITIAL_CONTESTS_MERGE_TICKS_COUNT;
-      for (let _ = 0; _ < INITIAL_CONTESTS_COUNT; _++) {
-        dispatch(
-          startContest({ division: 1, playerParticipating: false, users })
-        );
-
-        for (let __ = 0; __ < CONTEST_LENGTH / numberOfMergedTicks; __++) {
-          dispatch(
-            updateContestSliceAfterTickOfContest({
-              numberOfMergedTicks,
-              users,
-              dispatch,
-            })
-          );
-        }
-
-        dispatch(processSystestsAndRecalculateRatings(null));
-        dispatch(resetContest(null));
-
-*/

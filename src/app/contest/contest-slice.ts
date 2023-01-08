@@ -1,6 +1,5 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import type { BreakDataWithProblemPlacementAndUserContestIndex } from "../events/types";
 import type { ProblemDivision } from "../problems/types";
 import type { RootState } from "../store";
 import { generateContest } from "./generate-contest";
@@ -29,26 +28,8 @@ export const contestSlice = createSlice({
       return generateContest(
         action.payload.division,
         action.payload.playerParticipating,
-        action.payload.numberOfMergedTicks,
         users
       );
-    },
-
-    updateContestUserData: (
-      state: ContestSlice,
-      action: PayloadAction<{
-        newContestUsersData: Array<ContestUserData>;
-      }>
-    ) => {
-      if (!state) {
-        console.warn("Tried to update contest data when there was no contest");
-        return null;
-      }
-
-      return {
-        ...state,
-        contestUsersData: action.payload.newContestUsersData,
-      };
     },
 
     resetContest: (_state: ContestSlice, _action: PayloadAction<null>) => null,
@@ -60,65 +41,40 @@ export const contestSlice = createSlice({
       return state ? { ...state, finished: true } : null;
     },
 
-    addBreaks: (
+    updateContestSlice: (
       state: ContestSlice,
-      action: PayloadAction<
-        Array<BreakDataWithProblemPlacementAndUserContestIndex>
-      >
-    ): ContestSlice => {
-      if (state === null) return null;
-      const breaksData = action.payload;
-      breaksData.forEach((breakData) => {
-        const contestUserData =
-          state.contestUsersData[breakData.userContestIndex];
-        const breakProblemPlacement = breakData.problemPlacement;
-        const breakRemainingLength = breakData.breakRemainingLength;
-        const messageOnEndOfBreak = breakData.messageOnEndOfBreak;
-
-        const newBreak = {
-          problemPlacement: breakProblemPlacement,
-          breakRemainingLength,
-          messageOnEndOfBreak,
-          isBlocking: true,
-        };
-
-        if (breakData.isBlocking) {
-          contestUserData.blockingBreak = newBreak;
-        } else if (breakProblemPlacement !== "global") {
-          contestUserData.nonBlockingBreaks[breakProblemPlacement] = newBreak;
-        }
-      });
-      return state;
-    },
-
-    setNextEventIn: (state: ContestSlice, action: PayloadAction<number>) => {
-      return state ? { ...state, nextEventIn: action.payload } : null;
-    },
-
-    incrementTicksSinceBeginning: (
-      state: ContestSlice,
-      _action: PayloadAction<null>
+      action: PayloadAction<{
+        newContestUsersData: Array<ContestUserData>;
+        nextEventIn: number;
+        numberOfTicksSimulated: number;
+        finished?: true;
+      }>
     ) => {
-      return state
-        ? {
-            ...state,
-            ticksSinceBeginning:
-              state.numberOfMergedTicks + state.ticksSinceBeginning,
-          }
-        : null;
+      if (!state) {
+        console.warn("Tried to update contest data when there was no contest");
+        return null;
+      }
+
+      const finished = action.payload.finished ?? false;
+
+      return {
+        ...state,
+        contestUsersData: action.payload.newContestUsersData,
+        nextEventIn: action.payload.nextEventIn,
+        finished,
+        ticksSinceBeginning:
+          state.ticksSinceBeginning + action.payload.numberOfTicksSimulated,
+      };
     },
   },
 });
 
 export const {
   startContest,
-  updateContestUserData,
   resetContest,
   setContest,
   setContestFinished,
-  addBreaks,
-  setNextEventIn,
-  incrementTicksSinceBeginning,
+  updateContestSlice,
 } = contestSlice.actions;
 
 export const selectTicksSinceBeginning = (state: RootState) =>
