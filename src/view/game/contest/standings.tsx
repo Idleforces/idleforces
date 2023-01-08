@@ -10,6 +10,8 @@ import {
   computeNewRatingsSlice,
 } from "../../../app/contest/recalculate-ratings";
 import type {
+  ContestSlice,
+  ContestUserData,
   ContestUserStats,
   RatingPoints,
 } from "../../../app/contest/types";
@@ -17,12 +19,14 @@ import { useAppSelector } from "../../../app/hooks";
 import { problemPlacements } from "../../../app/problems/types";
 import { computeProblemPositionFromProblemPlacement } from "../../../app/problems/utils";
 import { selectHandle } from "../../../app/save/save-slice";
+import type { User } from "../../../app/users/types";
 import { selectUsers } from "../../../app/users/users-slice";
 import { convertSecondsToHHMM } from "../../../utils/time-format";
 import { sum } from "../../../utils/utils";
 import { DataTable } from "../utils/datatable";
 import { Flag } from "../utils/flag";
 import { RatingStyled } from "../utils/styled-rating";
+import { StandingsStub } from "./standings-stub";
 import "./standings.css";
 
 const computeAccepted = (contestUsersStats: Array<ContestUserStats>) => {
@@ -33,8 +37,10 @@ const computeAccepted = (contestUsersStats: Array<ContestUserStats>) => {
           score > 0 ? 1 : 0
         ) as Array<number>
     )
-    .reduce((acceptedA, acceptedB) =>
-      acceptedA.map((isAccepted, index) => isAccepted + acceptedB[index])
+    .reduce((acceptedAccumulator, accepted) =>
+      acceptedAccumulator.map(
+        (numAcceptedAtIndex, index) => numAcceptedAtIndex + accepted[index]
+      )
     );
 };
 
@@ -46,9 +52,22 @@ const computeTried = (contestUsersStats: Array<ContestUserStats>) => {
           score > 0 || contestUserStats.wrongSubmissionCounts[index] ? 1 : 0
         ) as Array<number>
     )
-    .reduce((acceptedA, acceptedB) =>
-      acceptedA.map((isAccepted, index) => isAccepted + acceptedB[index])
+    .reduce((triedAccumulator, tried) =>
+      triedAccumulator.map(
+        (numTriedAtIndex, index) => numTriedAtIndex + tried[index]
+      )
     );
+};
+
+const filterUsersWithAtLeastOneSubmission = (
+  contestUsersStats: Array<ContestUserData>
+) => {
+  return contestUsersStats.filter((contestUserStats) =>
+    problemPlacements.some(
+      (placement) =>
+        contestUserStats.problemSolveStatuses[placement].submissions.length
+    )
+  );
 };
 
 export const Standings = () => {
@@ -56,28 +75,49 @@ export const Standings = () => {
   const users = useAppSelector(selectUsers);
   const handle = useAppSelector(selectHandle);
 
-  // all of contest, contestUsersStats, users should be not null
-  // if they are null, hooks don't matter.
-  const contestUsersStats =
-    contest && users
-      ? computeContestUsersStatsSortedByRank(
-          contest.contestUsersData,
-          users,
-          contest.finished,
-          contest.problemScores,
-          contest.problemScoreDecrementsPerMinute
-        )
-      : null;
+  if (!contest || !users || handle === undefined)
+    return <StandingsStub text="No contest found." />;
 
-  const handleIndex = contestUsersStats
-    ? contestUsersStats.findIndex((userStats) => userStats.handle === handle)
-    : -1;
+  const contestWithUsersWithASubmission = {
+    ...contest,
+    contestUsersData: filterUsersWithAtLeastOneSubmission(
+      contest.contestUsersData
+    ),
+  };
+  if (contestWithUsersWithASubmission.contestUsersData.length === 0)
+    return <StandingsStub text="No submission has been made yet." />;
+
+  return (
+    <StandingsPage
+      contest={contestWithUsersWithASubmission}
+      users={users}
+      handle={handle}
+    />
+  );
+};
+
+const StandingsPage = (props: {
+  contest: Exclude<ContestSlice, null>;
+  users: Array<User>;
+  handle: string;
+}) => {
+  const { contest, users, handle } = props;
+
+  const contestUsersStats = computeContestUsersStatsSortedByRank(
+    contest.contestUsersData,
+    users,
+    contest.finished,
+    contest.problemScores,
+    contest.problemScoreDecrementsPerMinute
+  );
+
+  const handleIndex = contestUsersStats.findIndex(
+    (userStats) => userStats.handle === handle
+  );
   const preloadedPage =
     handleIndex === -1
       ? 1
       : Math.ceil(handleIndex / USERS_NO_ON_STANDINGS_PAGE);
-  const ticksSinceBeginning = contest ? contest.ticksSinceBeginning : 0;
-
   const [selectedPage, setSelectedPage] = useState(preloadedPage);
   const minIndex = (selectedPage - 1) * USERS_NO_ON_STANDINGS_PAGE;
   const maxIndex = selectedPage * USERS_NO_ON_STANDINGS_PAGE;
@@ -91,23 +131,22 @@ export const Standings = () => {
   */
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  const ticksSinceBeginning = contest.ticksSinceBeginning;
   const ticksSinceBeginningAtMount = useRef(ticksSinceBeginning);
+  const [ticksSinceBeginningUpdatedDuringContest, setTicksSinceBeginningUpdatedDuringContest] = useState(0);
+  if (!contest.finished && ticksSinceBeginningUpdatedDuringContest !== ticksSinceBeginning) setTicksSinceBeginningUpdatedDuringContest(ticksSinceBeginning);
+
+  const ratingsBeforeContest = useMemo(
+    () =>
+      contestUsersStats.map((contestUserStats) => contestUserStats.oldRating),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ticksSinceBeginningUpdatedDuringContest]
+  );
+
   const [ratingsRecomputedCount, setRatingsRecomputedCount] = useState(-1);
-
-  const [previousContestUsersStats, setPreviousContestUsersStats] =
-    useState<Array<ContestUserStats> | null>(() => null);
-  if (
-    JSON.stringify(contestUsersStats) !==
-    JSON.stringify(previousContestUsersStats)
-  )
-    setRatingsRecomputedCount(-1);
-
-  const newRatings: RatingPoints = useMemo(() => {
-    if (!contestUsersStats) return {};
-    else if (ratingsRecomputedCount === -1) {
-      setPreviousContestUsersStats(contestUsersStats);
-
-      const newRatingsPartial: RatingPoints = {};
+  const newRatings: Partial<RatingPoints> = useMemo(() => {
+    if (ratingsRecomputedCount === -1) {
+      const newRatingsPartial: Partial<RatingPoints> = {};
       contestUsersStats.forEach(
         (contestUserStats) =>
           (newRatingsPartial[contestUserStats.handle] = {
@@ -122,21 +161,14 @@ export const Standings = () => {
   }, [ratingsRecomputedCount]);
 
   useEffect(() => {
-    if (contest)
-      setRatingsRecomputedCount(
-        Math.floor(
-          (ticksSinceBeginning - ticksSinceBeginningAtMount.current) /
-            (RECOMPUTE_RATINGS_EVERY_N_TICKS * contest.numberOfMergedTicks)
-        )
-      );
-  }, [ticksSinceBeginning, contest, newRatings]);
-
-  if (!contestUsersStats || !contest || !users)
-    return (
-      <div style={{ fontSize: "2rem", color: "darkgray" }}>
-        No contest found.
-      </div>
+    setRatingsRecomputedCount(
+      Math.floor(
+        (ticksSinceBeginning - ticksSinceBeginningAtMount.current) /
+          RECOMPUTE_RATINGS_EVERY_N_TICKS
+      ) +
+        2 * selectedPage
     );
+  }, [ticksSinceBeginning, selectedPage]);
 
   const accepted = computeAccepted(contestUsersStats);
   const tried = computeTried(contestUsersStats);
@@ -161,11 +193,11 @@ export const Standings = () => {
       .concat([<>Δ</>]),
   ]
     .concat(
-      displayedContestUserStats.map((contestUserStats) => {
-        const ratingDiff = Math.round(
-          newRatings[contestUserStats.handle].rating -
-            contestUserStats.oldRating
-        );
+      displayedContestUserStats.map((contestUserStats, index) => {
+        const newRating = newRatings[contestUserStats.handle];
+        const ratingDiff = newRating
+          ? Math.round(newRating.rating - ratingsBeforeContest[minIndex + index])
+          : 0;
 
         return [
           <>{contestUserStats.rank}</>,
@@ -176,7 +208,7 @@ export const Standings = () => {
               rating={contestUserStats.oldRating}
             />
           </div>,
-          <>{Math.floor(sum(contestUserStats.scores))}</>,
+          <>{Math.round(sum(contestUserStats.scores))}</>,
         ]
           .concat(
             problemPlacements.map((placement) => {
@@ -188,7 +220,7 @@ export const Standings = () => {
                   {contestUserStats.scores[problemPosition] ? (
                     <>
                       <div className="green bold">
-                        {contestUserStats.scores[problemPosition]}
+                        {Math.round(contestUserStats.scores[problemPosition])}
                       </div>
                       <div className="gray">
                         {convertSecondsToHHMM(
@@ -265,7 +297,7 @@ export const Standings = () => {
   );
 
   return (
-    <div id="standings-page" style={{ margin: "2rem 10%" }}>
+    <div id="standings-page">
       <DataTable
         topText="Standings"
         containerBorderRadiusPx={5}

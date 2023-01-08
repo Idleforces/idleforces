@@ -10,6 +10,7 @@ export const SpeedSimSlider = (props: {
   return (
     <div className="slider-container">
       <label htmlFor="speed-sim-slider">Modify contest simulation speed</label>
+      <br/>
       <input
         type="range"
         min="0"
