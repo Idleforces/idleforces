@@ -70,7 +70,7 @@ export const computeSubmissionsStats = (
     let score = 0;
     let wrongSubmissionCount = 0;
 
-    for (const submission of submissions.reverse()) {
+    for (const submission of [...submissions].reverse()) {
       if (submissionFound) {
         score -= WRONG_SUBMISSION_PENALTY;
       }
@@ -91,9 +91,6 @@ export const computeSubmissionsStats = (
         submissionFound = true;
       } else wrongSubmissionCount++;
     }
-
-    // Reverse submissions back to original direction
-    submissions.reverse();
 
     if (submissionFound)
       score = Math.max(score, problemScore * MIN_RATIO_OF_MAX_SCORE);
@@ -204,7 +201,7 @@ export const computeNewRatingsSlice = (
   );
 
   const seedRankGeomeans = seeds.map((seed, index) =>
-    Math.sqrt(ranks[index] * seed)
+    Math.sqrt(ranks[index + (min !== undefined ? min : 0)] * seed)
   );
 
   const performancesOfUsersSeededAsGeomeans = seedRankGeomeans.map(

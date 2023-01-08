@@ -1,13 +1,13 @@
 import type { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { addEvent } from "../events/events-slice";
 import { resetNextEventIn } from "../events/next-event";
-import type { BreakDataWithProblemPlacementAndUserContestIndex } from "../events/types";
 import { processTickOfProblemSolving } from "../problems/solve-problem";
 import type {
   Problem,
   ProblemDivision,
   ProblemPlacement,
 } from "../problems/types";
+import { problemPlacements } from "../problems/types";
 import { isActiveProblemSolveStatus } from "../problems/types";
 import {
   computeProblemPositionFromProblemPlacement,
@@ -27,12 +27,16 @@ const automaticallySwitchToAnotherProblem = (
   lastProblemPlacement: ProblemPlacement | null,
   user: User
 ): void => {
+  const activeProblemPlacement = contestUserData.activeProblemPlacement;
   const problemSolveStatuses = contestUserData.problemSolveStatuses;
-  const problemPositionsThatCanBecomeActive = Object.values(
-    problemSolveStatuses
-  ).map(
-    (problemSolveStatus) => !isActiveProblemSolveStatus(problemSolveStatus)
+
+  const problemPositionsThatCanBecomeActive = problemPlacements.map(
+    (placement) =>
+      (isActiveProblemSolveStatus(problemSolveStatuses[placement]) ||
+        problemSolveStatuses[placement].phase === "before-reading") &&
+      placement !== activeProblemPlacement
   );
+
   const firstIndexThatCanBecomeActive: number =
     problemPositionsThatCanBecomeActive.findIndex(
       (canBecomeActive) => canBecomeActive
@@ -59,15 +63,14 @@ const automaticallySwitchToAnotherProblem = (
       ]++;
 
     contestUserData.remainingTicksToSwitchToAnotherProblem =
+      newActiveProblemPosition !== null &&
       contestUserData.activeProblemPlacement
         ? computeTimeToSwitchToAnotherProblem(
             user as NPC,
             contestUserData.activeProblemPlacement,
             division,
-            problems[newActiveProblemPosition as number].tag,
-            contestUserData.numberOfTimesSwitched[
-              newActiveProblemPosition as number
-            ]
+            problems[newActiveProblemPosition].tag,
+            contestUserData.numberOfTimesSwitched[newActiveProblemPosition]
           )
         : 999999;
   }
@@ -80,14 +83,11 @@ export const processTickOfContest = <RootStateType>(
   dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch
 ): {
   newContestUsersData: Array<ContestUserData>;
-  breaksToAddToStore: Array<BreakDataWithProblemPlacementAndUserContestIndex>;
   nextEventIn: number;
 } => {
   let nextEventIn = contestSlice.nextEventIn;
   const ticksSinceBeginning = contestSlice.ticksSinceBeginning;
   let userSliceIndex = 0;
-  const breaksToAddToStore: Array<BreakDataWithProblemPlacementAndUserContestIndex> =
-    [];
 
   const newContestUsersData = contestSlice.contestUsersData
     .map((contestUserData) => cloneDeep(contestUserData))
@@ -117,6 +117,7 @@ export const processTickOfContest = <RootStateType>(
         contestUserData.blockingBreak = null;
         return contestUserData;
       }
+      contestUserData.blockingBreak = blockingBreak;
 
       const activeProblemPlacement = contestUserData.activeProblemPlacement;
       if (!activeProblemPlacement) return contestUserData;
@@ -143,6 +144,8 @@ export const processTickOfContest = <RootStateType>(
         contestUserData.nonBlockingBreaks[activeProblemPlacement] = null;
         return contestUserData;
       }
+      contestUserData.nonBlockingBreaks[activeProblemPlacement] =
+        nonBlockingBreak;
 
       const problemSolveStatuses = contestUserData.problemSolveStatuses;
       const activeProblemProblemSolveStatus =
@@ -191,12 +194,28 @@ export const processTickOfContest = <RootStateType>(
       contestUserData.problemSolveStatuses[activeProblemPlacement] =
         newProblemSolveStatusWithNextEventInAndBreaks.newProblemSolveStatus;
 
-      breaksToAddToStore.concat(
-        newProblemSolveStatusWithNextEventInAndBreaks.breaksToAddToStore
-      );
+      const breakData = newProblemSolveStatusWithNextEventInAndBreaks.breakData;
+      if (breakData) {
+        const breakProblemPlacement = breakData.problemPlacement;
+        const breakRemainingLength = breakData.breakRemainingLength;
+        const messageOnEndOfBreak = breakData.messageOnEndOfBreak;
+
+        const newBreak = {
+          problemPlacement: breakProblemPlacement,
+          breakRemainingLength,
+          messageOnEndOfBreak,
+          isBlocking: true,
+        };
+
+        if (breakData.isBlocking) {
+          contestUserData.blockingBreak = newBreak;
+        } else if (breakProblemPlacement !== "global") {
+          contestUserData.nonBlockingBreaks[breakProblemPlacement] = newBreak;
+        }
+      }
 
       return contestUserData;
     });
 
-  return { newContestUsersData, breaksToAddToStore, nextEventIn };
+  return { newContestUsersData, nextEventIn };
 };

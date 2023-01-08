@@ -7,6 +7,7 @@ import type {
 import { problemPlacements } from "../problems/types";
 import { computeProblemPositionFromProblemPlacement } from "../problems/utils";
 import type { ContestUserData } from "./types";
+import { cloneDeep } from "lodash";
 
 export const processSystests = (
   problems: Array<Problem>,
@@ -25,9 +26,10 @@ export const processSystests = (
           const problemPretestsQuality =
             problems[problemPosition].pretestsQuality;
           const problemSolveStatus = problemSolveStatuses[placement];
-          const submissions = problemSolveStatus.submissions;
-          submissions.reverse();
-          const lastPassingSubmissionIndex = submissions.findIndex(
+          const newSubmissions = cloneDeep(problemSolveStatus.submissions);
+          newSubmissions.reverse();
+
+          const lastPassingSubmissionIndex = newSubmissions.findIndex(
             (submission) => submission.verdict === "Pretests passed"
           );
 
@@ -35,22 +37,24 @@ export const processSystests = (
             problemSolveStatus.phase === "after-passing-pretests" &&
             Math.random() < problemPretestsQuality
           ) {
-            submissions[lastPassingSubmissionIndex].verdict = "Systests passed";
-            submissions.reverse();
+            newSubmissions[lastPassingSubmissionIndex].verdict =
+              "Systests passed";
+            newSubmissions.reverse();
 
             return {
               phase: "after-passing-systests",
-              submissions,
+              submissions: newSubmissions,
             } satisfies ProblemSolveStatusAfterPassingSystests;
           } else if (problemSolveStatus.phase === "after-passing-pretests") {
-            submissions[lastPassingSubmissionIndex].verdict = "Systests failed";
-            submissions.reverse();
+            newSubmissions[lastPassingSubmissionIndex].verdict =
+              "Systests failed";
+            newSubmissions.reverse();
             return {
               phase: "after-failing-systests",
-              submissions: problemSolveStatus.submissions,
+              submissions: newSubmissions,
             } satisfies ProblemSolveStatusAfterFailingSystests;
           } else {
-            submissions.reverse();
+            newSubmissions.reverse();
             return problemSolveStatus;
           }
         }
