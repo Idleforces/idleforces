@@ -20,13 +20,15 @@ for bracket in users_in_brackets:
     random.shuffle(bracket)
 
 users_in_brackets = [
-    bracket[:math.floor(len(bracket) ** (3/4))] for bracket in users_in_brackets]
+    bracket[:math.floor(
+        (len(bracket) ** (3/4)) * (1 / 1 + math.exp(-(30 - index) / 25)) / 2.5
+        )] for index, bracket in enumerate(users_in_brackets)]
 
-trimmedUsers = {
+trimmed_users = {
     "status": "OK",
     "timeOfSnapshot": int(1000 * time.mktime(time.gmtime(None))),
     "result": reduce(lambda x, y: x + y, users_in_brackets)
 }
 
-with open("./src/app/users/trimmedUsers.json", "w") as outfile:
-    fp = json.dump(trimmedUsers, outfile)
+with open("../../src/app/users/trimmed-users.json", "w") as outfile:
+    fp = json.dump(trimmed_users, outfile)
