@@ -8,8 +8,10 @@ export const TimeLeft = () => {
 
   if (ticksSinceBeginning === null) return <></>;
   return (
-    <div id="time-left-container" style={{fontSize: "3rem"}}>
-      {convertSecondsToHHMMSS(CONTEST_LENGTH - ticksSinceBeginning)}
+    <div id="time-left-container" style={{ fontSize: "3rem" }}>
+      {convertSecondsToHHMMSS(
+        Math.max(CONTEST_LENGTH - ticksSinceBeginning, 0)
+      )}
     </div>
   );
 };
