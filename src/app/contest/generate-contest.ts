@@ -28,9 +28,8 @@ import { filterUsersSatisfyingRatingBound } from "./rating-bounds";
 export const generateContest = (
   division: ProblemDivision,
   playerParticipating: boolean,
-  numberOfMergedTicks: number,
   users: Array<User>
-): ContestSlice => {
+): Exclude<ContestSlice, null> => {
   const problems: ContestProblems = problemPlacements.map((placement) =>
     generateProblem(division, placement)
   );
@@ -103,7 +102,6 @@ export const generateContest = (
 
   return {
     ticksSinceBeginning: 0,
-    numberOfMergedTicks,
     nextEventIn: resetNextEventIn(0),
     finished: false,
     division,

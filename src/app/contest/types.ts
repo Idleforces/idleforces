@@ -38,7 +38,6 @@ export type ContestUserData = ContestNPCData | ContestPlayerData;
 
 export type ContestSlice = {
   ticksSinceBeginning: number;
-  numberOfMergedTicks: number;
   finished: boolean;
   division: ProblemDivision;
   nextEventIn: number;

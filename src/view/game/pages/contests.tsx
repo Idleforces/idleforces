@@ -45,9 +45,6 @@ const handleContestStart = (
   dispatch(setInContest(true));
   setContestTypeRunning({
     playerParticipating,
-    numberOfMergedTicks: playerParticipating
-      ? DIVISION_MERGE_TICKS_COUNT[(4 - rowIndex) as ProblemDivision]
-      : SIMULATED_CONTESTS_MERGE_TICKS_COUNT,
   });
 };
 

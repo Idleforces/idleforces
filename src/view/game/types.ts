@@ -12,5 +12,4 @@ export type LocalStorageSavesValue = Array<LocalStorageSaveData>;
 
 export type ContestTypeRunning = {
   playerParticipating: boolean;
-  numberOfMergedTicks: number;
 } | null;
