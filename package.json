@@ -45,6 +45,7 @@
     "@typescript-eslint/parser": "^5.47.0",
     "@vitejs/plugin-react": "^2.2.0",
     "@vitest/coverage-c8": "^0.25.5",
+    "deep-object-diff": "^1.1.9",
     "dependency-cruiser": "^12.2.0",
     "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
