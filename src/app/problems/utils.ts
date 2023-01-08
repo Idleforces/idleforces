@@ -7,6 +7,8 @@ import type { ProblemDivision, ProblemPlacement, ProblemTag } from "./types";
 import { problemPlacements } from "./types";
 import type { User } from "../users/types";
 import {
+  computeCombinedPlacementDivisionFactor,
+  computeCombinedPlacementPlacementFactor,
   IMPLEMENTATION_SCALING_FACTOR,
   IMPLEMENTATION_TIME_BASE,
   PEN_PAPER_SOLVING_SCALING_FACTOR,
@@ -65,7 +67,8 @@ export const computeCombinedPlacementBetweenDivisions = (
   division: ProblemDivision
 ): number => {
   return (
-    1.1 * (placement.charCodeAt(0) - "A".charCodeAt(0)) + (4 - division) * 1.75
+    computeCombinedPlacementDivisionFactor(division) +
+    computeCombinedPlacementPlacementFactor(placement)
   );
 };
 
@@ -195,6 +198,6 @@ export const computeTimeToSwitchToAnotherProblem = (
         1,
         TIME_TO_SWITCH_TO_ANOTHER_PROBLEM_DISTRIBUTION_PRECISION
       )) /
-    (numberOfTimesSwitched + 1)
+    Math.pow(numberOfTimesSwitched + 1, 0.6)
   );
 };

@@ -10,7 +10,7 @@ import type { NPC } from "../../../src/app/users/types";
 import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("computeTimeToSwitchToAnotherProblem function", () => {
-  it("", () => {
+  it("computes reasonable time to switch to another problem", () => {
     const timesToSwitchHighRatedZeroSubmissions: Array<number> = [];
 
     for (let _ = 0; _ < 10000; _++) {
@@ -32,18 +32,18 @@ describe("computeTimeToSwitchToAnotherProblem function", () => {
     timesToSwitchHighRatedZeroSubmissions.sort((a, b) => a - b);
     assertProbabilisticCloseTo(
       timesToSwitchHighRatedZeroSubmissions[5000],
-      3600,
-      250
+      2150,
+      150
     );
     assertProbabilisticCloseTo(
       timesToSwitchHighRatedZeroSubmissions[1000],
-      1500,
+      1020,
       100
     );
     assertProbabilisticCloseTo(
       timesToSwitchHighRatedZeroSubmissions[9000],
-      9000,
-      700
+      4500,
+      300
     );
   });
 });

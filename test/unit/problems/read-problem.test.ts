@@ -18,8 +18,8 @@ describe("startReadingProblem function", () => {
       .map((problemSolveStatus) => problemSolveStatus.increment)
       .sort((a, b) => b - a);
 
-    assertProbabilisticCloseTo(increments[500], 1 / 280, 1 / 1200);
-    assertProbabilisticCloseTo(increments[100], 1 / 150, 1 / 800);
-    assertProbabilisticCloseTo(increments[900], 1 / 600, 1 / 2000);
+    assertProbabilisticCloseTo(increments[500], 1 / 250, 1 / 1200);
+    assertProbabilisticCloseTo(increments[100], 1 / 120, 1 / 600);
+    assertProbabilisticCloseTo(increments[900], 1 / 550, 1 / 2000);
   });
 });

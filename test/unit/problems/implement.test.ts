@@ -22,9 +22,9 @@ describe("startImplementing function", () => {
       .map((problemSolveStatus) => problemSolveStatus.increment)
       .sort((a, b) => b - a);
 
-    assertProbabilisticCloseTo(increments[500], 1 / 1700, 1 / 10000);
-    assertProbabilisticCloseTo(increments[100], 1 / 500, 1 / 2000);
-    assertProbabilisticCloseTo(increments[900], 1 / 5000, 1 / 30000);
+    assertProbabilisticCloseTo(increments[500], 1 / 630, 1 / 5000);
+    assertProbabilisticCloseTo(increments[100], 1 / 230, 1 / 1800);
+    assertProbabilisticCloseTo(increments[900], 1 / 1660, 1 / 15000);
   });
 });
 
@@ -50,14 +50,14 @@ describe("computeIfImplementationCorrect function", () => {
 
     assertProbabilisticCloseTo(
       areImplementationCorrectNoSubmissions.filter((x) => x).length,
-      900,
-      20
+      830,
+      40
     );
 
     assertProbabilisticCloseTo(
       areImplementationCorrectWithSubmissions.filter((x) => x).length,
-      660,
-      45
+      560,
+      50
     );
   });
 });

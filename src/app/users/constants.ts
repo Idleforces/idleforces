@@ -1,10 +1,11 @@
 import type { AttributeConstants } from "./types";
 
-export const USER_INITIAL_RATING = 1500;
+export const USER_INITIAL_RATING = 1400;
 export const ATTRIBUTE_GENERATION_OFFICIAL_RATING_MIDPOINT = 2000;
 export const ATTRIBUTE_GENERATION_OFFICIAL_RATING_SINGLE_LOGIT = 800;
 export const ATTRIBUTE_GENERATION_STDEV = 0.5;
-export const USER_ATTRIBUTES_CONSTANTS: AttributeConstants = Object.freeze({
+
+export const USER_ATTRIBUTES_CONSTANTS = {
   reading: {
     MAX_VALUE: 50,
     MIN_VALUE: 0,
@@ -64,4 +65,4 @@ export const USER_ATTRIBUTES_CONSTANTS: AttributeConstants = Object.freeze({
     MIN_VALUE: 0,
     hardness: 1,
   },
-});
+} as const satisfies AttributeConstants;

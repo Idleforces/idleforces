@@ -111,8 +111,8 @@ describe("submitProblem function", () => {
 
     assertProbabilisticCloseTo(
       wrongProblemSolveStatuses[3750].penPaperProgressIncrement.increment,
-      1 / 700,
-      1 / 7000
+      1 / 320,
+      1 / 3000
     );
 
     wrongProblemSolveStatuses.sort(
@@ -123,8 +123,8 @@ describe("submitProblem function", () => {
 
     assertProbabilisticCloseTo(
       wrongProblemSolveStatuses[3750].implementationProgressIncrement.increment,
-      1 / 1700,
-      1 / 16000
+      1 / 750,
+      1 / 8000
     );
   });
 
@@ -174,7 +174,7 @@ describe("submitProblem function", () => {
     assertProbabilisticCloseTo(
       wrongVerdicts.filter((verdict) => verdict === "Runtime error").length,
       160,
-      25
+      30
     );
     assertProbabilisticCloseTo(
       wrongVerdicts.filter((verdict) => verdict === "Time limit exceeded")

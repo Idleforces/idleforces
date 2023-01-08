@@ -48,8 +48,8 @@ describe("generateUsers function", () => {
         ) > 0.6
     );
 
-    expect(usersWithHighDP.length).toBeGreaterThan(200);
-    expect(usersWithHighDP.length).toBeLessThan(1000);
+    expect(usersWithHighDP.length).toBeGreaterThan(300);
+    expect(usersWithHighDP.length).toBeLessThan(900);
 
     const usersWithLowDP = npcUsers.filter(
       (user) =>
@@ -76,12 +76,12 @@ describe("generateUsers function", () => {
     );
     const usersWithHighStDev = attributeStdevs.filter((stdev) => stdev > 0.14);
 
-    expect(usersWithHighStDev.length).toBeGreaterThan(100);
-    expect(usersWithHighStDev.length).toBeLessThan(500);
+    expect(usersWithHighStDev.length).toBeGreaterThan(300);
+    expect(usersWithHighStDev.length).toBeLessThan(900);
 
     const usersWithLowStDev = attributeStdevs.filter((stdev) => stdev < 0.05);
-    expect(usersWithLowStDev.length).toBeGreaterThan(500);
-    expect(usersWithLowStDev.length).toBeLessThan(3000);
+    expect(usersWithLowStDev.length).toBeGreaterThan(400);
+    expect(usersWithLowStDev.length).toBeLessThan(1200);
   });
 
   it("generates all attribute values between the corresponding minValue and maxValue", () => {

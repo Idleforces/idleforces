@@ -23,9 +23,9 @@ describe("startPenPaperSolving function", () => {
       .map((problemSolveStatus) => problemSolveStatus.increment)
       .sort((a, b) => b - a);
 
-    assertProbabilisticCloseTo(increments[500], 1 / 1700, 1 / 10000);
-    assertProbabilisticCloseTo(increments[100], 1 / 500, 1 / 2000);
-    assertProbabilisticCloseTo(increments[900], 1 / 5000, 1 / 20000);
+    assertProbabilisticCloseTo(increments[500], 1 / 750, 1 / 6000);
+    assertProbabilisticCloseTo(increments[100], 1 / 280, 1 / 1500);
+    assertProbabilisticCloseTo(increments[900], 1 / 1950, 1 / 10000);
   });
 });
 
@@ -59,13 +59,13 @@ describe("computeIfPenPaperCorrect function", () => {
 
     assertProbabilisticCloseTo(
       arePenPaperCorrectNoSubmissions.filter((x) => x).length,
-      775,
+      680,
       40
     );
 
     assertProbabilisticCloseTo(
       arePenPaperCorrectWithSubmissions.filter((x) => x).length,
-      720,
+      640,
       40
     );
   });

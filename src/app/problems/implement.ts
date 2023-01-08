@@ -31,9 +31,11 @@ export const startImplementing = (
 
   const increment =
     1 /
-    (IMPLEMENTATION_TIME_BASE *
+    ((IMPLEMENTATION_TIME_BASE *
       implementationExpectancyMultiplier *
-      betaPrimeAltParam(1, IMPLEMENTATION_DISTRIBUTION_PRECISION));
+      betaPrimeAltParam(1, IMPLEMENTATION_DISTRIBUTION_PRECISION)) /
+      (Math.sqrt(submissions.length) + 1));
+
   const progress = 0;
 
   return {
@@ -59,7 +61,7 @@ export const computeIfImplementationCorrect = (
         )
       ) -
         logit(problem.implementationDeceptiveness)) +
-      1.5 -
+      0.8 -
       (Math.pow(submissions.length + 1, 0.25) - 1)
   );
 

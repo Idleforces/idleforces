@@ -1,3 +1,5 @@
+import type { ProblemDivision, ProblemPlacement } from "./types";
+
 export const PROBLEM_QUALITY_PRECISION_ALPHA = 10;
 export const PROBLEM_QUALITY_PRECISION_BETA = 0.1;
 
@@ -32,20 +34,20 @@ export const READING_TIME_BASE = 200;
 export const READING_TIME_SCALING_FACTOR = Math.E;
 
 export const PEN_PAPER_SOLVING_DISTRIBUTION_PRECISION = 3;
-export const PEN_PAPER_SOLVING_TIME_BASE = 1500;
-export const PEN_PAPER_SOLVING_SCALING_FACTOR = 25;
+export const PEN_PAPER_SOLVING_TIME_BASE = 850;
+export const PEN_PAPER_SOLVING_SCALING_FACTOR = 8;
 
 export const IMPLEMENTATION_DISTRIBUTION_PRECISION = 4;
-export const IMPLEMENTATION_TIME_BASE = 1200;
-export const IMPLEMENTATION_SCALING_FACTOR = 16;
+export const IMPLEMENTATION_TIME_BASE = 700;
+export const IMPLEMENTATION_SCALING_FACTOR = 6;
 
 export const PEN_PAPER_SEARCHING_FOR_MISTAKE_DISTRIBUTION_PRECISION = 1;
-export const PEN_PAPER_SEARCHING_FOR_MISTAKE_TIME_BASE = 200;
-export const PEN_PAPER_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 16;
+export const PEN_PAPER_SEARCHING_FOR_MISTAKE_TIME_BASE = 150;
+export const PEN_PAPER_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 4;
 
 export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_DISTRIBUTION_PRECISION = 0.5;
-export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_TIME_BASE = 400;
-export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 16;
+export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_TIME_BASE = 300;
+export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 4;
 
 export const PROBABILITY_OF_PEN_PAPER_CORRECT_SCALING_FACTOR = 0.8;
 export const PROBABILITY_OF_IMPLEMENTATION_CORRECT_SCALING_FACTOR = 0.8;
@@ -61,3 +63,24 @@ export const WRONG_ANSWER_PROBABILITY_IF_PEN_PAPER_WRONG = 0.7;
 export const RUNTIME_ERROR_PROBABILITY_IF_PEN_PAPER_WRONG = 0.01;
 export const TIME_LIMIT_EXCEEDED_PROBABILITY_IF_PEN_PAPER_WRONG = 0.27;
 export const MEMORY_LIMIT_EXCEEDED_PROBABILITY_IF_PEN_PAPER_WRONG = 0.02;
+
+export const computeCombinedPlacementDivisionFactor = (
+  division: ProblemDivision
+) => {
+  switch (division) {
+    case 4:
+      return -0.5;
+    case 3:
+      return 0.8;
+    case 2:
+      return 2.5;
+    case 1:
+      return 4.5;
+  }
+};
+
+export const computeCombinedPlacementPlacementFactor = (
+  placement: ProblemPlacement
+) => {
+  return 1.1 * (placement.charCodeAt(0) - "A".charCodeAt(0));
+};

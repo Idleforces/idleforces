@@ -30,9 +30,10 @@ export const startPenPaperSolving = (
 
   const increment =
     1 /
-    (PEN_PAPER_SOLVING_TIME_BASE *
+    ((PEN_PAPER_SOLVING_TIME_BASE *
       penPaperSolvingExpectancyMultiplier *
-      betaPrimeAltParam(1, PEN_PAPER_SOLVING_DISTRIBUTION_PRECISION));
+      betaPrimeAltParam(1, PEN_PAPER_SOLVING_DISTRIBUTION_PRECISION)) /
+      (Math.sqrt(submissions.length) + 1));
   const progress = 0;
 
   return {
@@ -57,7 +58,7 @@ export const computeIfPenPaperCorrect = (
         )
       ) -
         logit(problem.penPaperDeceptiveness)) +
-      1.6 -
+      0.9 -
       (Math.pow(submissions.length + 1, 0.2) - 1)
   );
 

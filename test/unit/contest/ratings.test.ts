@@ -1,4 +1,4 @@
-import { describe, it, assert } from "vitest";
+import { describe, it, assert, expect } from "vitest";
 import { CONTEST_LENGTH } from "../../../src/app/contest/constants";
 import { computeProblemScoreDecrementsPerMinute } from "../../../src/app/contest/problem-scores";
 import {
@@ -174,5 +174,25 @@ describe("computeNewRatingsSlice function", () => {
         )
       )
     );
+  });
+
+  it("produces similar results whether given a slice or not which only differ by zero-mean correction", () => {
+    const minIndex = 1;
+    const maxIndex = 3;
+
+    const newRatingsFull = computeNewRatingsSlice(contestUsersStatsArray[1]);
+    const newRatingsSlice = computeNewRatingsSlice(
+      contestUsersStatsArray[1],
+      minIndex,
+      maxIndex
+    );
+
+    const ratingDiff =
+      newRatingsFull["tourist"].rating - newRatingsSlice["tourist"].rating;
+    expect(ratingDiff).toBe(-41.5784210205079);
+    expect(
+      newRatingsFull["normalHandle"].rating -
+        newRatingsSlice["normalHandle"].rating
+    ).toBe(ratingDiff);
   });
 });

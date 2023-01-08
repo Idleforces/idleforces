@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, assert } from "vitest";
 import type { ProblemPlacement } from "../../../src/app/problems/types";
 import {
   computeCombinedPlacementBetweenDivisions,
@@ -8,9 +8,9 @@ import {
 
 describe("computeCombinedPlacementBetweenDivisions function", () => {
   it("computes combined placement as a roughly single-digit number", () => {
-    expect(computeCombinedPlacementBetweenDivisions("B", 4)).toBe(1.1);
-    expect(computeCombinedPlacementBetweenDivisions("C", 3)).toBe(3.95);
-    expect(computeCombinedPlacementBetweenDivisions("F", 1)).toBe(10.75);
+    assert.closeTo(computeCombinedPlacementBetweenDivisions("B", 4), 0.6, 1e-6);
+    assert.closeTo(computeCombinedPlacementBetweenDivisions("C", 3), 3, 1e-6);
+    assert.closeTo(computeCombinedPlacementBetweenDivisions("F", 1), 10, 1e-6);
   });
 });
 
