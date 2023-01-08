@@ -1,0 +1,13 @@
+#contest-ui {
+  display: flex;
+  margin: 0 10%;
+  margin-top: 2rem;
+}
+
+#contest-main {
+  flex: 5 1 600px;
+}
+
+#contest-sidebar {
+  flex: 1 1 200px;
+}
