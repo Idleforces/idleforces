@@ -1,3 +1,4 @@
+import { problemTags } from "../problems/types";
 import type { ProblemTag } from "../problems/types";
 import type { RatingPoint } from "./load-users";
 export type AttributeValue = number;
@@ -18,14 +19,13 @@ export type NonTechnicalAttributeNames =
   typeof nonTechnicalAttributeNames[number];
 
 export type AttributeNames = ProblemTag | NonTechnicalAttributeNames;
+export const attributeNames: Array<AttributeNames> = [
+  ...problemTags,
+  ...nonTechnicalAttributeNames,
+];
 
-export type AttributeValues = {
-  [K in AttributeNames]: AttributeValue;
-};
-
-export type AttributeConstants = {
-  [K in AttributeNames]: AttributeConstant;
-};
+export type AttributeValues = Record<AttributeNames, AttributeValue>;
+export type AttributeConstants = Record<AttributeNames, AttributeConstant>;
 
 export type UserCore = {
   handle: string;

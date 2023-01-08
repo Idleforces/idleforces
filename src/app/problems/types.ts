@@ -100,12 +100,12 @@ export type ProblemSolveStatus =
 export function isActiveProblemSolveStatus(
   problemSolveStatus: ProblemSolveStatus
 ): problemSolveStatus is ProblemSolveStatusWhileActive {
-  return (
-    [
-      "during-reading",
-      "during-pen-paper-solving",
-      "during-implementing",
-      "during-searching-for-mistake",
-    ] as Array<ProblemSolvingPhases>
-  ).includes(problemSolveStatus.phase);
+  const activeProblemSolvingPhases: Array<ProblemSolvingPhases> = [
+    "during-reading",
+    "during-pen-paper-solving",
+    "during-implementing",
+    "during-searching-for-mistake",
+  ];
+
+  return activeProblemSolvingPhases.includes(problemSolveStatus.phase);
 }

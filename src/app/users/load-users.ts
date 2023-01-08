@@ -5,14 +5,10 @@ import {
   USER_ATTRIBUTES_CONSTANTS,
   USER_INITIAL_RATING,
 } from "./constants";
-import usersJSON from "./trimmedUsers.json" assert { type: "json" };
+import usersJSON from "./trimmed-users.json" assert { type: "json" };
 import { normal } from "@stdlib/random/base";
-import type {
-  AttributeValues,
-  AttributeConstants,
-  User,
-  UserCore,
-} from "./types";
+import type { AttributeValues, User, UserCore } from "./types";
+import { attributeNames } from "./types";
 import { sigmoid } from "../../utils/utils";
 import { betaPrimeAltParam } from "../problems/utils";
 import type { UsersSlice } from "./users-slice";
@@ -29,19 +25,17 @@ export const generateUser = (
   country: string | null,
   isPlayer: boolean
 ): User => {
-  const attributeConstantsKeys = Object.keys(
-    USER_ATTRIBUTES_CONSTANTS
-  ) as Array<keyof AttributeConstants>;
+  const ratingHistory: Array<RatingPoint> = [
+    { timestamp: Date.now(), rating: USER_INITIAL_RATING },
+  ];
 
   const userCore: UserCore = {
     handle,
     officialRating,
     country,
-    ratingHistory: [
-      { timestamp: Date.now(), rating: USER_INITIAL_RATING },
-    ] as Array<RatingPoint>,
+    ratingHistory,
     attributes: Object.fromEntries(
-      attributeConstantsKeys.map((attributeName) => [
+      attributeNames.map((attributeName) => [
         attributeName,
         isPlayer
           ? 0
