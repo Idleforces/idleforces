@@ -15,3 +15,16 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+
+button {
+  min-width: 5rem;
+  height: 2.5rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  border: 1px solid black;
+  padding: 0.5rem;
+}
+
+*:disabled {
+  cursor: default !important;
+}

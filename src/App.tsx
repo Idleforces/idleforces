@@ -15,8 +15,8 @@ import type { ContestTypeRunning } from "./view/game/types";
 import { useRef, useState } from "react";
 import { Contests } from "./view/game/pages/contests";
 import { Contest } from "./view/game/contest/contest";
-import { Standings } from "./view/game/contest/standings";
-import { Problems } from "./view/game/contest/problems";
+import { Standings } from "./view/game/contest/standings/standings";
+import { Problems } from "./view/game/contest/problems/problems";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -66,6 +66,8 @@ function App() {
           <Route path="contest/" element={<Contest
             noPlayerContestSimSpeed={noPlayerContestSimSpeed}
             setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
+            contestTypeRunning={contestTypeRunning}
+            setContestTypeRunning={setContestTypeRunning}
           />}>
             <Route path="standings" element={<Standings/>}/>
             <Route path="*" element={<Problems />}/>

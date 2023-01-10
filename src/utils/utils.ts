@@ -96,7 +96,7 @@ export function sample<T>(
  * // prints {key1: 1, key2: 2}
  */
 
-export function declareRecordByInitializer<T extends string, U>(
+export function declareRecordByInitializer<T extends string | number | symbol, U>(
   indexArray: Readonly<Array<T>>,
   initializer: (index: T) => U
 ): Record<T, U> {
@@ -106,6 +106,11 @@ export function declareRecordByInitializer<T extends string, U>(
   }
 
   return returnRecord as Record<T, U>;
+}
+
+export function transposeArray<T>(array: Array<Array<T>>) {
+  if (!array.length || !array[0].length) return array;
+  return array[0].map((_, colIndex) => array.map((row) => row[colIndex]));
 }
 
 export const safeSetLocalStorageValue = (

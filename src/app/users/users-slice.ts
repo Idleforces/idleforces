@@ -17,7 +17,8 @@ export const usersSlice = createSlice({
     updateRatings: (state: UsersSlice, action: PayloadAction<RatingPoints>) => {
       if (state === null) return null;
       state.users.forEach((user) => {
-        user.ratingHistory.push(action.payload[user.handle]);
+        const newUserRatingPoint = action.payload[user.handle];
+        if (newUserRatingPoint) user.ratingHistory.push(newUserRatingPoint);
       });
 
       return state;
