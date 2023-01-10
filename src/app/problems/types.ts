@@ -17,14 +17,21 @@ export const problemTags = [
 ] as const;
 export type ProblemTag = typeof problemTags[number];
 
+export const contestSubmissionWrongVerdicts = [
+  "Wrong answer",
+  "Runtime error",
+  "Time limit exceeded",
+  "Memory limit exceeded",
+] as const;
+
+export type ContestSubmissionWrongVerdict =
+  typeof contestSubmissionWrongVerdicts[number];
+
 export type ContestSubmissionVerdict =
-  | "Wrong answer"
-  | "Runtime error"
-  | "Time limit exceeded"
-  | "Memory limit exceeded"
+  | `${ContestSubmissionWrongVerdict} on pretests`
+  | `${ContestSubmissionWrongVerdict} on systests`
   | "Pretests passed"
-  | "Systests passed"
-  | "Systests failed";
+  | "Systests passed";
 
 export type ContestSubmission = {
   penPaperCorrect: boolean;

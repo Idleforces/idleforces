@@ -1,11 +1,12 @@
 import type {
   ContestSubmission,
-  ContestSubmissionVerdict,
+  ContestSubmissionWrongVerdict,
   Problem,
   ProblemProgressIncrement,
   ProblemSolveStatusAfterPassingPretests,
   ProblemSolveStatusDuringSearchingForMistake,
 } from "./types";
+import { contestSubmissionWrongVerdicts } from "./types";
 import {
   IMPLEMENTATION_SEARCHING_FOR_MISTAKE_DISTRIBUTION_PRECISION,
   IMPLEMENTATION_SEARCHING_FOR_MISTAKE_SCALING_FACTOR,
@@ -50,7 +51,7 @@ export const submitProblem = <RootStateType>(
       dispatch(
         addEvent({
           ticksSinceBeginning,
-          message: `Your submissions to the problem ${problem.placement} was accepted.`,
+          message: `Your submission to the problem ${problem.placement} was accepted.`,
           sentiment: "positive",
           problemPlacement: problem.placement,
         })
@@ -70,35 +71,34 @@ export const submitProblem = <RootStateType>(
     };
   }
 
-  const failureVerdicts: Array<ContestSubmissionVerdict> = [
-    "Wrong answer",
-    "Runtime error",
-    "Time limit exceeded",
-    "Memory limit exceeded",
-  ];
-
-  let verdict: ContestSubmissionVerdict;
+  let verdict: ContestSubmissionWrongVerdict;
   if (!implementationCorrect)
-    verdict = sample(failureVerdicts, [
-      WRONG_ANSWER_PROBABILITY_IF_IMPLEMENTATION_WRONG,
-      RUNTIME_ERROR_PROBABILITY_IF_IMPLEMENTATION_WRONG,
-      TIME_LIMIT_EXCEEDED_PROBABILITY_IF_IMPLEMENTATION_WRONG,
-      MEMORY_LIMIT_EXCEEDED_PROBABILITY_IF_IMPLEMENTATION_WRONG,
-    ]);
+    verdict = sample(
+      [...contestSubmissionWrongVerdicts],
+      [
+        WRONG_ANSWER_PROBABILITY_IF_IMPLEMENTATION_WRONG,
+        RUNTIME_ERROR_PROBABILITY_IF_IMPLEMENTATION_WRONG,
+        TIME_LIMIT_EXCEEDED_PROBABILITY_IF_IMPLEMENTATION_WRONG,
+        MEMORY_LIMIT_EXCEEDED_PROBABILITY_IF_IMPLEMENTATION_WRONG,
+      ]
+    );
   else if (!penPaperCorrect)
-    verdict = sample(failureVerdicts, [
-      WRONG_ANSWER_PROBABILITY_IF_PEN_PAPER_WRONG,
-      RUNTIME_ERROR_PROBABILITY_IF_PEN_PAPER_WRONG,
-      TIME_LIMIT_EXCEEDED_PROBABILITY_IF_PEN_PAPER_WRONG,
-      MEMORY_LIMIT_EXCEEDED_PROBABILITY_IF_PEN_PAPER_WRONG,
-    ]);
-  else verdict = sample(failureVerdicts, null);
+    verdict = sample(
+      [...contestSubmissionWrongVerdicts],
+      [
+        WRONG_ANSWER_PROBABILITY_IF_PEN_PAPER_WRONG,
+        RUNTIME_ERROR_PROBABILITY_IF_PEN_PAPER_WRONG,
+        TIME_LIMIT_EXCEEDED_PROBABILITY_IF_PEN_PAPER_WRONG,
+        MEMORY_LIMIT_EXCEEDED_PROBABILITY_IF_PEN_PAPER_WRONG,
+      ]
+    );
+  else verdict = sample([...contestSubmissionWrongVerdicts], null);
 
   if (user.isPlayer)
     dispatch(
       addEvent({
         ticksSinceBeginning,
-        message: `Your submissions to the problem ${problem.placement} was rejected (verdict = "${verdict}").`,
+        message: `Your submission to the problem ${problem.placement} was rejected (verdict = "${verdict}").`,
         sentiment: "negative",
         problemPlacement: problem.placement,
       })
@@ -162,7 +162,7 @@ export const submitProblem = <RootStateType>(
       {
         penPaperCorrect,
         implementationCorrect,
-        verdict,
+        verdict: `${verdict} on pretests`,
         ticksSinceBeginning: ticksSinceBeginning,
       },
     ],
@@ -170,4 +170,15 @@ export const submitProblem = <RootStateType>(
     implementationProgressIncrement,
     penPaperCorrect,
   };
+};
+
+export const isSubmissionCorrect = (submission: ContestSubmission) => {
+  switch (submission.verdict) {
+    case "Pretests passed":
+      return true;
+    case "Systests passed":
+      return true;
+    default:
+      return false;
+  }
 };
