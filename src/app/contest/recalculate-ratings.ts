@@ -1,15 +1,10 @@
-import { problemPlacements } from "../problems/types";
-import { computeProblemPositionFromProblemPlacement } from "../problems/utils";
 import type { User } from "../users/types";
 import type {
-  ContestProblemNumberValues,
   ContestUserData,
-  ContestUserStats,
-  ProblemSolveStatuses,
   RatingPoints,
 } from "./types";
-import { MIN_RATIO_OF_MAX_SCORE, WRONG_SUBMISSION_PENALTY } from "./constants";
 import { sum } from "../../utils/utils";
+import { computeContestUsersStatsSortedByRank } from "./contest-stats";
 
 const probabilitiesOfWinningByRatingDiff = Array(10000)
   .fill(0)
@@ -41,112 +36,6 @@ export const computeSeed = (
         computeProbabilityRatingABeastRatingB(opponentRating, userRating)
       )
     )
-  );
-};
-
-export const computeSubmissionsStats = (
-  problemScores: ContestProblemNumberValues,
-  problemScoreDecrementsPerMinute: ContestProblemNumberValues,
-  problemSolveStatuses: ProblemSolveStatuses,
-  useScoresAfterSystests: boolean
-): {
-  scores: Array<number>;
-  wrongSubmissionCounts: Array<number>;
-  correctSubmissionTimestamps: Array<number | null>;
-} => {
-  const scores: Array<number> = [];
-  const wrongSubmissionCounts: Array<number> = [];
-  const correctSubmissionTimestamps: Array<number | null> = [];
-
-  problemPlacements.forEach((placement) => {
-    const problemPosition =
-      computeProblemPositionFromProblemPlacement(placement);
-    const problemScore = problemScores[problemPosition];
-    const problemScoreDecrementPerMinute =
-      problemScoreDecrementsPerMinute[problemPosition];
-    const problemSolveStatus = problemSolveStatuses[placement];
-    const submissions = problemSolveStatus.submissions;
-    let submissionFound = false;
-    let score = 0;
-    let wrongSubmissionCount = 0;
-
-    for (const submission of [...submissions].reverse()) {
-      if (submissionFound) {
-        score -= WRONG_SUBMISSION_PENALTY;
-      }
-
-      if (
-        (useScoresAfterSystests &&
-          submission.verdict === "Systests passed" &&
-          problemSolveStatus.phase === "after-passing-systests") ||
-        (!useScoresAfterSystests &&
-          submission.verdict === "Pretests passed" &&
-          problemSolveStatus.phase === "after-passing-pretests")
-      ) {
-        score =
-          problemScore -
-          (problemScoreDecrementPerMinute * submission.ticksSinceBeginning) /
-            60;
-        correctSubmissionTimestamps.push(submission.ticksSinceBeginning);
-        submissionFound = true;
-      } else wrongSubmissionCount++;
-    }
-
-    if (submissionFound)
-      score = Math.max(score, problemScore * MIN_RATIO_OF_MAX_SCORE);
-
-    scores.push(score);
-    wrongSubmissionCounts.push(wrongSubmissionCount);
-    if (!submissionFound) correctSubmissionTimestamps.push(null);
-  });
-
-  return { scores, wrongSubmissionCounts, correctSubmissionTimestamps };
-};
-
-export const computeContestUsersStatsSortedByRank = (
-  contestUsersData: Array<ContestUserData>,
-  users: Array<User>,
-  useScoresAfterSystests: boolean,
-  problemScores: ContestProblemNumberValues,
-  problemScoreDecrementsPerMinute: ContestProblemNumberValues
-): Array<ContestUserStats> => {
-  let userContestIndex = 0;
-  return computeUserRanksConsideringTies(
-    contestUsersData
-      .map((contestUserData) => {
-        const handle = contestUserData.handle;
-        while (users[userContestIndex].handle !== handle) userContestIndex++;
-        const oldRating =
-          users[userContestIndex].ratingHistory.slice(-1)[0].rating;
-        const country = users[userContestIndex].country;
-
-        const { scores, wrongSubmissionCounts, correctSubmissionTimestamps } =
-          computeSubmissionsStats(
-            problemScores,
-            problemScoreDecrementsPerMinute,
-            contestUserData.problemSolveStatuses,
-            useScoresAfterSystests
-          );
-
-        return {
-          handle,
-          scores,
-          oldRating,
-          failedAtSystests: problemPlacements.map(
-            (placement) =>
-              contestUserData.problemSolveStatuses[placement].phase ===
-              "after-failing-systests"
-          ),
-          submissions: problemPlacements.map(
-            (placement) =>
-              contestUserData.problemSolveStatuses[placement].submissions
-          ),
-          correctSubmissionTimestamps,
-          wrongSubmissionCounts,
-          country,
-        };
-      })
-      .sort((a, b) => sum(b.scores) - sum(a.scores))
   );
 };
 
