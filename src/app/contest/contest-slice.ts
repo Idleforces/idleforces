@@ -39,10 +39,6 @@ export const contestSlice = createSlice({
     setContest: (_state: ContestSlice, action: PayloadAction<ContestSlice>) =>
       action.payload,
 
-    setContestFinished: (state: ContestSlice, _action: PayloadAction<null>) => {
-      return state ? { ...state, contestFinished: true } : null;
-    },
-
     updatePlayerActiveProblemPlacement: (
       state: ContestSlice,
       action: PayloadAction<ProblemPlacement | null>
@@ -66,15 +62,16 @@ export const contestSlice = createSlice({
       }
 
       const contestFinished = action.payload.contestFinished ?? false;
-
-      return {
+      const newState: ContestSlice = {
         ...state,
         contestUsersData: action.payload.newContestUsersData,
         nextEventIn: action.payload.nextEventIn,
-        contestFinished,
+        finished: contestFinished,
         ticksSinceBeginning:
           state.ticksSinceBeginning + action.payload.numberOfTicksSimulated,
       };
+
+      return newState;
     },
   },
 });
@@ -83,7 +80,6 @@ export const {
   startContest,
   resetContest,
   setContest,
-  setContestFinished,
   updateContestSlice,
   updatePlayerActiveProblemPlacement,
 } = contestSlice.actions;
