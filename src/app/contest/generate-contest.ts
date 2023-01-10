@@ -28,7 +28,8 @@ import { filterUsersSatisfyingRatingBound } from "./rating-bounds";
 export const generateContest = (
   division: ProblemDivision,
   playerParticipating: boolean,
-  users: Array<User>
+  users: Array<User>,
+  name: string
 ): Exclude<ContestSlice, null> => {
   const problems: ContestProblems = problemPlacements.map((placement) =>
     generateProblem(division, placement)
@@ -111,5 +112,6 @@ export const generateContest = (
     contestUsersData: (contestPlayerData as Array<ContestUserData>).concat(
       contestNPCData
     ),
+    name,
   };
 };

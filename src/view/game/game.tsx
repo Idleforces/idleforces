@@ -16,7 +16,10 @@ import {
   selectContest,
 } from "../../app/contest/contest-slice";
 import { selectEvents } from "../../app/events/events-slice";
-import { CONTEST_LENGTH } from "../../app/contest/constants";
+import {
+  CONTEST_LENGTH,
+  DIVISION_MERGE_TICKS_COUNT,
+} from "../../app/contest/constants";
 import { processTickOfContest } from "../../app/contest/process-tick";
 import { saveGameData } from "../persist-data";
 import { loadOrGenerateUsers } from "../../app/users/load-users";
@@ -103,6 +106,18 @@ export const Game = (props: {
     saveData,
   ]);
 
+  const contestTicksPassedAtMaxOfGameLoadStartContest = useMemo(
+    () => contestTicksPassed,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [contestTypeRunning]
+  );
+
+  const timestampOfMaxOfGameLoadStartContest = useMemo(
+    () => Date.now(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [contestTypeRunning]
+  );
+
   useEffect(() => {
     let ignore = false;
     if (!contest || !contestTypeRunning || !usersWithTimeOfSnapshot) {
@@ -114,53 +129,68 @@ export const Game = (props: {
       };
     }
 
-    if (!contestTypeRunning.playerParticipating) {
-      const numberOfMergedTicks = Math.ceil(
-        100 * Math.pow(noPlayerContestSimSpeed, 2)
+    const playerParticipating = contestTypeRunning.playerParticipating;
+    const divisionMergeTicksCount = DIVISION_MERGE_TICKS_COUNT[contest.division];
+    const numberOfMergedTicks = playerParticipating
+      ? divisionMergeTicksCount
+      : Math.ceil(100 * Math.pow(noPlayerContestSimSpeed, 2));
+
+    const sleepDuration = playerParticipating
+      ? Math.max(
+        divisionMergeTicksCount * (timestampOfMaxOfGameLoadStartContest -
+            Date.now()) +
+            1000 *
+              (contestTicksPassed -
+                contestTicksPassedAtMaxOfGameLoadStartContest +
+                divisionMergeTicksCount),
+          500
+        )
+      : 40;
+
+    if (
+      contestTicksPassed < CONTEST_LENGTH &&
+      (playerParticipating || noPlayerContestSimSpeed)
+    ) {
+      sleep(sleepDuration) // To prevent React complaining about infinite loop of rerenders or 1 second if playerParticipating.
+        .then(() => {
+          const { newContestUsersData, nextEventIn } = processTickOfContest(
+            contest,
+            numberOfMergedTicks,
+            usersWithTimeOfSnapshot.users,
+            dispatch
+          );
+          if (!ignore)
+            dispatch(
+              updateContestSlice({
+                nextEventIn,
+                newContestUsersData,
+                numberOfTicksSimulated: numberOfMergedTicks,
+              })
+            );
+        }) // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .catch(() => {});
+    } else if (contestTicksPassed >= CONTEST_LENGTH && !contest.finished) {
+      const newContestUsersData = processSystests(
+        contest.problems,
+        contest.contestUsersData
       );
 
-      if (contestTicksPassed < CONTEST_LENGTH && noPlayerContestSimSpeed) {
-        sleep(40) // To prevent React complaining about infinite loop of rerenders.
-          .then(() => {
-            const { newContestUsersData, nextEventIn } = processTickOfContest(
-              contest,
-              numberOfMergedTicks,
-              usersWithTimeOfSnapshot.users,
-              dispatch
-            );
-            if (!ignore)
-              dispatch(
-                updateContestSlice({
-                  nextEventIn,
-                  newContestUsersData,
-                  numberOfTicksSimulated: numberOfMergedTicks,
-                })
-              );
-          }) // eslint-disable-next-line @typescript-eslint/no-empty-function
-          .catch(() => {});
-      } else if (contestTicksPassed >= CONTEST_LENGTH && !contest.finished) {
-        const newContestUsersData = processSystests(
-          contest.problems,
-          contest.contestUsersData
-        );
+      const newRatingPoints = recalculateRatings(
+        newContestUsersData,
+        contest.problemScores,
+        contest.problemScoreDecrementsPerMinute,
+        usersWithTimeOfSnapshot.users
+      );
 
-        dispatch(
-          updateContestSlice({
-            nextEventIn: NaN,
-            newContestUsersData,
-            numberOfTicksSimulated: numberOfMergedTicks,
-            finished: true,
-          }));
-
-        const newRatingPoints = recalculateRatings(
+      dispatch(
+        updateContestSlice({
+          nextEventIn: NaN,
           newContestUsersData,
-          contest.problemScores,
-          contest.problemScoreDecrementsPerMinute,
-          usersWithTimeOfSnapshot.users
-        );
-
-        dispatch(updateRatings(newRatingPoints));
-      }
+          numberOfTicksSimulated: numberOfMergedTicks,
+          contestFinished: true,
+        })
+      );
+      dispatch(updateRatings(newRatingPoints));
     }
 
     return () => {
@@ -169,6 +199,8 @@ export const Game = (props: {
   }, [
     contestTypeRunning,
     contestTicksPassed,
+    contestTicksPassedAtMaxOfGameLoadStartContest,
+    timestampOfMaxOfGameLoadStartContest,
     contest,
     dispatch,
     noPlayerContestSimSpeed,

@@ -1,6 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import type { ProblemDivision } from "../problems/types";
+import type { ProblemDivision, ProblemPlacement } from "../problems/types";
 import type { RootState } from "../store";
 import { generateContest } from "./generate-contest";
 import type { ContestSlice, ContestUserData } from "./types";
@@ -15,11 +15,12 @@ export const contestSlice = createSlice({
       action: PayloadAction<{
         division: ProblemDivision;
         playerParticipating: boolean;
-        numberOfMergedTicks: number;
         users: Array<User> | null;
+        name: string;
       }>
     ) => {
       const users = action.payload.users;
+      const name = action.payload.name;
       if (!users || users.length === 0) {
         console.warn("Cannot start a contest when users are not loaded.");
         return null;
@@ -28,7 +29,8 @@ export const contestSlice = createSlice({
       return generateContest(
         action.payload.division,
         action.payload.playerParticipating,
-        users
+        users,
+        name
       );
     },
 
@@ -38,7 +40,15 @@ export const contestSlice = createSlice({
       action.payload,
 
     setContestFinished: (state: ContestSlice, _action: PayloadAction<null>) => {
-      return state ? { ...state, finished: true } : null;
+      return state ? { ...state, contestFinished: true } : null;
+    },
+
+    updatePlayerActiveProblemPlacement: (
+      state: ContestSlice,
+      action: PayloadAction<ProblemPlacement | null>
+    ) => {
+      if (state)
+        state.contestUsersData[0].activeProblemPlacement = action.payload;
     },
 
     updateContestSlice: (
@@ -47,7 +57,7 @@ export const contestSlice = createSlice({
         newContestUsersData: Array<ContestUserData>;
         nextEventIn: number;
         numberOfTicksSimulated: number;
-        finished?: true;
+        contestFinished?: true;
       }>
     ) => {
       if (!state) {
@@ -55,13 +65,13 @@ export const contestSlice = createSlice({
         return null;
       }
 
-      const finished = action.payload.finished ?? false;
+      const contestFinished = action.payload.contestFinished ?? false;
 
       return {
         ...state,
         contestUsersData: action.payload.newContestUsersData,
         nextEventIn: action.payload.nextEventIn,
-        finished,
+        contestFinished,
         ticksSinceBeginning:
           state.ticksSinceBeginning + action.payload.numberOfTicksSimulated,
       };
@@ -75,10 +85,15 @@ export const {
   setContest,
   setContestFinished,
   updateContestSlice,
+  updatePlayerActiveProblemPlacement,
 } = contestSlice.actions;
 
 export const selectTicksSinceBeginning = (state: RootState) =>
   state.contest ? state.contest.ticksSinceBeginning : null;
 export const selectContest = (state: RootState) => state.contest;
+export const selectContestFinished = (state: RootState) =>
+  state.contest ? state.contest.finished : null;
+export const selectContestName = (state: RootState) =>
+  state.contest ? state.contest.name : null;
 
 export const contestReducer = contestSlice.reducer;

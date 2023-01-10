@@ -45,6 +45,7 @@ export type ContestSlice = {
   problemScores: ContestProblemNumberValues;
   problemScoreDecrementsPerMinute: ContestProblemNumberValues;
   contestUsersData: Array<ContestUserData>;
+  name: string;
 } | null;
 
 export type ContestUserStats = {
@@ -62,6 +63,4 @@ export type ContestUserStats = {
 /**
  * Rating points indexed by user handle.
  */
-export type RatingPoints = {
-  [handle in string]: RatingPoint;
-};
+export type RatingPoints = Partial<Record<string, RatingPoint>>;
