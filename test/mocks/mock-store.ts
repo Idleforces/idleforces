@@ -23,5 +23,3 @@ export const mockStore = {
     }
   },
 };
-
-export type MockDispatch = typeof mockStore.mockDispatch;

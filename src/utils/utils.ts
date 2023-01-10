@@ -8,12 +8,6 @@ export const sum = (array: Array<number>): number => {
   return s;
 };
 
-export const normalizeArray = (array: Array<number>): Array<number> => {
-  const s = sum(array);
-  for (let i = 0; i < array.length; i++) array[i] /= s;
-  return array;
-};
-
 type Iterableify<T> = { [K in keyof T]: Iterable<T[K]> };
 
 export function* zip<T extends Array<any>>( // eslint-disable-line @typescript-eslint/no-explicit-any

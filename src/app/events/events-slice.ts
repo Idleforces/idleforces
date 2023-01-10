@@ -1,4 +1,4 @@
-import type { AnyAction, PayloadAction, ThunkAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import type { ContestEvent, EventsSlice } from "./types";
@@ -23,11 +23,3 @@ export const { resetEvents, setEvents, setEventsToEmptyArray, addEvent } =
   eventsSlice.actions;
 export const selectEvents = (state: RootState) => state.events;
 export const eventsReducer = eventsSlice.reducer;
-
-export const saveEvent = (
-  event: ContestEvent
-): ThunkAction<void, RootState, undefined, AnyAction> => {
-  return function saveEventThunk(dispatch, _getState) {
-    dispatch(addEvent(event));
-  };
-};
