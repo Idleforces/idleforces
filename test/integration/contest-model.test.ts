@@ -29,7 +29,12 @@ describe("during contest simulation", () => {
 
   const division: ProblemDivision = 3;
   const numberOfMergedTicks = 50;
-  const contest = generateContest(division, true, users);
+  const contest = generateContest(
+    division,
+    true,
+    users,
+    "Idleforces round test"
+  );
   let nextEventIn: number;
   let contestUsersData: Array<ContestUserData>;
 

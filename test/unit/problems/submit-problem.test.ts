@@ -167,18 +167,21 @@ describe("submitProblem function", () => {
       0
     );
     assertProbabilisticCloseTo(
-      wrongVerdicts.filter((verdict) => verdict === "Wrong answer").length,
-      580,
+      wrongVerdicts.filter((verdict) => verdict === "Wrong answer on pretests")
+        .length,
+      590,
       50
     );
     assertProbabilisticCloseTo(
-      wrongVerdicts.filter((verdict) => verdict === "Runtime error").length,
+      wrongVerdicts.filter((verdict) => verdict === "Runtime error on pretests")
+        .length,
       160,
       30
     );
     assertProbabilisticCloseTo(
-      wrongVerdicts.filter((verdict) => verdict === "Time limit exceeded")
-        .length,
+      wrongVerdicts.filter(
+        (verdict) => verdict === "Time limit exceeded on pretests"
+      ).length,
       190,
       30
     );

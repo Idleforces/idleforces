@@ -59,7 +59,7 @@ describe("computeIfPenPaperCorrect function", () => {
 
     assertProbabilisticCloseTo(
       arePenPaperCorrectNoSubmissions.filter((x) => x).length,
-      680,
+      690,
       40
     );
 
