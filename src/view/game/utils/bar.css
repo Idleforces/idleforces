@@ -1,0 +1,23 @@
+.bar-data-container {
+  width: 100%;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.bar-data-container-below {
+  flex-wrap: wrap;
+}
+
+.bar-container-below {
+  width: 100%;
+}
+
+.bar-container-inline {
+  flex-grow: 1;
+}
+
+.gradient-bar {
+  border: 3px solid black;
+}
