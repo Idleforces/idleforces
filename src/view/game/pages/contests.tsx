@@ -5,10 +5,10 @@ import {
   CONTEST_LENGTH,
   DIVISION_MERGE_TICKS_COUNT,
   MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST,
-  SIMULATED_CONTESTS_MERGE_TICKS_COUNT,
 } from "../../../app/contest/constants";
 import { startContest } from "../../../app/contest/contest-slice";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { problemDivisions } from "../../../app/problems/types";
 import type { ProblemDivision } from "../../../app/problems/types";
 import type { RootState } from "../../../app/store";
 import type { User } from "../../../app/users/types";
@@ -22,22 +22,22 @@ import { setEventsToEmptyArray } from "../../../app/events/events-slice";
 import { filterUsersSatisfyingRatingBound } from "../../../app/contest/rating-bounds";
 import { Link, useNavigate } from "react-router-dom";
 import { setInContest } from "../../../app/save/save-slice";
+import { declareRecordByInitializer } from "../../../utils/utils";
 
 const handleContestStart = (
   playerParticipating: boolean,
-  rowIndex: number,
+  division: ProblemDivision,
+  name: string,
   dispatch: ThunkDispatch<RootState, void, AnyAction>,
   users: Array<User> | null,
   setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>
 ) => {
   dispatch(
     startContest({
-      division: (4 - rowIndex) as ProblemDivision,
+      division,
       playerParticipating,
-      numberOfMergedTicks: playerParticipating
-        ? DIVISION_MERGE_TICKS_COUNT[(4 - rowIndex) as ProblemDivision]
-        : SIMULATED_CONTESTS_MERGE_TICKS_COUNT,
       users,
+      name,
     })
   );
   dispatch(setEventsToEmptyArray(null));
@@ -59,9 +59,19 @@ export const Contests = (props: {
   const navigate = useNavigate();
 
   const users = useAppSelector(selectUsers) ?? [];
-  const usersSatisfyingRatingBoundsCounts = (
-    [4, 3, 2, 1] as Array<ProblemDivision>
-  ).map((division) => filterUsersSatisfyingRatingBound(users, division).length);
+
+  const reverseProblemDivisions = [...problemDivisions].reverse();
+  const usersSatisfyingRatingBoundsCounts: Record<ProblemDivision, number> =
+    declareRecordByInitializer(
+      reverseProblemDivisions,
+      (division) => filterUsersSatisfyingRatingBound(users, division).length
+    );
+
+  const contestNames: Record<ProblemDivision, string> =
+    declareRecordByInitializer(
+      reverseProblemDivisions,
+      (division) => `Idleforces round (Div. ${division})`
+    );
 
   if (contestTypeRunning)
     return (
@@ -72,50 +82,54 @@ export const Contests = (props: {
     );
 
   const computeStartContestFieldContent = (
-    rowIndex: number,
+    division: ProblemDivision,
     playerParticipating: boolean
   ): JSX.Element => {
-    return usersSatisfyingRatingBoundsCounts[rowIndex] >=
+    return usersSatisfyingRatingBoundsCounts[division] >=
       MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST ? (
       <a
         className="dark-red-link"
         onClick={() => {
           handleContestStart(
             playerParticipating,
-            rowIndex,
+            division,
+            contestNames[division],
             dispatch,
             users,
             setContestTypeRunning
           );
 
-          navigate(playerParticipating ? "/game/contest/problems" : "/game/contest/standings");
+          navigate(
+            playerParticipating
+              ? "/game/contest/problems"
+              : "/game/contest/standings"
+          );
         }}
       >
         {playerParticipating ? "Register" : "Simulate"}
       </a>
     ) : (
-      <span style={{ color: "#222" }}>Not enough users can participate.</span>
+      <span style={{ color: "gray" }}>Not enough users can participate.</span>
     );
   };
 
   const dataTableContents: Array<Array<JSX.Element>> = [
     [<>Name</>, <>Cooldown</>, <>Length</>, <>Start</>, <>Simulate</>],
   ].concat(
-    Array(4)
-      .fill(0)
-      .map((_, rowIndex) => [
-        <>Idleforces Round (Div. {4 - rowIndex})</>,
+    reverseProblemDivisions
+      .map((division) => [
+        <>{contestNames[division]}</>,
         <></>,
         <>
           {convertSecondsToHHMM(
             CONTEST_LENGTH /
-              DIVISION_MERGE_TICKS_COUNT[(4 - rowIndex) as ProblemDivision]
+              DIVISION_MERGE_TICKS_COUNT[division]
           )}
         </>,
-        computeStartContestFieldContent(rowIndex, true),
-        computeStartContestFieldContent(rowIndex, false),
+        computeStartContestFieldContent(division, true),
+        computeStartContestFieldContent(division, false),
       ])
-    );
+  );
 
   const classNames = Array(5)
     .fill(0)
