@@ -3,61 +3,30 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   RECOMPUTE_RATINGS_EVERY_N_TICKS,
   USERS_NO_ON_STANDINGS_PAGE,
-} from "../../../app/contest/constants";
-import { selectContest } from "../../../app/contest/contest-slice";
+} from "../../../../app/contest/constants";
+import { selectContest } from "../../../../app/contest/contest-slice";
+import { computeAccepted, computeContestUsersStatsSortedByRank, computeTried } from "../../../../app/contest/contest-stats";
 import {
-  computeContestUsersStatsSortedByRank,
   computeNewRatingsSlice,
-} from "../../../app/contest/recalculate-ratings";
+} from "../../../../app/contest/recalculate-ratings";
 import type {
   ContestSlice,
   ContestUserData,
-  ContestUserStats,
   RatingPoints,
-} from "../../../app/contest/types";
-import { useAppSelector } from "../../../app/hooks";
-import { problemPlacements } from "../../../app/problems/types";
-import { computeProblemPositionFromProblemPlacement } from "../../../app/problems/utils";
-import { selectHandle } from "../../../app/save/save-slice";
-import type { User } from "../../../app/users/types";
-import { selectUsers } from "../../../app/users/users-slice";
-import { convertSecondsToHHMM } from "../../../utils/time-format";
-import { sum } from "../../../utils/utils";
-import { DataTable } from "../utils/datatable";
-import { Flag } from "../utils/flag";
-import { RatingStyled } from "../utils/styled-rating";
+} from "../../../../app/contest/types";
+import { useAppSelector } from "../../../../app/hooks";
+import { problemPlacements } from "../../../../app/problems/types";
+import { computeProblemPositionFromProblemPlacement } from "../../../../app/problems/utils";
+import { selectHandle } from "../../../../app/save/save-slice";
+import type { User } from "../../../../app/users/types";
+import { selectUsers } from "../../../../app/users/users-slice";
+import { convertSecondsToHHMM } from "../../../../utils/time-format";
+import { sum } from "../../../../utils/utils";
+import { DataTable } from "../../utils/datatable";
+import { Flag } from "../../utils/flag";
+import { RatingStyled } from "../../utils/styled-rating";
 import { StandingsStub } from "./standings-stub";
 import "./standings.css";
-
-const computeAccepted = (contestUsersStats: Array<ContestUserStats>) => {
-  return contestUsersStats
-    .map(
-      (contestUserStats) =>
-        contestUserStats.scores.map((score) =>
-          score > 0 ? 1 : 0
-        ) as Array<number>
-    )
-    .reduce((acceptedAccumulator, accepted) =>
-      acceptedAccumulator.map(
-        (numAcceptedAtIndex, index) => numAcceptedAtIndex + accepted[index]
-      )
-    );
-};
-
-const computeTried = (contestUsersStats: Array<ContestUserStats>) => {
-  return contestUsersStats
-    .map(
-      (contestUserStats) =>
-        contestUserStats.scores.map((score, index) =>
-          score > 0 || contestUserStats.wrongSubmissionCounts[index] ? 1 : 0
-        ) as Array<number>
-    )
-    .reduce((triedAccumulator, tried) =>
-      triedAccumulator.map(
-        (numTriedAtIndex, index) => numTriedAtIndex + tried[index]
-      )
-    );
-};
 
 const filterUsersWithAtLeastOneSubmission = (
   contestUsersStats: Array<ContestUserData>
@@ -170,8 +139,8 @@ const StandingsPage = (props: {
     );
   }, [ticksSinceBeginning, selectedPage]);
 
-  const accepted = computeAccepted(contestUsersStats);
-  const tried = computeTried(contestUsersStats);
+  const accepted = computeAccepted(contest.contestUsersData);
+  const tried = computeTried(contest.contestUsersData);
   const displayedContestUserStats = contestUsersStats.slice(minIndex, maxIndex);
 
   const dataTableContents: Array<Array<JSX.Element>> = [
