@@ -38,13 +38,17 @@ export const ContestInfoBox = () => {
           fontWeight: 600,
         }}
       >
-        {contestFinished ? "Contest has contestFinished" : "Contest is running"}
+        {contestFinished ? "Contest has finished" : "Contest is running"}
       </span>,
     ],
 
     [
       contestFinished ? (
-        <></>
+        <div id="time-left-container" style={{ fontWeight: 500 }}>
+          {convertSecondsToHHMMSS(
+            0
+          )}
+        </div>
       ) : (
         <div id="time-left-container" style={{ fontWeight: 500 }}>
           {convertSecondsToHHMMSS(
