@@ -3,7 +3,7 @@ import "./navbar.css";
 
 export const NavBar = (props: { gameSaving: boolean }) => {
   const location = useLocation();
-  const pages = ["dashboard", "contests"];
+  const pages = ["dashboard", "contests", "rating"];
 
   return (
     <nav>
