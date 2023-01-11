@@ -2,8 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   RECOMPUTE_RATINGS_EVERY_N_TICKS,
-  USERS_NO_ON_STANDINGS_PAGE,
-} from "../../../../app/contest/constants";
+  USERS_NO_ON_STANDINGS_PAGE} from "../../../constants";
 import { selectContest } from "../../../../app/contest/contest-slice";
 import { computeAccepted, computeContestUsersStatsSortedByRank, computeTried } from "../../../../app/contest/contest-stats";
 import {
@@ -24,6 +23,7 @@ import { convertSecondsToHHMM } from "../../../../utils/time-format";
 import { sum } from "../../../../utils/utils";
 import { DataTable } from "../../utils/datatable";
 import { Flag } from "../../utils/flag";
+import { RankingPageLinks } from "../../utils/ranking-page-links";
 import { RatingStyled } from "../../utils/styled-rating";
 import { StandingsStub } from "./standings-stub";
 import "./standings.css";
@@ -174,7 +174,7 @@ const StandingsPage = (props: {
             <Flag countryName={contestUserStats.country} />
             <RatingStyled
               stringToStyle={contestUserStats.handle}
-              rating={contestUserStats.oldRating}
+              rating={contest.finished && newRating ? newRating.rating : contestUserStats.oldRating}
             />
           </div>,
           <>{Math.round(sum(contestUserStats.scores))}</>,
@@ -273,25 +273,16 @@ const StandingsPage = (props: {
         contents={dataTableContents}
         classNames={classNames}
       />
-      <div id="standings-page-links-container">
-        {Array(Math.ceil(contestUsersStats.length / USERS_NO_ON_STANDINGS_PAGE))
-          .fill(0)
-          .map((_, index) => (
-            <a
-              onClick={(_e) => {
-                setSelectedPage(index + 1);
-                setRatingsRecomputedCount(-1);
-              }}
-              key={index}
-            >
-              {USERS_NO_ON_STANDINGS_PAGE * index + 1}-
-              {Math.min(
-                USERS_NO_ON_STANDINGS_PAGE * (index + 1),
-                contestUsersStats.length
-              )}
-            </a>
-          ))}
-      </div>
+      <RankingPageLinks
+        setSelectedPage={setSelectedPage}
+        additionalDispatch={{
+          dispatch: setRatingsRecomputedCount,
+          param: -1,
+        }}
+        dataLength={contestUsersStats.length}
+        dataOnOnePage={USERS_NO_ON_STANDINGS_PAGE}
+      />
     </div>
+
   );
 };
