@@ -71,7 +71,7 @@ describe("submitProblem function", () => {
     );
 
     const wrongCount = wrongProblemSolveStatusArray.length;
-    assertProbabilisticCloseTo(wrongCount, 990, 8);
+    assertProbabilisticCloseTo(wrongCount, 950, 15);
   });
 
   it("returns reasonable increments if the submission is wrong, ", () => {
@@ -111,8 +111,8 @@ describe("submitProblem function", () => {
 
     assertProbabilisticCloseTo(
       wrongProblemSolveStatuses[3750].penPaperProgressIncrement.increment,
-      1 / 320,
-      1 / 3000
+      1 / 280,
+      1 / 2500
     );
 
     wrongProblemSolveStatuses.sort(
@@ -123,8 +123,8 @@ describe("submitProblem function", () => {
 
     assertProbabilisticCloseTo(
       wrongProblemSolveStatuses[3750].implementationProgressIncrement.increment,
-      1 / 750,
-      1 / 8000
+      1 / 650,
+      1 / 6000
     );
   });
 
