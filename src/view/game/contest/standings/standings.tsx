@@ -120,12 +120,12 @@ const StandingsPage = (props: {
         (contestUserStats) =>
           (newRatingsPartial[contestUserStats.handle] = {
             rating: contestUserStats.oldRating,
-            timestamp: 0, // will be ignored
+            contestName: null, // will be ignored
           })
       );
 
       return newRatingsPartial;
-    } else return computeNewRatingsSlice(contestUsersStats, minIndex, maxIndex);
+    } else return computeNewRatingsSlice(contestUsersStats, contest.name, minIndex, maxIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ratingsRecomputedCount]);
 

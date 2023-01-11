@@ -75,6 +75,7 @@ export const computeNewRatingsSlice = (
     oldRating: number;
     rank: number;
   }>,
+  contestName: string | null,
   min?: number,
   max?: number
 ): RatingPoints => {
@@ -130,7 +131,6 @@ export const computeNewRatingsSlice = (
         userRatings.length;
 
   const ratingPoints: RatingPoints = {};
-  const now = Date.now();
   userRatings.forEach((oldRating, index) => {
     ratingPoints[handles[min !== undefined ? min + index : index]] = {
       rating:
@@ -138,7 +138,7 @@ export const computeNewRatingsSlice = (
           performancesOfUsersSeededAsGeomeans[index] -
           zeroMeanCorrection) /
         2,
-      timestamp: now,
+      contestName,
     };
   });
 
@@ -156,7 +156,8 @@ export const recalculateRatings = (
   contestUsersData: Array<ContestUserData>,
   problemScores: Array<number>,
   problemScoreDecrementsPerMinute: Array<number>,
-  users: Array<User>
+  users: Array<User>,
+  contestName: string
 ): RatingPoints => {
   const contestUsersStats = computeContestUsersStatsSortedByRank(
     contestUsersData,
@@ -166,5 +167,5 @@ export const recalculateRatings = (
     problemScoreDecrementsPerMinute
   );
 
-  return computeNewRatingsSlice(contestUsersStats);
+  return computeNewRatingsSlice(contestUsersStats, contestName);
 };

@@ -142,16 +142,17 @@ describe("computeNewRatingsSlice function", () => {
 
   it("computes new ratings", () => {
     let newRatings = computeNewRatingsSlice(
-      contestUsersStatsArray[0]
+      contestUsersStatsArray[0],
+      null
     ) as Record<string, RatingPoint>;
 
     assertProbabilisticCloseTo(newRatings.tourist.rating, 3700, 1);
     assertProbabilisticCloseTo(newRatings.fourist.rating, 0, 1);
 
-    newRatings = computeNewRatingsSlice(contestUsersStatsArray[1]) as Record<
-      string,
-      RatingPoint
-    >;
+    newRatings = computeNewRatingsSlice(
+      contestUsersStatsArray[1],
+      null
+    ) as Record<string, RatingPoint>;
     assert.equal(newRatings.chad.rating, 2862.668145751953);
     assert.equal(newRatings.tourist.rating, 3462.2105346679687);
     assert.equal(newRatings.normalHandle.rating, 1359.1896911621093);
@@ -161,7 +162,8 @@ describe("computeNewRatingsSlice function", () => {
 
   it("produces zero-mean rating differences", () => {
     const newRatings = computeNewRatingsSlice(
-      contestUsersStatsArray[1]
+      contestUsersStatsArray[1],
+      null
     ) as Record<string, RatingPoint>;
     assert.equal(
       sum(Object.values(newRatings).map((ratingPoint) => ratingPoint.rating)),
@@ -176,6 +178,7 @@ describe("computeNewRatingsSlice function", () => {
   it("ignores zero-mean correction if given a slice", () => {
     const newRatings = computeNewRatingsSlice(
       contestUsersStatsArray[1],
+      null,
       0,
       5
     ) as Record<string, RatingPoint>;
@@ -194,10 +197,12 @@ describe("computeNewRatingsSlice function", () => {
     const maxIndex = 3;
 
     const newRatingsFull = computeNewRatingsSlice(
-      contestUsersStatsArray[1]
+      contestUsersStatsArray[1],
+      null
     ) as Record<string, RatingPoint>;
     const newRatingsSlice = computeNewRatingsSlice(
       contestUsersStatsArray[1],
+      null,
       minIndex,
       maxIndex
     ) as Record<string, RatingPoint>;

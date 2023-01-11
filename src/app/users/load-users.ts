@@ -15,7 +15,7 @@ import type { UsersSlice } from "./users-slice";
 import { decompressFromUTF16 } from "lz-string";
 
 export type RatingPoint = {
-  timestamp: number;
+  contestName: string | null;
   rating: number;
 };
 
@@ -26,7 +26,7 @@ export const generateUser = (
   isPlayer: boolean
 ): User => {
   const ratingHistory: Array<RatingPoint> = [
-    { timestamp: Date.now(), rating: USER_INITIAL_RATING },
+    { contestName: null, rating: USER_INITIAL_RATING },
   ];
 
   const userCore: UserCore = {

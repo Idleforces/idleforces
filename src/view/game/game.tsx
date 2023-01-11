@@ -187,7 +187,8 @@ export const Game = (props: {
         newContestUsersData,
         contest.problemScores,
         contest.problemScoreDecrementsPerMinute,
-        usersWithTimeOfSnapshot.users
+        usersWithTimeOfSnapshot.users,
+        contest.name
       );
 
       dispatch(
