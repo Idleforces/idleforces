@@ -14,9 +14,6 @@ export const DIVISION_MERGE_TICKS_COUNT: Record<ProblemDivision, number> = {
   4: 8,
 };
 
-export const USERS_NO_ON_STANDINGS_PAGE = 200;
-export const RECOMPUTE_RATINGS_EVERY_N_TICKS = 60;
-
 export const EXPECTED_PROBLEM_SCORE = (problemPlacement: ProblemPlacement) => {
   switch (problemPlacement) {
     case "A":
