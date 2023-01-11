@@ -1,8 +1,5 @@
 import type { User } from "../users/types";
-import type {
-  ContestUserData,
-  RatingPoints,
-} from "./types";
+import type { ContestUserData, RatingPoints } from "./types";
 import { sum } from "../../utils/utils";
 import { computeContestUsersStatsSortedByRank } from "./contest-stats";
 
@@ -39,23 +36,35 @@ export const computeSeed = (
   );
 };
 
-export const computeUserRanksConsideringTies = <
+export const computeRanksConsideringTies = (
+  criterion: Array<number>
+): Array<number> => {
+  let curRank = 1;
+  let lastScore = 999999;
+
+  return criterion.map((criterionValue, index) => {
+    if (Math.floor(lastScore) !== Math.floor(criterionValue)) {
+      curRank = index + 1;
+      lastScore = Math.floor(criterionValue);
+    }
+
+    return curRank;
+  });
+};
+
+export const computeContestRanksConsideringTies = <
   T extends { scores: Array<number> }
 >(
   contestUsersStats: Array<T>
 ): Array<T & { rank: number }> => {
-  let curRank = 1;
-  let lastScore = 999999;
+  const ranks = computeRanksConsideringTies(
+    contestUsersStats.map((contestUserStats) => sum(contestUserStats.scores))
+  );
 
   return contestUsersStats.map((contestUserStats, index) => {
-    if (Math.floor(lastScore) !== Math.floor(sum(contestUserStats.scores))) {
-      curRank = index + 1;
-      lastScore = Math.floor(sum(contestUserStats.scores));
-    }
-
     return {
       ...contestUserStats,
-      rank: curRank,
+      rank: ranks[index],
     };
   });
 };

@@ -4,7 +4,7 @@ import { problemPlacements } from "../problems/types";
 import { computeProblemPositionFromProblemPlacement } from "../problems/utils";
 import type { User } from "../users/types";
 import { MIN_RATIO_OF_MAX_SCORE, WRONG_SUBMISSION_PENALTY } from "./constants";
-import { computeUserRanksConsideringTies } from "./recalculate-ratings";
+import { computeContestRanksConsideringTies } from "./recalculate-ratings";
 import type {
   ContestProblemNumberValues,
   ContestUserData,
@@ -79,7 +79,7 @@ export const computeContestUsersStatsSortedByRank = (
   problemScoreDecrementsPerMinute: ContestProblemNumberValues
 ): Array<ContestUserStats> => {
   let userContestIndex = 0;
-  return computeUserRanksConsideringTies(
+  return computeContestRanksConsideringTies(
     contestUsersData
       .map((contestUserData) => {
         const handle = contestUserData.handle;
