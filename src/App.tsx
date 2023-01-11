@@ -17,6 +17,8 @@ import { Contests } from "./view/game/pages/contests";
 import { Contest } from "./view/game/contest/contest";
 import { Standings } from "./view/game/contest/standings/standings";
 import { Problems } from "./view/game/contest/problems/problems";
+import { Rating } from "./view/game/pages/rating";
+import { resetContestArchive } from "./app/contest-archive/contest-archive-slice";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -31,6 +33,7 @@ function App() {
     dispatch(resetSaveData(null));
     dispatch(resetContest(null));
     dispatch(resetEvents(null));
+    dispatch(resetContestArchive(null));
     setContestTypeRunning(null);
     setNoPlayerContestSimSpeed(0);
   };
@@ -72,6 +75,7 @@ function App() {
             <Route path="standings" element={<Standings/>}/>
             <Route path="*" element={<Problems />}/>
           </Route>
+          <Route path="rating" element={<Rating/>}/>
           <Route path="*" element={<Dashboard />} />
         </Route>
         <Route path="/loading" element={<Loading />} />

@@ -25,6 +25,10 @@ import { saveGameData } from "../persist-data";
 import { loadOrGenerateUsers } from "../../app/users/load-users";
 import { processSystests } from "../../app/contest/process-systests";
 import { recalculateRatings } from "../../app/contest/recalculate-ratings";
+import {
+  addContestToArchive,
+  selectArchivedContests,
+} from "../../app/contest-archive/contest-archive-slice";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
@@ -41,6 +45,7 @@ export const Game = (props: {
 
   const usersWithTimeOfSnapshot = useAppSelector(selectUsersWithTimeOfSnapshot);
   const contest = useAppSelector(selectContest);
+  const contestArchive = useAppSelector(selectArchivedContests);
   const contestTicksPassed = contest ? contest.ticksSinceBeginning : 0;
   const events = useAppSelector(selectEvents);
   const saveData = useAppSelector(selectSaveData);
@@ -72,6 +77,7 @@ export const Game = (props: {
             newUsersWithTimeOfSnapshot,
             contest,
             events,
+            contestArchive,
             saveData,
             leaveGame
           );
@@ -104,6 +110,7 @@ export const Game = (props: {
     events,
     usersWithTimeOfSnapshot,
     saveData,
+    contestArchive,
   ]);
 
   const contestTicksPassedAtMaxOfGameLoadStartContest = useMemo(
@@ -130,15 +137,16 @@ export const Game = (props: {
     }
 
     const playerParticipating = contestTypeRunning.playerParticipating;
-    const divisionMergeTicksCount = DIVISION_MERGE_TICKS_COUNT[contest.division];
+    const divisionMergeTicksCount =
+      DIVISION_MERGE_TICKS_COUNT[contest.division];
     const numberOfMergedTicks = playerParticipating
       ? divisionMergeTicksCount
       : Math.ceil(100 * Math.pow(noPlayerContestSimSpeed, 2));
 
     const sleepDuration = playerParticipating
       ? Math.max(
-        divisionMergeTicksCount * (timestampOfMaxOfGameLoadStartContest -
-            Date.now()) +
+          divisionMergeTicksCount *
+            (timestampOfMaxOfGameLoadStartContest - Date.now()) +
             1000 *
               (contestTicksPassed -
                 contestTicksPassedAtMaxOfGameLoadStartContest +
@@ -191,6 +199,7 @@ export const Game = (props: {
         })
       );
       dispatch(updateRatings(newRatingPoints));
+      dispatch(addContestToArchive(contest));
     }
 
     return () => {

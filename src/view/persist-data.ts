@@ -1,4 +1,5 @@
 import hash_sum from "hash-sum";
+import type { ContestArchiveSlice } from "../app/contest-archive/contest-archive-slice";
 import type { ContestSlice } from "../app/contest/types";
 import type { EventsSlice } from "../app/events/types";
 import type { SaveSlice } from "../app/save/save-slice";
@@ -15,6 +16,7 @@ const updateLocalStorageSavesValue = (
   usersHash: string,
   contestHash: string,
   eventsHash: string,
+  contestArchiveHash: string,
   inContest: boolean,
   leaveGame: () => void
 ): void => {
@@ -24,6 +26,7 @@ const updateLocalStorageSavesValue = (
     usersHash,
     contestHash,
     eventsHash,
+    contestArchiveHash,
     inContest,
     saveName: saveData.saveName,
     handle: saveData.handle,
@@ -55,12 +58,14 @@ export const saveGameData = (
   usersWithTimeOfSnapshot: UsersSlice,
   contest: ContestSlice,
   events: EventsSlice,
+  contestArchive: ContestArchiveSlice,
   saveData: Exclude<SaveSlice, null>,
   leaveGame: () => void
 ): void => {
   const usersHash = hash_sum(usersWithTimeOfSnapshot);
   const contestHash = hash_sum(contest);
   const eventsHash = hash_sum(events);
+  const contestArchiveHash = hash_sum(contestArchive);
   const saveName = saveData.saveName;
 
   updateLocalStorageSavesValue(
@@ -68,6 +73,7 @@ export const saveGameData = (
     usersHash,
     contestHash,
     eventsHash,
+    contestArchiveHash,
     contest !== null,
     leaveGame
   );
@@ -88,6 +94,20 @@ export const saveGameData = (
     safeSetLocalStorageValue(
       `contest-${saveName}`,
       JSON.stringify(contest),
+      leaveGame
+    );
+  }
+
+  const localStorageContestArchiveValue = localStorage.getItem(
+    `archive-contest-${saveName}`
+  );
+  if (
+    localStorageContestValue === null ||
+    contestHash !== hash_sum(localStorageContestArchiveValue)
+  ) {
+    safeSetLocalStorageValue(
+      `archive-contest-${saveName}`,
+      JSON.stringify(contestArchive),
       leaveGame
     );
   }

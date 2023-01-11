@@ -18,6 +18,8 @@ import { setEvents } from "../app/events/events-slice";
 import type { EventsSlice } from "../app/events/types";
 import { saveGameData } from "./persist-data";
 import { loadOrGenerateUsers } from "../app/users/load-users";
+import { setContestArchive } from "../app/contest-archive/contest-archive-slice";
+import type { ContestArchiveSlice } from "../app/contest-archive/contest-archive-slice";
 
 const getSavesFromLocalStorage = (): LocalStorageSavesValue => {
   const savesJSON = localStorage.getItem("saves");
@@ -62,7 +64,7 @@ export const Index = (props: {
       dispatch(setSaveData(saveData));
       dispatch(setUsers(newUsersWithTimeOfSnapshot));
 
-      saveGameData(newUsersWithTimeOfSnapshot, null, null, saveData, leaveGame);
+      saveGameData(newUsersWithTimeOfSnapshot, null, null, [], saveData, leaveGame);
       navigate("/game/dashboard");
     } else {
       alert("Please choose a save name different from the previous ones.");
@@ -95,6 +97,11 @@ export const Index = (props: {
         localStorage.getItem(`events-${saveName}`) as string
       ) as EventsSlice;
       dispatch(setEvents(events));
+
+      const contestArchive = JSON.parse(
+        localStorage.getItem(`archive-contest-${saveName}`) as string
+      ) as ContestArchiveSlice;
+      dispatch(setContestArchive(contestArchive));
     }
 
     navigate("/game/dashboard");

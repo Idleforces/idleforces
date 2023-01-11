@@ -23,6 +23,7 @@ import { filterUsersSatisfyingRatingBound } from "../../../app/contest/rating-bo
 import { Link, useNavigate } from "react-router-dom";
 import { setInContest } from "../../../app/save/save-slice";
 import { declareRecordByInitializer } from "../../../utils/utils";
+import { selectArchivedContests } from "../../../app/contest-archive/contest-archive-slice";
 
 const handleContestStart = (
   playerParticipating: boolean,
@@ -59,6 +60,7 @@ export const Contests = (props: {
   const navigate = useNavigate();
 
   const users = useAppSelector(selectUsers) ?? [];
+  const contestArchive = useAppSelector(selectArchivedContests);
 
   const reverseProblemDivisions = [...problemDivisions].reverse();
   const usersSatisfyingRatingBoundsCounts: Record<ProblemDivision, number> =
@@ -70,7 +72,8 @@ export const Contests = (props: {
   const contestNames: Record<ProblemDivision, string> =
     declareRecordByInitializer(
       reverseProblemDivisions,
-      (division) => `Idleforces round (Div. ${division})`
+      (division) =>
+        `Idleforces round #${contestArchive.length + 1} (Div. ${division})`
     );
 
   if (contestTypeRunning)
@@ -116,19 +119,17 @@ export const Contests = (props: {
   const dataTableContents: Array<Array<JSX.Element>> = [
     [<>Name</>, <>Cooldown</>, <>Length</>, <>Start</>, <>Simulate</>],
   ].concat(
-    reverseProblemDivisions
-      .map((division) => [
-        <>{contestNames[division]}</>,
-        <></>,
-        <>
-          {convertSecondsToHHMM(
-            CONTEST_LENGTH /
-              DIVISION_MERGE_TICKS_COUNT[division]
-          )}
-        </>,
-        computeStartContestFieldContent(division, true),
-        computeStartContestFieldContent(division, false),
-      ])
+    reverseProblemDivisions.map((division) => [
+      <>{contestNames[division]}</>,
+      <></>,
+      <>
+        {convertSecondsToHHMM(
+          CONTEST_LENGTH / DIVISION_MERGE_TICKS_COUNT[division]
+        )}
+      </>,
+      computeStartContestFieldContent(division, true),
+      computeStartContestFieldContent(division, false),
+    ])
   );
 
   const classNames = Array(5)
