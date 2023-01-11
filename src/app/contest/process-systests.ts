@@ -37,6 +37,9 @@ export const processSystests = (
             computeProblemPositionFromProblemPlacement(placement);
           const problemPretestsQuality =
             problems[problemPosition].pretestsQuality;
+          const problemQualityPrecision =
+            problems[problemPosition].qualityPrecision;
+
           const problemSolveStatus = problemSolveStatuses[placement];
           const newSubmissions = cloneDeep(problemSolveStatus.submissions);
           newSubmissions.reverse();
@@ -54,10 +57,16 @@ export const processSystests = (
           const implementationCorrect =
             passingSubmission?.implementationCorrect ?? false;
 
+          // pretestsQuality = 0 => passes with 1 - qualityPrecision (usually close to 0).
+          // pretestsQuality = 1 => passes with probability 1 (all wrong solutions caught by pretests)
+          const probabilityIncorrectSubmissionPasses =
+            (1 - problemQualityPrecision) /
+            (1 - problemQualityPrecision * problemPretestsQuality);
+
           if (
             problemSolveStatus.phase === "after-passing-pretests" &&
             ((penPaperCorrect && implementationCorrect) ||
-              Math.random() < problemPretestsQuality)
+              Math.random() < probabilityIncorrectSubmissionPasses)
           ) {
             newSubmissions[lastPassingSubmissionIndex].verdict =
               "Systests passed";

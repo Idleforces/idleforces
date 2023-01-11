@@ -44,7 +44,7 @@ export const submitProblem = <RootStateType>(
   const correct = penPaperCorrect && implementationCorrect;
   const isSuccess = correct
     ? Math.random() < problem.qualityRecall
-    : Math.random() > problem.qualityPrecision;
+    : Math.random() > problem.qualityPrecision * problem.pretestsQuality;
 
   if (isSuccess) {
     if (user.isPlayer)
