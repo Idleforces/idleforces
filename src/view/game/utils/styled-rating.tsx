@@ -1,11 +1,14 @@
 export const RatingStyled = (props: {
   rating: number;
   stringToStyle: number | string;
+  nutellaFormatting?: boolean;
 }) => {
   const rating = props.rating;
   const stringToStyle = String(props.stringToStyle);
+  const nutellaFormatting =
+    props.nutellaFormatting === undefined ? true : props.nutellaFormatting;
 
-  if (rating >= 3000) {
+  if (rating >= 3000 && nutellaFormatting) {
     return (
       <>
         <span style={{ fontWeight: 600, color: "black" }}>
