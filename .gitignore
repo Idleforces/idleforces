@@ -28,6 +28,7 @@ dist-ssr
 # Misc
 public/trimmed-users.json
 dependency-graph.svg
+rating-graph-sample.svg
 
 # Environment variables
 .env
