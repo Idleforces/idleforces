@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./navbar.css";
 
 export const NavBar = (props: { gameSaving: boolean }) => {
@@ -20,7 +21,7 @@ export const NavBar = (props: { gameSaving: boolean }) => {
       </div>
       {props.gameSaving ? (
         <>
-          <i className="fa-solid fa-spinner"></i>
+          <FontAwesomeIcon icon={["fas", "spinner"]}/>
           <span>Loading...</span>
         </>
       ) : (

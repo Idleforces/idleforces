@@ -1,10 +1,14 @@
 /* eslint-disable react/jsx-key */
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   selectContest,
   updatePlayerActiveProblemPlacement,
 } from "../../../../app/contest/contest-slice";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
-import type { ProblemPlacement, ProblemTag } from "../../../../app/problems/types";
+import type {
+  ProblemPlacement,
+  ProblemTag,
+} from "../../../../app/problems/types";
 import { problemPlacements } from "../../../../app/problems/types";
 import {
   computeProblemPlacementFromProblemPosition,
@@ -77,6 +81,7 @@ export const Problems = () => {
         onClick={(_e) => {
           handleSwitchActiveProblem(placement);
         }}
+        tabIndex={0}
       >
         {placement === activeProblemPlacement
           ? "Stop solving problem"
@@ -117,7 +122,7 @@ export const Problems = () => {
                 problemPosition
               )}`}
             >
-              <i className="fa-solid fa-user"></i>x{problemAccepted}
+              <FontAwesomeIcon icon={["fas", "user"]} />x{problemAccepted}
             </Link>
           )),
         ])
@@ -132,10 +137,7 @@ export const Problems = () => {
         topText="Problems"
         containerBorderRadiusPx={5}
       />
-      {
-        playerParticipating ?
-        <Events heightInRem={30}/> : <></>
-      }
+      {playerParticipating ? <Events heightInRem={30} /> : <></>}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import type { Dispatch, FormEvent, SetStateAction } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { setUsers } from "../app/users/users-slice";
@@ -20,6 +21,8 @@ import { saveGameData } from "./persist-data";
 import { loadOrGenerateUsers } from "../app/users/load-users";
 import { setContestArchive } from "../app/contest-archive/contest-archive-slice";
 import type { ContestArchiveSlice } from "../app/contest-archive/types";
+import type { FriendsSlice } from "../app/friends/types";
+import { setFriends } from "../app/friends/friends-slice";
 
 const getSavesFromLocalStorage = (): LocalStorageSavesValue => {
   const savesJSON = localStorage.getItem("saves");
@@ -64,8 +67,10 @@ export const Index = (props: {
       dispatch(setSaveData(saveData));
       dispatch(setUsers(newUsersWithTimeOfSnapshot));
 
-      saveGameData(newUsersWithTimeOfSnapshot, null, null, [], saveData, leaveGame);
-      navigate("/game/dashboard");
+      saveGameData(newUsersWithTimeOfSnapshot, null, null, [], [], saveData, leaveGame)
+        .then(_res => { navigate("/game/dashboard"); })
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .catch(() => {});
     } else {
       alert("Please choose a save name different from the previous ones.");
       setNewSaveName("");
@@ -104,6 +109,11 @@ export const Index = (props: {
     ) as ContestArchiveSlice;
     dispatch(setContestArchive(contestArchive));
 
+    const friends = (JSON.parse(
+      localStorage.getItem(`friends-${saveName}`) as string
+    ) ?? []) as FriendsSlice;
+    dispatch(setFriends(friends));
+
     navigate("/game/dashboard");
   };
 
@@ -124,6 +134,7 @@ export const Index = (props: {
     localStorage.removeItem(`events-${deletedSave.saveName}`);
     localStorage.removeItem(`contest-${deletedSave.saveName}`);
     localStorage.removeItem(`archive-contest-${deletedSave.saveName}`);
+    localStorage.removeItem(`friends-${deletedSave.saveName}`);
   };
 
   return (
@@ -223,11 +234,12 @@ export const Index = (props: {
                   onClick={(_e) => {
                     loadSave(save);
                   }}
+                  tabIndex={0}
                 >
-                  <i
-                    className="fa-solid fa-right-to-bracket "
+                  <FontAwesomeIcon
+                    icon={["fas", "right-to-bracket"]}
                     id="load-save-button"
-                  ></i>
+                  />
                 </div>
                 <div
                   className="save-box-button-container"
@@ -241,11 +253,12 @@ export const Index = (props: {
                       setSaves(getSavesFromLocalStorage);
                     }
                   }}
+                  tabIndex={0}
                 >
-                  <i
-                    className="fa-solid fa-trash-can"
+                  <FontAwesomeIcon
+                    icon={["fas", "trash-can"]}
                     id="delete-save-button"
-                  ></i>
+                  />
                 </div>
               </span>
             </div>
