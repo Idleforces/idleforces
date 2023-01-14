@@ -76,31 +76,43 @@ export const computeNewRatingsSlice = (
     rank: number;
   }>,
   contestName: string | null,
-  min?: number,
-  max?: number
+  selectedHandles?: Array<string>
 ): RatingPoints => {
   const opponentRatings = contestUsersStats.map(
     (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.oldRating
   );
 
-  const userRatings = contestUsersStats
-    .slice(min, max)
-    .map(
-      (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.oldRating
+  const selectedHandlesList =
+    selectedHandles ??
+    contestUsersStats.map(
+      (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.handle
     );
 
-  const handles = contestUsersStats.map(
-    (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.handle
+  let selectedUsersStats = contestUsersStats;
+  if (selectedHandles)
+    selectedUsersStats = contestUsersStats.filter((contestUserStats) =>
+      selectedHandlesList.includes(contestUserStats.handle)
+    );
+
+  const selectedUserOldRatings = selectedUsersStats.map(
+    (selectedUserStats) => selectedUserStats.oldRating
   );
-  const ranks = contestUsersStats.map(
+
+  const ranksArray = contestUsersStats.map(
     (contestUserStatsSortedByRank) => contestUserStatsSortedByRank.rank
   );
-  const seeds = userRatings.map((rating) =>
-    computeSeed(rating, opponentRatings)
+
+  const ranks: Partial<Record<string, number>> = {};
+  ranksArray.forEach((rank, index) => {
+    ranks[contestUsersStats[index].handle] = rank;
+  });
+
+  const seeds = selectedUsersStats.map(({ oldRating }) =>
+    computeSeed(oldRating, opponentRatings)
   );
 
   const seedRankGeomeans = seeds.map((seed, index) =>
-    Math.sqrt(ranks[index + (min !== undefined ? min : 0)] * seed)
+    Math.sqrt((ranks[selectedUsersStats[index].handle] as number) * seed)
   );
 
   const performancesOfUsersSeededAsGeomeans = seedRankGeomeans.map(
@@ -124,15 +136,14 @@ export const computeNewRatingsSlice = (
     }
   );
 
-  const zeroMeanCorrection =
-    min !== undefined || max !== undefined
-      ? 0
-      : (sum(performancesOfUsersSeededAsGeomeans) - sum(userRatings)) /
-        userRatings.length;
+  const zeroMeanCorrection = selectedHandles
+    ? 0
+    : (sum(performancesOfUsersSeededAsGeomeans) - sum(selectedUserOldRatings)) /
+      selectedUserOldRatings.length;
 
   const ratingPoints: RatingPoints = {};
-  userRatings.forEach((oldRating, index) => {
-    ratingPoints[handles[min !== undefined ? min + index : index]] = {
+  selectedUserOldRatings.forEach((oldRating, index) => {
+    ratingPoints[selectedUsersStats[index].handle] = {
       rating:
         (oldRating +
           performancesOfUsersSeededAsGeomeans[index] -

@@ -176,12 +176,13 @@ describe("computeNewRatingsSlice function", () => {
   });
 
   it("ignores zero-mean correction if given a slice", () => {
-    const newRatings = computeNewRatingsSlice(
-      contestUsersStatsArray[1],
-      null,
-      0,
-      5
-    ) as Record<string, RatingPoint>;
+    const newRatings = computeNewRatingsSlice(contestUsersStatsArray[1], null, [
+      "chad",
+      "tourist",
+      "normalHandle",
+      "virgin",
+      "fourist",
+    ]) as Record<string, RatingPoint>;
     assert.notEqual(
       sum(Object.values(newRatings).map((ratingPoint) => ratingPoint.rating)),
       sum(
@@ -193,9 +194,7 @@ describe("computeNewRatingsSlice function", () => {
   });
 
   it("produces similar results whether given a slice or not which only differ by zero-mean correction", () => {
-    const minIndex = 1;
-    const maxIndex = 3;
-
+    const handles = ["tourist", "normalHandle"];
     const newRatingsFull = computeNewRatingsSlice(
       contestUsersStatsArray[1],
       null
@@ -203,8 +202,7 @@ describe("computeNewRatingsSlice function", () => {
     const newRatingsSlice = computeNewRatingsSlice(
       contestUsersStatsArray[1],
       null,
-      minIndex,
-      maxIndex
+      handles
     ) as Record<string, RatingPoint>;
 
     const ratingDiff =
