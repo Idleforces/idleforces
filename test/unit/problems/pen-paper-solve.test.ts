@@ -23,8 +23,8 @@ describe("startPenPaperSolving function", () => {
       .map((problemSolveStatus) => problemSolveStatus.increment)
       .sort((a, b) => b - a);
 
-    assertProbabilisticCloseTo(increments[500], 1 / 750, 1 / 6000);
-    assertProbabilisticCloseTo(increments[100], 1 / 280, 1 / 1500);
+    assertProbabilisticCloseTo(increments[500], 1 / 700, 1 / 6000);
+    assertProbabilisticCloseTo(increments[100], 1 / 240, 1 / 1500);
     assertProbabilisticCloseTo(increments[900], 1 / 1950, 1 / 10000);
   });
 });

@@ -21,13 +21,13 @@ describe("generateProblem function", () => {
     const penPaperDifficultyExpectedStdevs = [0.03, 0.04, 0.05, 0.035];
 
     const implementationDifficultyExpectedMeans = [0.14, 0.25, 0.48, 0.8];
-    const implementationDifficultyExpectedStdevs = [0.04, 0.06, 0.07, 0.05];
+    const implementationDifficultyExpectedStdevs = [0.03, 0.06, 0.07, 0.05];
 
-    const deceptivenessExpectedMeans = [0.15, 0.28, 0.52, 0.78];
-    const deceptivenessExpectedStdevs = [0.1, 0.14, 0.16, 0.11];
+    const deceptivenessExpectedMeans = [0.09, 0.2, 0.52, 0.9];
+    const deceptivenessExpectedStdevs = [0.05, 0.11, 0.16, 0.06];
 
     const readingDifficultyExpectedMeans = [0.25, 0.35, 0.54, 0.73];
-    const readingDifficultyExpectedStdevs = [0.1, 0.11, 0.11, 0.1];
+    const readingDifficultyExpectedStdevs = [0.08, 0.11, 0.11, 0.09];
 
     const qualityPrecisionLowerBound = {
       bound: 0.8,
@@ -121,7 +121,7 @@ describe("generateProblem function", () => {
       assertProbabilisticCloseTo(
         implementationDifficultyStDev,
         implementationDifficultyExpectedStdev,
-        0.01
+        0.015
       );
       assertProbabilisticCloseTo(
         implementationDifficultyMean,

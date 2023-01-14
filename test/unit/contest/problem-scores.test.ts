@@ -59,6 +59,6 @@ describe("computeProblemScores function", () => {
       ) as number;
     }
 
-    assertProbabilisticCloseTo(difficultiesScoresCorr, 0.2, 0.04);
+    assertProbabilisticCloseTo(difficultiesScoresCorr, 0.18, 0.04);
   });
 });

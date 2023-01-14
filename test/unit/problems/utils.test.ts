@@ -8,9 +8,17 @@ import {
 
 describe("computeCombinedPlacementBetweenDivisions function", () => {
   it("computes combined placement as a roughly single-digit number", () => {
-    assert.closeTo(computeCombinedPlacementBetweenDivisions("B", 4), 0.6, 1e-6);
-    assert.closeTo(computeCombinedPlacementBetweenDivisions("C", 3), 3, 1e-6);
-    assert.closeTo(computeCombinedPlacementBetweenDivisions("F", 1), 10, 1e-6);
+    assert.closeTo(
+      computeCombinedPlacementBetweenDivisions("B", 4),
+      0.15,
+      1e-6
+    );
+    assert.closeTo(computeCombinedPlacementBetweenDivisions("C", 3), 2.9, 1e-6);
+    assert.closeTo(
+      computeCombinedPlacementBetweenDivisions("F", 1),
+      11.75,
+      1e-6
+    );
   });
 });
 

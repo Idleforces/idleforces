@@ -24,7 +24,7 @@ describe("startImplementing function", () => {
 
     assertProbabilisticCloseTo(increments[500], 1 / 630, 1 / 5000);
     assertProbabilisticCloseTo(increments[100], 1 / 230, 1 / 1800);
-    assertProbabilisticCloseTo(increments[900], 1 / 1660, 1 / 15000);
+    assertProbabilisticCloseTo(increments[900], 1 / 1800, 1 / 15000);
   });
 });
 
@@ -50,13 +50,13 @@ describe("computeIfImplementationCorrect function", () => {
 
     assertProbabilisticCloseTo(
       areImplementationCorrectNoSubmissions.filter((x) => x).length,
-      830,
-      40
+      888,
+      25
     );
 
     assertProbabilisticCloseTo(
       areImplementationCorrectWithSubmissions.filter((x) => x).length,
-      560,
+      510,
       50
     );
   });

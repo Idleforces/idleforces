@@ -18,11 +18,11 @@ export const PROBLEM_IMPLEMENTATION_DIFFICULTY_MULTIPLIER = 0.3;
 export const PROBLEM_IMPLEMENTATION_DIFFICULTY_STDEV = 0.3;
 
 export const PROBLEM_PEN_PAPER_DECEPTIVENESS_MIDPOINT = 5.5;
-export const PROBLEM_PEN_PAPER_DECEPTIVENESS_MULTIPLIER = 0.3;
+export const PROBLEM_PEN_PAPER_DECEPTIVENESS_MULTIPLIER = 0.4;
 export const PROBLEM_PEN_PAPER_DECEPTIVENESS_STDEV = 0.75;
 
 export const PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MIDPOINT = 5.5;
-export const PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MULTIPLIER = 0.3;
+export const PROBLEM_IMPLEMENTATION_DECEPTIVENESS_MULTIPLIER = 0.4;
 export const PROBLEM_IMPLEMENTATION_DECEPTIVENESS_STDEV = 0.75;
 
 export const PROBLEM_READING_DIFFICULTY_MIDPOINT = 5.5;
@@ -35,19 +35,19 @@ export const READING_TIME_SCALING_FACTOR = Math.E;
 
 export const PEN_PAPER_SOLVING_DISTRIBUTION_PRECISION = 3;
 export const PEN_PAPER_SOLVING_TIME_BASE = 850;
-export const PEN_PAPER_SOLVING_SCALING_FACTOR = 8;
+export const PEN_PAPER_SOLVING_SCALING_FACTOR = 12;
 
 export const IMPLEMENTATION_DISTRIBUTION_PRECISION = 4;
 export const IMPLEMENTATION_TIME_BASE = 700;
-export const IMPLEMENTATION_SCALING_FACTOR = 6;
+export const IMPLEMENTATION_SCALING_FACTOR = 9;
 
 export const PEN_PAPER_SEARCHING_FOR_MISTAKE_DISTRIBUTION_PRECISION = 1;
 export const PEN_PAPER_SEARCHING_FOR_MISTAKE_TIME_BASE = 150;
-export const PEN_PAPER_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 4;
+export const PEN_PAPER_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 6;
 
 export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_DISTRIBUTION_PRECISION = 0.5;
 export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_TIME_BASE = 300;
-export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 4;
+export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 6;
 
 export const PROBABILITY_OF_PEN_PAPER_CORRECT_SCALING_FACTOR = 0.8;
 export const PROBABILITY_OF_IMPLEMENTATION_CORRECT_SCALING_FACTOR = 0.8;
@@ -69,18 +69,21 @@ export const computeCombinedPlacementDivisionFactor = (
 ) => {
   switch (division) {
     case 4:
-      return -0.5;
+      return -1;
     case 3:
-      return 0.8;
+      return 0.5;
     case 2:
-      return 2.5;
+      return 2.4;
     case 1:
-      return 4.5;
+      return 5;
   }
 };
 
 export const computeCombinedPlacementPlacementFactor = (
   placement: ProblemPlacement
 ) => {
-  return 1.1 * (placement.charCodeAt(0) - "A".charCodeAt(0));
+  return (
+    1.1 * (placement.charCodeAt(0) - "A".charCodeAt(0)) +
+    0.05 * Math.pow(placement.charCodeAt(0) - "A".charCodeAt(0), 2)
+  );
 };
