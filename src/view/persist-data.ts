@@ -1,5 +1,5 @@
 import hash_sum from "hash-sum";
-import type { ContestArchiveSlice } from "../app/contest-archive/contest-archive-slice";
+import type { ContestArchiveSlice } from "../app/contest-archive/types";
 import type { ContestSlice } from "../app/contest/types";
 import type { EventsSlice } from "../app/events/types";
 import type { SaveSlice } from "../app/save/save-slice";

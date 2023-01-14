@@ -19,7 +19,7 @@ import type { EventsSlice } from "../app/events/types";
 import { saveGameData } from "./persist-data";
 import { loadOrGenerateUsers } from "../app/users/load-users";
 import { setContestArchive } from "../app/contest-archive/contest-archive-slice";
-import type { ContestArchiveSlice } from "../app/contest-archive/contest-archive-slice";
+import type { ContestArchiveSlice } from "../app/contest-archive/types";
 
 const getSavesFromLocalStorage = (): LocalStorageSavesValue => {
   const savesJSON = localStorage.getItem("saves");
@@ -123,6 +123,7 @@ export const Index = (props: {
     localStorage.removeItem(`users-${deletedSave.saveName}`);
     localStorage.removeItem(`events-${deletedSave.saveName}`);
     localStorage.removeItem(`contest-${deletedSave.saveName}`);
+    localStorage.removeItem(`archive-contest-${deletedSave.saveName}`);
   };
 
   return (

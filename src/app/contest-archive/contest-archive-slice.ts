@@ -2,15 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { ContestSlice } from "../contest/types";
 import type { RootState } from "../store";
-
-export type ContestArchiveSlice = Array<
-  Pick<
-    Exclude<ContestSlice, null>,
-    "division" | "problems" | "problemScores" | "name"
-  > & {
-    timestamp: number;
-  }
->;
+import type { ContestArchivePlayerData, ContestArchiveSlice } from "./types";
+import { declareRecordByInitializer } from "../../utils/utils";
+import { problemPlacements } from "../problems/types";
+import { generateInitialProblemSolveStatus } from "../problems/solve-problem";
 
 export const contestArchiveSlice = createSlice({
   name: "contestArchive",
@@ -30,12 +25,37 @@ export const contestArchiveSlice = createSlice({
       state: ContestArchiveSlice,
       action: PayloadAction<Exclude<ContestSlice, null>>
     ) => {
+      const contest = action.payload;
+      const playerParticipating = contest.contestUsersData[0].isPlayer;
+
+      let contestArchivePlayerData: ContestArchivePlayerData = {
+        blockingBreak: null,
+        nonBlockingBreaks: declareRecordByInitializer(
+          problemPlacements,
+          (_placement) => null
+        ),
+        problemSolveStatuses: declareRecordByInitializer(
+          problemPlacements,
+          (_placement) => generateInitialProblemSolveStatus()
+        ),
+      };
+
+      if (playerParticipating) {
+        const contestPlayerData = contest.contestUsersData[0];
+        contestArchivePlayerData = {
+          blockingBreak: contestPlayerData.blockingBreak,
+          nonBlockingBreaks: contestPlayerData.nonBlockingBreaks,
+          problemSolveStatuses: contestPlayerData.problemSolveStatuses,
+        };
+      }
+
       state.push({
-        division: action.payload.division,
-        problems: action.payload.problems,
-        problemScores: action.payload.problemScores,
+        division: contest.division,
+        problems: contest.problems,
+        problemScores: contest.problemScores,
         name: action.payload.name,
         timestamp: Date.now(),
+        contestArchivePlayerData,
       });
     },
   },

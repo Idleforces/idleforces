@@ -195,17 +195,28 @@ export const Game = (props: {
         updateContestSlice({
           nextEventIn: NaN,
           newContestUsersData,
-          numberOfTicksSimulated: numberOfMergedTicks,
+          numberOfTicksSimulated: 0,
           contestFinished: true,
         })
       );
-      dispatch(updateRatings(newRatingPoints));
+
       dispatch(addContestToArchive(contest));
+      if (saveData)
+        saveGameData(
+          usersWithTimeOfSnapshot,
+          contest,
+          events,
+          contestArchive,
+          saveData,
+          leaveGame
+        );
+      dispatch(updateRatings(newRatingPoints));
     }
 
     return () => {
       ignore = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     contestTypeRunning,
     contestTicksPassed,
