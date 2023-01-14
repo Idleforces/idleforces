@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-key */
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { MutableRefObject, SetStateAction, Dispatch } from "react";
 import {
   RECOMPUTE_RATINGS_EVERY_N_TICKS,
   USERS_NO_ON_STANDINGS_PAGE,
@@ -10,10 +11,14 @@ import {
   computeContestUsersStatsSortedByRank,
   computeTried,
 } from "../../../../app/contest/contest-stats";
-import { computeNewRatingsSlice } from "../../../../app/contest/recalculate-ratings";
+import {
+  computeNewRatingsSlice,
+  computeRanksConsideringTies,
+} from "../../../../app/contest/recalculate-ratings";
 import type {
   ContestSlice,
   ContestUserData,
+  ContestUserStats,
   RatingPoints,
 } from "../../../../app/contest/types";
 import { useAppSelector } from "../../../../app/hooks";
@@ -31,6 +36,20 @@ import { RatingStyled } from "../../utils/styled-rating";
 import { StandingsStub } from "./standings-stub";
 import "./standings.css";
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router";
+import { selectFriends } from "../../../../app/friends/friends-slice";
+
+export type RatingRecomputeData =
+  | {
+      placeholder: false;
+      selectedPage: number;
+      onlyFriends: boolean;
+      finished: boolean;
+      numberOfTimesRecomputedByContestProgress: number;
+    }
+  | {
+      placeholder: true;
+    };
 
 const filterUsersWithAtLeastOneSubmission = (
   contestUsersStats: Array<ContestUserData>
@@ -43,10 +62,27 @@ const filterUsersWithAtLeastOneSubmission = (
   );
 };
 
-export const Standings = () => {
+const computeNumberOfTimesRecomputedByContestProgress = (
+  ticksSinceBeginning: number,
+  ticksSinceBeginningAtMount: MutableRefObject<number>
+) => {
+  return Math.floor(
+    (ticksSinceBeginning - ticksSinceBeginningAtMount.current) /
+      RECOMPUTE_RATINGS_EVERY_N_TICKS
+  );
+};
+
+export const Standings = (props: {
+  ratingRecomputeData: RatingRecomputeData;
+  setRatingRecomputeData: Dispatch<SetStateAction<RatingRecomputeData>>;
+}) => {
+  const { ratingRecomputeData, setRatingRecomputeData } = props;
+
   const contest = useAppSelector(selectContest);
   const users = useAppSelector(selectUsers);
   const handle = useAppSelector(selectHandle);
+  const location = useLocation();
+  const onlyFriends = location.pathname.includes("friends");
 
   if (!contest || !users || handle === undefined)
     return <StandingsStub text="No contest found." />;
@@ -57,14 +93,26 @@ export const Standings = () => {
       contest.contestUsersData
     ),
   };
+
   if (contestWithUsersWithASubmission.contestUsersData.length === 0)
-    return <StandingsStub text="No submission has been made yet." />;
+    return (
+      <StandingsStub
+        text={
+          onlyFriends
+            ? "None of you or your friends has made a submission yet"
+            : "No submission has been made yet."
+        }
+      />
+    );
 
   return (
     <StandingsPage
       contest={contestWithUsersWithASubmission}
       users={users}
       handle={handle}
+      onlyFriends={onlyFriends}
+      ratingRecomputeData={ratingRecomputeData}
+      setRatingRecomputeData={setRatingRecomputeData}
     />
   );
 };
@@ -73,9 +121,21 @@ const StandingsPage = (props: {
   contest: Exclude<ContestSlice, null>;
   users: Array<User>;
   handle: string;
+  onlyFriends: boolean;
+  ratingRecomputeData: RatingRecomputeData;
+  setRatingRecomputeData: Dispatch<SetStateAction<RatingRecomputeData>>;
 }) => {
-  const { contest, users, handle } = props;
+  const {
+    contest,
+    users,
+    handle,
+    onlyFriends,
+    ratingRecomputeData,
+    setRatingRecomputeData,
+  } = props;
+
   const finished = contest.finished;
+  const friends = useAppSelector(selectFriends);
 
   const contestUsersStats = computeContestUsersStatsSortedByRank(
     contest.contestUsersData,
@@ -85,6 +145,35 @@ const StandingsPage = (props: {
     contest.problemScores,
     contest.problemScoreDecrementsPerMinute
   );
+
+  let friendsContestUsersStats: Array<
+    ContestUserStats & { globalRank?: number }
+  > = contestUsersStats;
+
+  if (onlyFriends) {
+    friendsContestUsersStats = friendsContestUsersStats
+      .filter(
+        (contestUserStats) =>
+          friends.includes(contestUserStats.handle) ||
+          contestUserStats.handle === handle
+      )
+      .map((contestUsersStats) => {
+        return {
+          ...contestUsersStats,
+          globalRank: contestUsersStats.rank,
+        };
+      });
+
+    const ranks = computeRanksConsideringTies(
+      friendsContestUsersStats.map((contestUserStats) =>
+        Math.round(sum(contestUserStats.scores))
+      )
+    );
+
+    friendsContestUsersStats.forEach(
+      (contestUserStats, index) => (contestUserStats.rank = ranks[index])
+    );
+  }
 
   const handleIndex = contestUsersStats.findIndex(
     (userStats) => userStats.handle === handle
@@ -97,37 +186,27 @@ const StandingsPage = (props: {
   const minIndex = (selectedPage - 1) * USERS_NO_ON_STANDINGS_PAGE;
   const maxIndex = selectedPage * USERS_NO_ON_STANDINGS_PAGE;
 
+  const displayedContestUsersStats = friendsContestUsersStats.slice(
+    minIndex,
+    maxIndex
+  );
+
   /*
     Here, computing newRatings takes about 1.5 seconds on my machine.
     The following optimizes computation of newRatings as follows.
-        - `ratingsRecomputedCount` is modified after every
+        - `ratingRecomputeData` is modified after every
           `RECOMPUTE_RATINGS_EVERY_N_TICKS` ticks in the post-render phase.
         - This in turn triggers recomputation of the memo of `newRatings`.
   */
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const ticksSinceBeginning = contest.ticksSinceBeginning;
-  const ticksSinceBeginningAtMount = useRef(ticksSinceBeginning);
-  const [
-    ticksSinceBeginningUpdatedDuringContest,
-    setTicksSinceBeginningUpdatedDuringContest,
-  ] = useState(0);
-  if (
-    !finished &&
-    ticksSinceBeginningUpdatedDuringContest !== ticksSinceBeginning
-  )
-    setTicksSinceBeginningUpdatedDuringContest(ticksSinceBeginning);
-
-  const ratingsBeforeContest = useMemo(
-    () =>
-      contestUsersStats.map((contestUserStats) => contestUserStats.oldRating),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ticksSinceBeginningUpdatedDuringContest]
+  const oldRatings = displayedContestUsersStats.map(
+    (contestUserStats) => contestUserStats.oldRating
   );
 
-  const [ratingsRecomputedCount, setRatingsRecomputedCount] = useState(-1);
+  const ticksSinceBeginning = contest.ticksSinceBeginning;
+  const ticksSinceBeginningAtMount = useRef(ticksSinceBeginning);
+
   const newRatings: Partial<RatingPoints> = useMemo(() => {
-    if (ratingsRecomputedCount === -1) {
+    if (ratingRecomputeData.placeholder) {
       const newRatingsPartial: Partial<RatingPoints> = {};
       contestUsersStats.forEach(
         (contestUserStats) =>
@@ -154,25 +233,35 @@ const StandingsPage = (props: {
       return computeNewRatingsSlice(
         contestUsersStats,
         contest.name,
-        minIndex,
-        maxIndex
+        displayedContestUsersStats.map(
+          (contestUserStats) => contestUserStats.handle
+        )
       );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ratingsRecomputedCount, finished]);
+  }, [ratingRecomputeData, finished]);
 
   useEffect(() => {
-    setRatingsRecomputedCount(
-      Math.floor(
-        (ticksSinceBeginning - ticksSinceBeginningAtMount.current) /
-          RECOMPUTE_RATINGS_EVERY_N_TICKS
-      ) +
-        2 * selectedPage
-    );
-  }, [ticksSinceBeginning, selectedPage]);
+    setRatingRecomputeData((prev) => {
+      const newReturnObject = {
+        numberOfTimesRecomputedByContestProgress:
+          computeNumberOfTimesRecomputedByContestProgress(
+            ticksSinceBeginning,
+            ticksSinceBeginningAtMount
+          ),
+        selectedPage,
+        onlyFriends,
+        placeholder: false,
+        finished
+      };
+
+      return JSON.stringify(prev) === JSON.stringify(newReturnObject)
+        ? prev
+        : newReturnObject;
+    });
+  }, [ticksSinceBeginning, selectedPage, onlyFriends, setRatingRecomputeData, finished]);
 
   const accepted = computeAccepted(contest.contestUsersData);
   const tried = computeTried(contest.contestUsersData);
-  const displayedContestUserStats = contestUsersStats.slice(minIndex, maxIndex);
 
   const dataTableContents: Array<Array<JSX.Element>> = [
     [<>#</>, <>Who</>, <>=</>]
@@ -193,16 +282,18 @@ const StandingsPage = (props: {
       .concat([<>Δ</>]),
   ]
     .concat(
-      displayedContestUserStats.map((contestUserStats, index) => {
+      displayedContestUsersStats.map((contestUserStats, index) => {
         const newRating = newRatings[contestUserStats.handle];
         const ratingDiff = newRating
-          ? Math.round(
-              newRating.rating - ratingsBeforeContest[minIndex + index]
-            )
+          ? Math.round(newRating.rating - oldRatings[index])
           : 0;
 
         return [
-          <>{contestUserStats.rank}</>,
+          <>
+            {onlyFriends && contestUserStats.globalRank !== undefined
+              ? `${contestUserStats.rank} (${contestUserStats.globalRank})`
+              : contestUserStats.rank}
+          </>,
           <div className="align-left">
             <Flag countryName={contestUserStats.country} />
             <Link to={`/game/profile/${contestUserStats.handle}`}>
@@ -299,7 +390,7 @@ const StandingsPage = (props: {
         return className;
       }),
   ].concat(
-    Array(displayedContestUserStats.length + 1)
+    Array(displayedContestUsersStats.length + 1)
       .fill(0)
       .map((_) => Array<string>(4 + accepted.length).fill(""))
   );
@@ -315,10 +406,12 @@ const StandingsPage = (props: {
       <RankingPageLinks
         setSelectedPage={setSelectedPage}
         additionalDispatch={{
-          dispatch: setRatingsRecomputedCount,
-          param: -1,
+          dispatch: setRatingRecomputeData,
+          param: {
+            placeholder: true,
+          },
         }}
-        dataLength={contestUsersStats.length}
+        dataLength={friendsContestUsersStats.length}
         dataOnOnePage={USERS_NO_ON_STANDINGS_PAGE}
       />
     </div>

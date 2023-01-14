@@ -12,13 +12,16 @@ import {
 } from "../../../app/contest/contest-slice";
 import { resetEvents } from "../../../app/events/events-slice";
 import { setInContest } from "../../../app/save/save-slice";
+import type { RatingRecomputeData } from "./standings/standings";
 
 export const Contest = (props: {
   noPlayerContestSimSpeed: number;
   setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
   contestTypeRunning: ContestTypeRunning;
   setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
+  setRatingRecomputeData: Dispatch<SetStateAction<RatingRecomputeData>>;
 }) => {
+  const setRatingRecomputeData = props.setRatingRecomputeData;
   const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
   const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
   const playerParticipating =
@@ -40,7 +43,7 @@ export const Contest = (props: {
 
   return (
     <>
-      <ContestNavBar />
+      <ContestNavBar setRatingRecomputeData={setRatingRecomputeData} />
       <div id="contest-ui">
         <div id="contest-main">
           <Outlet />
@@ -59,6 +62,7 @@ export const Contest = (props: {
             <button
               disabled={contestFinished === null || !contestFinished}
               onClick={endContest}
+              tabIndex={0}
             >
               End contest
             </button>

@@ -1,10 +1,11 @@
 import type { Dispatch, SetStateAction } from "react";
+import type { RatingRecomputeData } from "../contest/standings/standings";
 
 export const RankingPageLinks = (props: {
   setSelectedPage: Dispatch<SetStateAction<number>>;
   additionalDispatch?: {
-    dispatch: Dispatch<SetStateAction<number>>;
-    param: number;
+    dispatch: Dispatch<SetStateAction<RatingRecomputeData>>;
+    param: RatingRecomputeData;
   };
   dataLength: number;
   dataOnOnePage: number;
@@ -22,6 +23,7 @@ export const RankingPageLinks = (props: {
               if (additionalDispatch)
                 additionalDispatch.dispatch(additionalDispatch.param);
             }}
+            tabIndex={0}
             key={index}
           >
             {dataOnOnePage * index + 1}-

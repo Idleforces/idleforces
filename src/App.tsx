@@ -16,10 +16,12 @@ import { useRef, useState } from "react";
 import { Contests } from "./view/game/pages/contests";
 import { Contest } from "./view/game/contest/contest";
 import { Standings } from "./view/game/contest/standings/standings";
+import type { RatingRecomputeData } from "./view/game/contest/standings/standings";
 import { Problems } from "./view/game/contest/problems/problems";
 import { Rating } from "./view/game/pages/rating";
 import { resetContestArchive } from "./app/contest-archive/contest-archive-slice";
 import { Profile } from "./view/game/pages/profile";
+import { resetFriends } from "./app/friends/friends-slice";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -28,6 +30,10 @@ function App() {
   const [contestTypeRunning, setContestTypeRunning] =
     useState<ContestTypeRunning>(null);
   const [noPlayerContestSimSpeed, setNoPlayerContestSimSpeed] = useState(0);
+  const [ratingRecomputeData, setRatingRecomputeData] =
+    useState<RatingRecomputeData>({
+      placeholder: true,
+    });
 
   const resetData = () => {
     dispatch(resetUsers(null));
@@ -35,6 +41,7 @@ function App() {
     dispatch(resetContest(null));
     dispatch(resetEvents(null));
     dispatch(resetContestArchive(null));
+    dispatch(resetFriends(null));
     setContestTypeRunning(null);
     setNoPlayerContestSimSpeed(0);
   };
@@ -68,17 +75,40 @@ function App() {
               />
             }
           />
-          <Route path="contest/" element={<Contest
-            noPlayerContestSimSpeed={noPlayerContestSimSpeed}
-            setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
-            contestTypeRunning={contestTypeRunning}
-            setContestTypeRunning={setContestTypeRunning}
-          />}>
-            <Route path="standings" element={<Standings/>}/>
-            <Route path="*" element={<Problems />}/>
+          <Route
+            path="contest/"
+            element={
+              <Contest
+                noPlayerContestSimSpeed={noPlayerContestSimSpeed}
+                setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
+                contestTypeRunning={contestTypeRunning}
+                setContestTypeRunning={setContestTypeRunning}
+                setRatingRecomputeData={setRatingRecomputeData}
+              />
+            }
+          >
+            <Route
+              path="standings"
+              element={
+                <Standings
+                  ratingRecomputeData={ratingRecomputeData}
+                  setRatingRecomputeData={setRatingRecomputeData}
+                />
+              }
+            />
+            <Route
+              path="standings/friends"
+              element={
+                <Standings
+                  ratingRecomputeData={ratingRecomputeData}
+                  setRatingRecomputeData={setRatingRecomputeData}
+                />
+              }
+            />
+            <Route path="*" element={<Problems />} />
           </Route>
-          <Route path="rating" element={<Rating/>}/>
-          <Route path="profile/:user" element={<Profile/>}/>
+          <Route path="rating" element={<Rating />} />
+          <Route path="profile/:user" element={<Profile />} />
           <Route path="*" element={<Dashboard />} />
         </Route>
         <Route path="/loading" element={<Loading />} />
