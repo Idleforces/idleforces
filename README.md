@@ -15,30 +15,36 @@ This is a silly game inspired by competitive programming. You take on a role of 
 
 - First, install necessary packages:
 
-```javascript
+```bash
 npm install
 ```
 
 - Run the development server:
 
-```javascript
+```bash
 npm run dev
 ```
 
-- Create a local .env file with the following boolean variable. Check out `/test/probabilistic-assert.ts` for usage
+- Create a local .env file with the following boolean variable. Check out `/test/probabilistic-assert.ts` for usage:
 
-```env
+```bash
 VITE_weak=true
+```
+
+- Get all the necessary stuff for husky pre-commit hooks:
+
+```bash
+npm run prepare
 ```
 
 - Get dependency cruiser output in an eslint format:
 
-```javascript
+```bash
 npx depcruise --config .dependency-cruiser.cjs
 ```
 
 - Get dependency graph visualized as svg:
 
-```javascript
+```bash
 npx depcruise src --include-only "^src" --config --output-type dot | dot -T svg > dependency-graph.svg
 ```
