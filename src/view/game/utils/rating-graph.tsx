@@ -80,7 +80,7 @@ export const RatingGraph = (props: {
 
   const ratingPointStrokeWidth = "3px";
   const ratingPointRadius =
-    (viewBoxWidth * Math.pow(contestArchive.length + 1, -0.2)) / 200;
+    (viewBoxWidth * Math.pow(contestArchive.length + 1, -0.2)) / 60;
   const pathStrokeWidth = 0.007;
 
   return (

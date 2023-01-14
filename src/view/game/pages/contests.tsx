@@ -94,6 +94,7 @@ export const Contests = (props: {
       MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST ? (
       <a
         className="dark-red-link"
+        tabIndex={0}
         onClick={() => {
           handleContestStart(
             playerParticipating,
