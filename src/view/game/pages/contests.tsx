@@ -52,9 +52,11 @@ const handleContestStart = (
 export const Contests = (props: {
   setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
   contestTypeRunning: ContestTypeRunning;
+  setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
 }) => {
   const contestTypeRunning = props.contestTypeRunning;
   const setContestTypeRunning = props.setContestTypeRunning;
+  const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -101,6 +103,8 @@ export const Contests = (props: {
             users,
             setContestTypeRunning
           );
+
+          if (!playerParticipating) setNoPlayerContestSimSpeed(0);
 
           navigate(
             playerParticipating
