@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-key */
 import { cloneDeep } from "lodash";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { computeRanksConsideringTies } from "../../../app/contest/recalculate-ratings";
 import { useAppSelector } from "../../../app/hooks";
 import { selectUsers } from "../../../app/users/users-slice";
@@ -55,10 +56,12 @@ export const Rating = () => {
   const handlesColumn = filteredUsers.map((user) => (
     <div style={{ textAlign: "left" }}>
       <Flag countryName={user.country} />
-      <RatingStyled
-        stringToStyle={user.handle}
-        rating={Math.round(user.ratingHistory.slice(-1)[0].rating)}
-      />
+      <Link to={`/game/profile/${user.handle}`}>
+        <RatingStyled
+          stringToStyle={user.handle}
+          rating={Math.round(user.ratingHistory.slice(-1)[0].rating)}
+        />
+      </Link>
     </div>
   ));
 

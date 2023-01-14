@@ -19,6 +19,7 @@ import { Standings } from "./view/game/contest/standings/standings";
 import { Problems } from "./view/game/contest/problems/problems";
 import { Rating } from "./view/game/pages/rating";
 import { resetContestArchive } from "./app/contest-archive/contest-archive-slice";
+import { Profile } from "./view/game/pages/profile";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -63,6 +64,7 @@ function App() {
               <Contests
                 setContestTypeRunning={setContestTypeRunning}
                 contestTypeRunning={contestTypeRunning}
+                setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
               />
             }
           />
@@ -76,6 +78,7 @@ function App() {
             <Route path="*" element={<Problems />}/>
           </Route>
           <Route path="rating" element={<Rating/>}/>
+          <Route path="profile/:user" element={<Profile/>}/>
           <Route path="*" element={<Dashboard />} />
         </Route>
         <Route path="/loading" element={<Loading />} />

@@ -89,3 +89,12 @@
 .datatable .dark-blue {
   color: darkblue;
 }
+
+.datatable a {
+  text-decoration: none;
+  color: unset;
+}
+
+.datatable a :hover {
+  cursor: pointer;
+}
