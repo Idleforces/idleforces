@@ -2,6 +2,7 @@ import hash_sum from "hash-sum";
 import type { ContestArchiveSlice } from "../app/contest-archive/types";
 import type { ContestSlice } from "../app/contest/types";
 import type { EventsSlice } from "../app/events/types";
+import type { FriendsSlice } from "../app/friends/types";
 import type { SaveSlice } from "../app/save/save-slice";
 import { saveUsers } from "../app/users/save-users";
 import type { UsersSlice } from "../app/users/users-slice";
@@ -11,15 +12,16 @@ import type {
   LocalStorageSavesValue,
 } from "./game/types";
 
-const updateLocalStorageSavesValue = (
+const updateLocalStorageSavesValue = async (
   saveData: Exclude<SaveSlice, null>,
   usersHash: string,
   contestHash: string,
   eventsHash: string,
   contestArchiveHash: string,
+  friendsHash: string,
   inContest: boolean,
   leaveGame: () => void
-): void => {
+): Promise<void> => {
   const savesJSON = localStorage.getItem("saves");
   const localStorageGameSaveValue: LocalStorageSaveData = {
     rating: saveData.rating,
@@ -27,20 +29,21 @@ const updateLocalStorageSavesValue = (
     contestHash,
     eventsHash,
     contestArchiveHash,
+    friendsHash,
     inContest,
     saveName: saveData.saveName,
     handle: saveData.handle,
   };
 
   if (savesJSON === null) {
-    safeSetLocalStorageValue(
+    await safeSetLocalStorageValue(
       "saves",
       JSON.stringify([localStorageGameSaveValue]),
       leaveGame
     );
   } else {
     const saves = JSON.parse(savesJSON) as LocalStorageSavesValue;
-    safeSetLocalStorageValue(
+    await safeSetLocalStorageValue(
       "saves",
       JSON.stringify([
         ...saves.filter(
@@ -54,26 +57,35 @@ const updateLocalStorageSavesValue = (
   }
 };
 
-export const saveGameData = (
+const promisifiedHashSum = (value: unknown): Promise<string> => {
+  return new Promise((resolve, _reject) => {
+    resolve(hash_sum(value));
+  });
+};
+
+export const saveGameData = async (
   usersWithTimeOfSnapshot: UsersSlice,
   contest: ContestSlice,
   events: EventsSlice,
   contestArchive: ContestArchiveSlice,
+  friends: FriendsSlice,
   saveData: Exclude<SaveSlice, null>,
   leaveGame: () => void
-): void => {
-  const usersHash = hash_sum(usersWithTimeOfSnapshot);
-  const contestHash = hash_sum(contest);
-  const eventsHash = hash_sum(events);
-  const contestArchiveHash = hash_sum(contestArchive);
+): Promise<void> => {
+  const usersHash = await promisifiedHashSum(usersWithTimeOfSnapshot);
+  const contestHash = await promisifiedHashSum(contest);
+  const eventsHash = await promisifiedHashSum(events);
+  const contestArchiveHash = await promisifiedHashSum(contestArchive);
+  const friendsHash = await promisifiedHashSum(friends);
   const saveName = saveData.saveName;
 
-  updateLocalStorageSavesValue(
+  await updateLocalStorageSavesValue(
     saveData,
     usersHash,
     contestHash,
     eventsHash,
     contestArchiveHash,
+    friendsHash,
     contest !== null,
     leaveGame
   );
@@ -83,7 +95,7 @@ export const saveGameData = (
     localStorageUsersValue === null ||
     usersHash !== hash_sum(localStorageUsersValue)
   ) {
-    saveUsers(usersWithTimeOfSnapshot, saveName, leaveGame);
+    await saveUsers(usersWithTimeOfSnapshot, saveName, leaveGame);
   }
 
   const localStorageContestValue = localStorage.getItem(`contest-${saveName}`);
@@ -91,7 +103,7 @@ export const saveGameData = (
     localStorageContestValue === null ||
     contestHash !== hash_sum(localStorageContestValue)
   ) {
-    safeSetLocalStorageValue(
+    await safeSetLocalStorageValue(
       `contest-${saveName}`,
       JSON.stringify(contest),
       leaveGame
@@ -105,7 +117,7 @@ export const saveGameData = (
     localStorageContestValue === null ||
     contestHash !== hash_sum(localStorageContestArchiveValue)
   ) {
-    safeSetLocalStorageValue(
+    await safeSetLocalStorageValue(
       `archive-contest-${saveName}`,
       JSON.stringify(contestArchive),
       leaveGame
@@ -117,9 +129,21 @@ export const saveGameData = (
     localStorageEventsValue === null ||
     eventsHash !== hash_sum(localStorageEventsValue)
   ) {
-    safeSetLocalStorageValue(
+    await safeSetLocalStorageValue(
       `events-${saveName}`,
       JSON.stringify(events),
+      leaveGame
+    );
+  }
+
+  const localStorageFriendsValue = localStorage.getItem(`friends-${saveName}`);
+  if (
+    localStorageFriendsValue === null ||
+    friendsHash !== hash_sum(localStorageFriendsValue)
+  ) {
+    await safeSetLocalStorageValue(
+      `friends-${saveName}`,
+      JSON.stringify(friends),
       leaveGame
     );
   }

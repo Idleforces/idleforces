@@ -6,6 +6,7 @@ export type LocalStorageSaveData = {
   eventsHash: string;
   contestHash: string;
   contestArchiveHash: string;
+  friendsHash: string;
   inContest: boolean;
 };
 
