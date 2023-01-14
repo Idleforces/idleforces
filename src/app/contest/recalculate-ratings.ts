@@ -43,9 +43,9 @@ export const computeRanksConsideringTies = (
   let lastScore = 999999;
 
   return criterion.map((criterionValue, index) => {
-    if (Math.floor(lastScore) !== Math.floor(criterionValue)) {
+    if (Math.round(lastScore) !== Math.round(criterionValue)) {
       curRank = index + 1;
-      lastScore = Math.floor(criterionValue);
+      lastScore = Math.round(criterionValue);
     }
 
     return curRank;
@@ -163,6 +163,7 @@ export const recalculateRatings = (
     contestUsersData,
     users,
     true,
+    false,
     problemScores,
     problemScoreDecrementsPerMinute
   );
