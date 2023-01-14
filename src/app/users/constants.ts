@@ -66,3 +66,5 @@ export const USER_ATTRIBUTES_CONSTANTS = {
     hardness: 1,
   },
 } as const satisfies AttributeConstants;
+
+export const USER_RATING_HISTORY_MAX_LENGTH = 20;

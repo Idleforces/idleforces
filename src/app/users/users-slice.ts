@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import type { User } from "./types";
 import type { RatingPoints } from "../contest/types";
+import { USER_RATING_HISTORY_MAX_LENGTH } from "./constants";
 
 export type UsersSlice = { users: Array<User>; timeOfSnapshot: number } | null;
 
@@ -19,6 +20,11 @@ export const usersSlice = createSlice({
       state.users.forEach((user) => {
         const newUserRatingPoint = action.payload[user.handle];
         if (newUserRatingPoint) user.ratingHistory.push(newUserRatingPoint);
+        if (
+          !user.isPlayer &&
+          user.ratingHistory.length >= USER_RATING_HISTORY_MAX_LENGTH
+        )
+          user.ratingHistory.shift();
       });
 
       return state;
