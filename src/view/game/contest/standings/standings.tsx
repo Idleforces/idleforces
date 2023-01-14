@@ -251,14 +251,20 @@ const StandingsPage = (props: {
         selectedPage,
         onlyFriends,
         placeholder: false,
-        finished
+        finished,
       };
 
       return JSON.stringify(prev) === JSON.stringify(newReturnObject)
         ? prev
         : newReturnObject;
     });
-  }, [ticksSinceBeginning, selectedPage, onlyFriends, setRatingRecomputeData, finished]);
+  }, [
+    ticksSinceBeginning,
+    selectedPage,
+    onlyFriends,
+    setRatingRecomputeData,
+    finished,
+  ]);
 
   const accepted = computeAccepted(contest.contestUsersData);
   const tried = computeTried(contest.contestUsersData);
