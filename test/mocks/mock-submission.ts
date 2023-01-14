@@ -27,12 +27,12 @@ export const computeMockSubmission = (
       : generatePretestPassing
       ? "Pretests passed"
       : Math.random() < 0.5
-      ? "Wrong answer"
+      ? "Wrong answer on pretests"
       : Math.random() < 0.5
-      ? "Time limit exceeded"
+      ? "Time limit exceeded on pretests"
       : Math.random() < 0.5
-      ? "Runtime error"
-      : "Memory limit exceeded",
+      ? "Runtime error on pretests"
+      : "Memory limit exceeded on pretests",
     ticksSinceBeginning:
       ticksSinceBeginning ?? Math.floor(Math.random() * CONTEST_LENGTH),
   };
