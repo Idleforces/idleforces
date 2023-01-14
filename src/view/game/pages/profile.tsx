@@ -127,10 +127,9 @@ export const Profile = () => {
               contestArchive,
               viewBoxWidth
             );
+            const contestName = ratingHistory[index].contestName;
 
             if (index) {
-              const contest = contestArchive[contestId];
-
               const prevRating = ratings[index - 1];
               const ratingDiff = Math.round(historicalRating - prevRating);
 
@@ -148,7 +147,7 @@ export const Profile = () => {
                     })`,
                   }}
                 >
-                  <p>{contest.name}</p>
+                  <p>{contestName}</p>
                   <p>
                     Rating: {Math.round(historicalRating)}{" "}
                     {ratingDiff > 0
