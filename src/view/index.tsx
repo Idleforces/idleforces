@@ -97,12 +97,12 @@ export const Index = (props: {
         localStorage.getItem(`events-${saveName}`) as string
       ) as EventsSlice;
       dispatch(setEvents(events));
-
-      const contestArchive = JSON.parse(
-        localStorage.getItem(`archive-contest-${saveName}`) as string
-      ) as ContestArchiveSlice;
-      dispatch(setContestArchive(contestArchive));
     }
+
+    const contestArchive = JSON.parse(
+      localStorage.getItem(`archive-contest-${saveName}`) as string
+    ) as ContestArchiveSlice;
+    dispatch(setContestArchive(contestArchive));
 
     navigate("/game/dashboard");
   };
