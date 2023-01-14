@@ -2,12 +2,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   RECOMPUTE_RATINGS_EVERY_N_TICKS,
-  USERS_NO_ON_STANDINGS_PAGE} from "../../../constants";
+  USERS_NO_ON_STANDINGS_PAGE,
+} from "../../../constants";
 import { selectContest } from "../../../../app/contest/contest-slice";
-import { computeAccepted, computeContestUsersStatsSortedByRank, computeTried } from "../../../../app/contest/contest-stats";
 import {
-  computeNewRatingsSlice,
-} from "../../../../app/contest/recalculate-ratings";
+  computeAccepted,
+  computeContestUsersStatsSortedByRank,
+  computeTried,
+} from "../../../../app/contest/contest-stats";
+import { computeNewRatingsSlice } from "../../../../app/contest/recalculate-ratings";
 import type {
   ContestSlice,
   ContestUserData,
@@ -27,6 +30,7 @@ import { RankingPageLinks } from "../../utils/ranking-page-links";
 import { RatingStyled } from "../../utils/styled-rating";
 import { StandingsStub } from "./standings-stub";
 import "./standings.css";
+import { Link } from "react-router-dom";
 
 const filterUsersWithAtLeastOneSubmission = (
   contestUsersStats: Array<ContestUserData>
@@ -71,11 +75,13 @@ const StandingsPage = (props: {
   handle: string;
 }) => {
   const { contest, users, handle } = props;
+  const finished = contest.finished;
 
   const contestUsersStats = computeContestUsersStatsSortedByRank(
     contest.contestUsersData,
     users,
-    contest.finished,
+    finished,
+    finished,
     contest.problemScores,
     contest.problemScoreDecrementsPerMinute
   );
@@ -102,8 +108,15 @@ const StandingsPage = (props: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ticksSinceBeginning = contest.ticksSinceBeginning;
   const ticksSinceBeginningAtMount = useRef(ticksSinceBeginning);
-  const [ticksSinceBeginningUpdatedDuringContest, setTicksSinceBeginningUpdatedDuringContest] = useState(0);
-  if (!contest.finished && ticksSinceBeginningUpdatedDuringContest !== ticksSinceBeginning) setTicksSinceBeginningUpdatedDuringContest(ticksSinceBeginning);
+  const [
+    ticksSinceBeginningUpdatedDuringContest,
+    setTicksSinceBeginningUpdatedDuringContest,
+  ] = useState(0);
+  if (
+    !finished &&
+    ticksSinceBeginningUpdatedDuringContest !== ticksSinceBeginning
+  )
+    setTicksSinceBeginningUpdatedDuringContest(ticksSinceBeginning);
 
   const ratingsBeforeContest = useMemo(
     () =>
@@ -125,9 +138,27 @@ const StandingsPage = (props: {
       );
 
       return newRatingsPartial;
-    } else return computeNewRatingsSlice(contestUsersStats, contest.name, minIndex, maxIndex);
+    } else if (finished) {
+      const newRatingsPartial: Partial<RatingPoints> = {};
+      users.forEach((user) => {
+        if (user.ratingHistory.slice(-1)[0].contestName === contest.name) {
+          newRatingsPartial[user.handle] = {
+            rating: user.ratingHistory.slice(-1)[0].rating,
+            contestName: contest.name,
+          };
+        }
+      });
+
+      return newRatingsPartial;
+    } else
+      return computeNewRatingsSlice(
+        contestUsersStats,
+        contest.name,
+        minIndex,
+        maxIndex
+      );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ratingsRecomputedCount]);
+  }, [ratingsRecomputedCount, finished]);
 
   useEffect(() => {
     setRatingsRecomputedCount(
@@ -165,17 +196,25 @@ const StandingsPage = (props: {
       displayedContestUserStats.map((contestUserStats, index) => {
         const newRating = newRatings[contestUserStats.handle];
         const ratingDiff = newRating
-          ? Math.round(newRating.rating - ratingsBeforeContest[minIndex + index])
+          ? Math.round(
+              newRating.rating - ratingsBeforeContest[minIndex + index]
+            )
           : 0;
 
         return [
           <>{contestUserStats.rank}</>,
           <div className="align-left">
             <Flag countryName={contestUserStats.country} />
-            <RatingStyled
-              stringToStyle={contestUserStats.handle}
-              rating={contest.finished && newRating ? newRating.rating : contestUserStats.oldRating}
-            />
+            <Link to={`/game/profile/${contestUserStats.handle}`}>
+              <RatingStyled
+                stringToStyle={contestUserStats.handle}
+                rating={
+                  contest.finished && newRating
+                    ? newRating.rating
+                    : contestUserStats.oldRating
+                }
+              />
+            </Link>
           </div>,
           <>{Math.round(sum(contestUserStats.scores))}</>,
         ]
@@ -283,6 +322,5 @@ const StandingsPage = (props: {
         dataOnOnePage={USERS_NO_ON_STANDINGS_PAGE}
       />
     </div>
-
   );
 };

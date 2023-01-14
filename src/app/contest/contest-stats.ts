@@ -75,6 +75,7 @@ export const computeContestUsersStatsSortedByRank = (
   contestUsersData: Array<ContestUserData>,
   users: Array<User>,
   contestFinished: boolean,
+  ratingChangesApplied: boolean,
   problemScores: ContestProblemNumberValues,
   problemScoreDecrementsPerMinute: ContestProblemNumberValues
 ): Array<ContestUserStats> => {
@@ -84,7 +85,7 @@ export const computeContestUsersStatsSortedByRank = (
       .map((contestUserData) => {
         const handle = contestUserData.handle;
         while (users[userContestIndex].handle !== handle) userContestIndex++;
-        const oldRating = contestFinished
+        const oldRating = ratingChangesApplied
           ? users[userContestIndex].ratingHistory.slice(-2)[0].rating
           : users[userContestIndex].ratingHistory.slice(-1)[0].rating;
         const country = users[userContestIndex].country;
