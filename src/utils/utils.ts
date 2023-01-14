@@ -90,10 +90,10 @@ export function sample<T>(
  * // prints {key1: 1, key2: 2}
  */
 
-export function declareRecordByInitializer<T extends string | number | symbol, U>(
-  indexArray: Readonly<Array<T>>,
-  initializer: (index: T) => U
-): Record<T, U> {
+export function declareRecordByInitializer<
+  T extends string | number | symbol,
+  U
+>(indexArray: Readonly<Array<T>>, initializer: (index: T) => U): Record<T, U> {
   const returnRecord: Partial<Record<T, U>> = {};
   for (const index of indexArray) {
     returnRecord[index] = initializer(index);
@@ -107,13 +107,16 @@ export function transposeArray<T>(array: Array<Array<T>>) {
   return array[0].map((_, colIndex) => array.map((row) => row[colIndex]));
 }
 
-export const safeSetLocalStorageValue = (
+export const safeSetLocalStorageValue = async (
   key: string,
   value: string,
   leaveGame: () => void
 ) => {
   try {
-    localStorage.setItem(key, value);
+    await new Promise<void>((resolve, _reject) => {
+      localStorage.setItem(key, value);
+      resolve();
+    });
   } catch (e: unknown) {
     if (typeof e === "object" && e && "code" in e && typeof e.code === "number")
       if (e.code == 22 || e.code == 1014) {

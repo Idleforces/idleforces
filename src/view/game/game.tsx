@@ -29,6 +29,7 @@ import {
   addContestToArchive,
   selectArchivedContests,
 } from "../../app/contest-archive/contest-archive-slice";
+import { selectFriends } from "../../app/friends/friends-slice";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
@@ -46,6 +47,7 @@ export const Game = (props: {
   const usersWithTimeOfSnapshot = useAppSelector(selectUsersWithTimeOfSnapshot);
   const contest = useAppSelector(selectContest);
   const contestArchive = useAppSelector(selectArchivedContests);
+  const friends = useAppSelector(selectFriends);
   const contestTicksPassed = contest ? contest.ticksSinceBeginning : 0;
   const events = useAppSelector(selectEvents);
   const saveData = useAppSelector(selectSaveData);
@@ -78,10 +80,15 @@ export const Game = (props: {
             contest,
             events,
             contestArchive,
+            friends,
             saveData,
             leaveGame
-          );
-          setGameSaving(false);
+          )
+            .then((_res) => {
+              setGameSaving(false);
+            })
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            .catch(() => {});
         }
       } else {
         leaveGame();
@@ -108,6 +115,7 @@ export const Game = (props: {
     contest,
     dispatch,
     events,
+    friends,
     usersWithTimeOfSnapshot,
     saveData,
     contestArchive,
@@ -201,16 +209,17 @@ export const Game = (props: {
       );
 
       dispatch(addContestToArchive(contest));
+      dispatch(updateRatings(newRatingPoints));
       if (saveData)
-        saveGameData(
+        void saveGameData(
           usersWithTimeOfSnapshot,
           contest,
           events,
           contestArchive,
+          friends,
           saveData,
           leaveGame
         );
-      dispatch(updateRatings(newRatingPoints));
     }
 
     return () => {
