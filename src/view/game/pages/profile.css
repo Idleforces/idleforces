@@ -37,3 +37,24 @@
   border-radius: 0.5rem;
   margin-bottom: 1rem;
 }
+
+#user-info-container h2 span {
+  margin-left: 0.5rem;
+}
+
+#user-info-container svg:focus {
+  border: 2px solid blue;
+}
+
+#toggle-friend-button {
+  cursor: pointer;
+}
+
+svg.friend {
+  color: rgb(235, 235, 3);
+}
+
+svg.friend path {
+  stroke: black;
+  stroke-width: 30;
+}

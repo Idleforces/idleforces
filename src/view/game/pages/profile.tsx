@@ -1,8 +1,14 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { lowerCase } from "lodash";
 import React, { useState } from "react";
 import { useParams } from "react-router";
 import { selectArchivedContests } from "../../../app/contest-archive/contest-archive-slice";
-import { useAppSelector } from "../../../app/hooks";
+import {
+  selectFriends,
+  toggleFriend,
+} from "../../../app/friends/friends-slice";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { selectHandle } from "../../../app/save/save-slice";
 import { selectUsers } from "../../../app/users/users-slice";
 import { Flag } from "../utils/flag";
 import {
@@ -18,8 +24,13 @@ import "./profile.css";
 export const Profile = () => {
   const params = useParams();
   const handle = params["user"];
+
+  const playerHandle = useAppSelector(selectHandle);
   const users = useAppSelector(selectUsers);
   const contestArchive = useAppSelector(selectArchivedContests);
+  const friends = useAppSelector(selectFriends);
+  const dispatch = useAppDispatch();
+
   const [hiddenHoverContestData, setHiddenHoverContestData] = useState<
     Array<boolean>
   >([]);
@@ -55,6 +66,8 @@ export const Profile = () => {
   if (!hiddenHoverContestData.length)
     setHiddenHoverContestData(ratingHistory.map((_) => true));
 
+  const isFriend = friends.includes(handle) || handle === playerHandle;
+
   return (
     <div id="profile-page">
       <div id="user-info-container">
@@ -68,13 +81,27 @@ export const Profile = () => {
         <h2>
           <Flag countryName={user.country} />
           <RatingStyled stringToStyle={user.handle} rating={rating} />
+          <span
+            id="toggle-friend-button"
+            tabIndex={0}
+            onClick={(_e) => dispatch(toggleFriend(handle))}
+          >
+            <FontAwesomeIcon
+              icon={[`fa${isFriend ? "s" : "r"}`, "star"]}
+              className={isFriend ? "friend" : "not-friend"}
+              />
+          </span>
         </h2>
         <p>
-          Contest rating: {<RatingStyled
+          Contest rating:{" "}
+          {
+            <RatingStyled
               stringToStyle={rating}
               rating={rating}
               nutellaFormatting={false}
-            />} (max.{" "}
+            />
+          }{" "}
+          (max.{" "}
           {
             <RatingStyled
               stringToStyle={maxRating}
@@ -82,13 +109,15 @@ export const Profile = () => {
               nutellaFormatting={false}
             />
           }
-          , {
-          <RatingStyled
-          stringToStyle={lowerCase(computeUserTitle(maxRating))}
-          rating={maxRating}
-          nutellaFormatting={false}
-          />
-        })
+          ,{" "}
+          {
+            <RatingStyled
+              stringToStyle={lowerCase(computeUserTitle(maxRating))}
+              rating={maxRating}
+              nutellaFormatting={false}
+            />
+          }
+          )
         </p>
       </div>
       <div id="rating-graph-container">
@@ -121,7 +150,10 @@ export const Profile = () => {
           })}
           {ratings.map((historicalRating, index) => {
             const contestId = contestIds[index] - 1;
-            const ratingYCoord = computeYCoordFromRating(historicalRating, globals);
+            const ratingYCoord = computeYCoordFromRating(
+              historicalRating,
+              globals
+            );
             const ratingXCoord = computeXCoordFromContestId(
               contestId + 1,
               contestArchive,
@@ -150,10 +182,8 @@ export const Profile = () => {
                   <p>{contestName}</p>
                   <p>
                     Rating: {Math.round(historicalRating)}{" "}
-                    {ratingDiff > 0
-                      ? `(+${ratingDiff})`
-                      : `(${ratingDiff})`}
-                    , {lowerCase(computeUserTitle(rating))}
+                    {ratingDiff > 0 ? `(+${ratingDiff})` : `(${ratingDiff})`},{" "}
+                    {lowerCase(computeUserTitle(rating))}
                   </p>
                 </div>
               );
