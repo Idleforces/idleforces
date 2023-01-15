@@ -1,16 +1,17 @@
 import hash_sum from "hash-sum";
-import type { ContestArchiveSlice } from "../app/contest-archive/types";
-import type { ContestSlice } from "../app/contest/types";
-import type { EventsSlice } from "../app/events/types";
-import type { FriendsSlice } from "../app/friends/types";
-import type { SaveSlice } from "../app/save/save-slice";
-import { saveUsers } from "../app/users/save-users";
-import type { UsersSlice } from "../app/users/users-slice";
-import { safeSetLocalStorageValue } from "../utils/utils";
+import type { ContestArchiveSlice } from "../../app/contest-archive/types";
+import type { ContestSlice } from "../../app/contest/types";
+import type { EventsSlice } from "../../app/events/types";
+import type { FriendsSlice } from "../../app/friends/types";
+import type { SaveSlice } from "../../app/save/save-slice";
+import { saveUsers } from "../../app/users/save-users";
+import type { UsersSlice } from "../../app/users/users-slice";
+import { safeSetLocalStorageValue } from "../../utils/utils";
 import type {
   LocalStorageSaveData,
   LocalStorageSavesValue,
-} from "./game/types";
+} from "../game/types";
+import type { LocalStorageKeys } from "./types";
 
 const updateLocalStorageSavesValue = async (
   saveData: Exclude<SaveSlice, null>,
@@ -63,6 +64,33 @@ const promisifiedHashSum = (value: unknown): Promise<string> => {
   });
 };
 
+const promisifiedLocalStorageGet = (key: string): Promise<string | null> => {
+  return new Promise((resolve, _reject) => {
+    resolve(localStorage.getItem(key));
+  });
+};
+
+async function saveToLocalStorageIfHashesDiffer(
+  key: LocalStorageKeys,
+  hash: string,
+  saveName: string,
+  value: unknown,
+  leaveGame: () => void
+) {
+  const localStorageValue = await promisifiedLocalStorageGet(
+    `${key}-${saveName}`
+  );
+  const localStorageValueHash = await promisifiedHashSum(localStorageValue);
+
+  if (localStorageValue === null || hash !== localStorageValueHash) {
+    await safeSetLocalStorageValue(
+      `${key}-${saveName}`,
+      JSON.stringify(value),
+      leaveGame
+    );
+  }
+}
+
 export const saveGameData = async (
   usersWithTimeOfSnapshot: UsersSlice,
   contest: ContestSlice,
@@ -98,53 +126,32 @@ export const saveGameData = async (
     await saveUsers(usersWithTimeOfSnapshot, saveName, leaveGame);
   }
 
-  const localStorageContestValue = localStorage.getItem(`contest-${saveName}`);
-  if (
-    localStorageContestValue === null ||
-    contestHash !== hash_sum(localStorageContestValue)
-  ) {
-    await safeSetLocalStorageValue(
-      `contest-${saveName}`,
-      JSON.stringify(contest),
-      leaveGame
-    );
-  }
-
-  const localStorageContestArchiveValue = localStorage.getItem(
-    `archive-contest-${saveName}`
+  await saveToLocalStorageIfHashesDiffer(
+    "contest",
+    contestHash,
+    saveName,
+    contest,
+    leaveGame
   );
-  if (
-    localStorageContestValue === null ||
-    contestHash !== hash_sum(localStorageContestArchiveValue)
-  ) {
-    await safeSetLocalStorageValue(
-      `archive-contest-${saveName}`,
-      JSON.stringify(contestArchive),
-      leaveGame
-    );
-  }
-
-  const localStorageEventsValue = localStorage.getItem(`events-${saveName}`);
-  if (
-    localStorageEventsValue === null ||
-    eventsHash !== hash_sum(localStorageEventsValue)
-  ) {
-    await safeSetLocalStorageValue(
-      `events-${saveName}`,
-      JSON.stringify(events),
-      leaveGame
-    );
-  }
-
-  const localStorageFriendsValue = localStorage.getItem(`friends-${saveName}`);
-  if (
-    localStorageFriendsValue === null ||
-    friendsHash !== hash_sum(localStorageFriendsValue)
-  ) {
-    await safeSetLocalStorageValue(
-      `friends-${saveName}`,
-      JSON.stringify(friends),
-      leaveGame
-    );
-  }
+  await saveToLocalStorageIfHashesDiffer(
+    "archive-contest",
+    contestArchiveHash,
+    saveName,
+    contestArchive,
+    leaveGame
+  );
+  await saveToLocalStorageIfHashesDiffer(
+    "events",
+    eventsHash,
+    saveName,
+    events,
+    leaveGame
+  );
+  await saveToLocalStorageIfHashesDiffer(
+    "friends",
+    friendsHash,
+    saveName,
+    friends,
+    leaveGame
+  );
 };

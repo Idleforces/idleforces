@@ -17,7 +17,7 @@ import { setContest } from "../app/contest/contest-slice";
 import type { ContestSlice } from "../app/contest/types";
 import { setEvents } from "../app/events/events-slice";
 import type { EventsSlice } from "../app/events/types";
-import { saveGameData } from "./persist-data";
+import { saveGameData } from "./persist-data/persist-data";
 import { loadOrGenerateUsers } from "../app/users/load-users";
 import { setContestArchive } from "../app/contest-archive/contest-archive-slice";
 import type { ContestArchiveSlice } from "../app/contest-archive/types";
