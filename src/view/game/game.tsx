@@ -21,7 +21,7 @@ import {
   DIVISION_MERGE_TICKS_COUNT,
 } from "../../app/contest/constants";
 import { processTickOfContest } from "../../app/contest/process-tick";
-import { saveGameData } from "../persist-data";
+import { saveGameData } from "../persist-data/persist-data";
 import { loadOrGenerateUsers } from "../../app/users/load-users";
 import { processSystests } from "../../app/contest/process-systests";
 import { recalculateRatings } from "../../app/contest/recalculate-ratings";
@@ -102,7 +102,7 @@ export const Game = (props: {
           setTicksPassedSinceGameLoad((prev) => (prev += 1));
           resolve("DONE");
         } else resolve("IGNORED");
-      }, Math.max(gameLoadTimestamp - Date.now() + 1000 * (ticksPassedSinceGameLoad + 1), 500));
+      }, Math.max(gameLoadTimestamp - Date.now() + 1000 * (ticksPassedSinceGameLoad + 1), 0));
     });
 
     return () => {
