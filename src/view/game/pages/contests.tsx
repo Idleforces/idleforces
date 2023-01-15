@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 import type { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch, SetStateAction, MutableRefObject } from "react";
 import {
   CONTEST_LENGTH,
   DIVISION_MERGE_TICKS_COUNT,
@@ -13,7 +13,10 @@ import type { ProblemDivision } from "../../../app/problems/types";
 import type { RootState } from "../../../app/store";
 import type { User } from "../../../app/users/types";
 import { selectUsers } from "../../../app/users/users-slice";
-import { convertSecondsToHHMM } from "../../../utils/time-format";
+import {
+  convertSecondsToHHMM,
+  convertSecondsToHHMMSS,
+} from "../../../utils/time-format";
 import type { ContestTypeRunning } from "../types";
 import { DataTable } from "../utils/datatable";
 import "./contests.css";
@@ -24,6 +27,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { setInContest } from "../../../app/save/save-slice";
 import { declareRecordByInitializer } from "../../../utils/utils";
 import { selectArchivedContests } from "../../../app/contest-archive/contest-archive-slice";
+import { DIVISION_COOLDOWNS } from "../../../app/contest-archive/constants";
+import { cloneDeep } from "lodash";
 
 const handleContestStart = (
   playerParticipating: boolean,
@@ -53,10 +58,15 @@ export const Contests = (props: {
   setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
   contestTypeRunning: ContestTypeRunning;
   setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
+  secondsSincePageLoad: number
+  timestampAtPageLoad: MutableRefObject<number>
 }) => {
+  const secondsSincePageLoad = props.secondsSincePageLoad;
+  const timestampAtPageLoad = props.timestampAtPageLoad;
   const contestTypeRunning = props.contestTypeRunning;
   const setContestTypeRunning = props.setContestTypeRunning;
   const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
+
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -88,10 +98,21 @@ export const Contests = (props: {
 
   const computeStartContestFieldContent = (
     division: ProblemDivision,
-    playerParticipating: boolean
+    playerParticipating: boolean,
+    lastDivisionTimestamp: number | null,
+    currentTimestamp: number
   ): JSX.Element => {
+    const secondsRemaining =
+      lastDivisionTimestamp !== null
+        ? (lastDivisionTimestamp +
+            DIVISION_COOLDOWNS[division] -
+            currentTimestamp) /
+          1000
+        : 0;
+
     return usersSatisfyingRatingBoundsCounts[division] >=
-      MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST ? (
+      MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST &&
+      secondsRemaining <= 0 ? (
       <a
         className="dark-red-link"
         tabIndex={0}
@@ -116,25 +137,37 @@ export const Contests = (props: {
       >
         {playerParticipating ? "Register" : "Simulate"}
       </a>
-    ) : (
+    ) : usersSatisfyingRatingBoundsCounts[division] <=
+      MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST ? (
       <span style={{ color: "gray" }}>Not enough users can participate.</span>
+    ) : (
+      <span style={{ color: "gray" }}>
+        {convertSecondsToHHMMSS(secondsRemaining)}
+      </span>
     );
   };
 
   const dataTableContents: Array<Array<JSX.Element>> = [
-    [<>Name</>, <>Cooldown</>, <>Length</>, <>Start</>, <>Simulate</>],
+    [<>Name</>, <>Length</>, <>Start</>, <>Simulate</>],
   ].concat(
-    reverseProblemDivisions.map((division) => [
-      <>{contestNames[division]}</>,
-      <></>,
-      <>
-        {convertSecondsToHHMM(
-          CONTEST_LENGTH / DIVISION_MERGE_TICKS_COUNT[division]
-        )}
-      </>,
-      computeStartContestFieldContent(division, true),
-      computeStartContestFieldContent(division, false),
-    ])
+    reverseProblemDivisions.map((division) => {
+      const lastDivisionTimestamp = cloneDeep(contestArchive)
+        .reverse()
+        .find((contest) => contest.division === division)?.timestamp ?? null;
+
+      const currentTimestamp = timestampAtPageLoad.current + 1000 * secondsSincePageLoad;
+
+      return [
+        <>{contestNames[division]}</>,
+        <>
+          {convertSecondsToHHMM(
+            CONTEST_LENGTH / DIVISION_MERGE_TICKS_COUNT[division]
+          )}
+        </>,
+        computeStartContestFieldContent(division, true, lastDivisionTimestamp, currentTimestamp),
+        computeStartContestFieldContent(division, false, lastDivisionTimestamp, currentTimestamp),
+      ];
+    })
   );
 
   const classNames = Array(5)

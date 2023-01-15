@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import {  useEffect, useMemo, useState } from "react";
+import type { MutableRefObject } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   selectUsersWithTimeOfSnapshot,
@@ -35,13 +36,15 @@ export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
   contestTypeRunning: ContestTypeRunning;
   noPlayerContestSimSpeed: number;
+  secondsSincePageLoad: number
+  timestampAtPageLoad: MutableRefObject<number>
 }) => {
+  const secondsSincePageLoad = props.secondsSincePageLoad;
+  const timestampAtPageLoad = props.timestampAtPageLoad;
   const contestTypeRunning = props.contestTypeRunning;
   const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
   const leaveGame = props.leaveGameRef.current;
 
-  const gameLoadTimestamp = useMemo(() => Date.now(), []);
-  const [ticksPassedSinceGameLoad, setTicksPassedSinceGameLoad] = useState(0);
   const [gameSaving, setGameSaving] = useState(false);
 
   const usersWithTimeOfSnapshot = useAppSelector(selectUsersWithTimeOfSnapshot);
@@ -54,7 +57,6 @@ export const Game = (props: {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    let ignore = false;
     const persistDataDuringTick = () => {
       if (saveData) {
         const savesJSON = localStorage.getItem("saves");
@@ -73,7 +75,7 @@ export const Game = (props: {
           dispatch(setUsers(newUsersWithTimeOfSnapshot));
         }
 
-        if (ticksPassedSinceGameLoad % 60 === 30) {
+        if (secondsSincePageLoad % 60 === 30) {
           setGameSaving(true);
           saveGameData(
             newUsersWithTimeOfSnapshot,
@@ -95,22 +97,10 @@ export const Game = (props: {
       }
     };
 
-    void new Promise((resolve, _reject) => {
-      setTimeout(() => {
-        if (!ignore) {
-          persistDataDuringTick();
-          setTicksPassedSinceGameLoad((prev) => (prev += 1));
-          resolve("DONE");
-        } else resolve("IGNORED");
-      }, Math.max(gameLoadTimestamp - Date.now() + 1000 * (ticksPassedSinceGameLoad + 1), 0));
-    });
-
-    return () => {
-      ignore = true;
-    };
+    persistDataDuringTick();
   }, [
-    ticksPassedSinceGameLoad,
-    gameLoadTimestamp,
+    secondsSincePageLoad,
+    timestampAtPageLoad,
     leaveGame,
     contest,
     dispatch,

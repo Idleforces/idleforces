@@ -12,7 +12,7 @@ import { Loading } from "./view/loading/loading";
 import { resetContest } from "./app/contest/contest-slice";
 import { resetEvents } from "./app/events/events-slice";
 import type { ContestTypeRunning } from "./view/game/types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Contests } from "./view/game/pages/contests";
 import { Contest } from "./view/game/contest/contest";
 import { Standings } from "./view/game/contest/standings/standings";
@@ -34,6 +34,34 @@ function App() {
     useState<RatingRecomputeData>({
       placeholder: true,
     });
+
+  const timestampAtPageLoad = useRef<number>(Date.now());
+  const [secondsSincePageLoad, setSecondsSincePageLoad] = useState(0);
+
+  useEffect(() => {
+    let ignore = false;
+    void new Promise((resolve, _reject) => {
+      setTimeout(() => {
+        if (!ignore) {
+          setSecondsSincePageLoad(
+            (prev) =>
+              prev +
+              Math.max(
+                Math.floor((-timestampAtPageLoad.current + Date.now()) / 1000 - secondsSincePageLoad) - 1,
+                1
+              )
+          );
+          resolve("DONE");
+        } else {
+          resolve("IGNORED");
+        }
+      }, Math.max(timestampAtPageLoad.current - Date.now() + 1000 * (secondsSincePageLoad + 1), 0));
+    });
+
+    return () => {
+      ignore = true;
+    };
+  }, [secondsSincePageLoad]);
 
   const resetData = () => {
     dispatch(resetUsers(null));
@@ -62,6 +90,8 @@ function App() {
               leaveGameRef={leaveGameRef}
               contestTypeRunning={contestTypeRunning}
               noPlayerContestSimSpeed={noPlayerContestSimSpeed}
+              secondsSincePageLoad={secondsSincePageLoad}
+              timestampAtPageLoad={timestampAtPageLoad}
             />
           }
         >
@@ -72,6 +102,8 @@ function App() {
                 setContestTypeRunning={setContestTypeRunning}
                 contestTypeRunning={contestTypeRunning}
                 setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
+                secondsSincePageLoad={secondsSincePageLoad}
+                timestampAtPageLoad={timestampAtPageLoad}
               />
             }
           />
