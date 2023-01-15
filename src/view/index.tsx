@@ -23,6 +23,20 @@ import { setContestArchive } from "../app/contest-archive/contest-archive-slice"
 import type { ContestArchiveSlice } from "../app/contest-archive/types";
 import type { FriendsSlice } from "../app/friends/types";
 import { setFriends } from "../app/friends/friends-slice";
+import type { User } from "../app/users/types";
+
+export const countriesCount = new Map<string, number>();
+
+const populateCountriesCount = (users: Array<User>) => {
+  users.forEach((user) => {
+    const countryName = user.country;
+    if (countryName !== null) {
+      const countryCount = countriesCount.get(countryName);
+      if (countryCount === undefined) countriesCount.set(countryName, 1);
+      else countriesCount.set(countryName, countryCount + 1);
+    }
+  });
+};
 
 const getSavesFromLocalStorage = (): LocalStorageSavesValue => {
   const savesJSON = localStorage.getItem("saves");
@@ -57,6 +71,8 @@ export const Index = (props: {
         newSaveName,
         handle
       );
+      if (!countriesCount.size)
+        populateCountriesCount(newUsersWithTimeOfSnapshot.users);
 
       const saveData = {
         handle,
@@ -67,8 +83,18 @@ export const Index = (props: {
       dispatch(setSaveData(saveData));
       dispatch(setUsers(newUsersWithTimeOfSnapshot));
 
-      saveGameData(newUsersWithTimeOfSnapshot, null, null, [], [], saveData, leaveGame)
-        .then(_res => { navigate("/game/dashboard"); })
+      saveGameData(
+        newUsersWithTimeOfSnapshot,
+        null,
+        null,
+        [],
+        [],
+        saveData,
+        leaveGame
+      )
+        .then((_res) => {
+          navigate("/game/dashboard");
+        })
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         .catch(() => {});
     } else {
@@ -83,6 +109,9 @@ export const Index = (props: {
       saveName,
       saveData.handle
     );
+    if (!countriesCount.size)
+      populateCountriesCount(usersWithTimeOfSnapshot.users);
+
     dispatch(setSaveData(saveData));
     dispatch(setUsers(usersWithTimeOfSnapshot));
 
