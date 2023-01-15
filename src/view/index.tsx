@@ -238,7 +238,7 @@ export const Index = (props: {
                 >
                   <FontAwesomeIcon
                     icon={["fas", "right-to-bracket"]}
-                    id="load-save-button"
+                    className="load-save-button"
                   />
                 </div>
                 <div
@@ -257,7 +257,7 @@ export const Index = (props: {
                 >
                   <FontAwesomeIcon
                     icon={["fas", "trash-can"]}
-                    id="delete-save-button"
+                    className="delete-save-button"
                   />
                 </div>
               </span>

@@ -1,123 +1,125 @@
 #index-description-container {
-    padding: 4rem 0;
-    background-color: #ccc;
+  padding: 4rem 0;
+  background-color: #ccc;
 }
 
 .index-description-header-paragraph {
-    margin: 0 10%;
-    padding: 1rem 0 3rem 0;
-    text-transform: uppercase;
-    font-weight: 600;
-    font-size: 2rem;
-    line-height: 3rem;
+  margin: 0 10%;
+  padding: 1rem 0 3rem 0;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 2rem;
+  line-height: 3rem;
 }
 
 #index-description-container li {
-    margin: 0 10%;
-    padding: 1rem 0;
-    text-align: left;
-    font-size: 1.25rem;
-    font-weight: 500;
+  margin: 0 10%;
+  padding: 1rem 0;
+  text-align: left;
+  font-size: 1.25rem;
+  font-weight: 500;
 }
 
 #new-save-form {
-    font-size: 1.25rem;
-    line-height: 3rem;
-    padding: 3rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  font-size: 1.25rem;
+  line-height: 3rem;
+  padding: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #new-save-form .new-save-form-text-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-bottom: 1rem;
 }
 
 #new-save-form label {
-    padding: 0 1.25rem;
+  padding: 0 1.25rem;
 }
 
 #new-save-form .text-input {
-    height: 2.5rem;
-    padding-left: 5px;
-    line-height: 1.25rem;
-    font-size: 1.25rem;
-    border-radius: 0.75rem;
+  height: 2.5rem;
+  padding-left: 5px;
+  line-height: 1.25rem;
+  font-size: 1.25rem;
+  border-radius: 0.75rem;
 }
 
 #new-save-form .submit-input {
-    padding: 1rem;
-    border-radius: 1rem;
-    border: 2px solid darkgreen;
-    background-color: #eee;
-    display: block;
-    position: relative;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 2px solid darkgreen;
+  background-color: #eee;
+  display: block;
+  position: relative;
 }
 
 #new-save-form .submit-input-disabled:hover {
-    cursor: default !important;
+  cursor: default !important;
 }
 
 #new-save-form .submit-input:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 #new-save-form .submit-input-disabled:active {
-    top: 0 !important;
+  top: 0 !important;
 }
 
 #new-save-form .submit-input:active {
-    top: 3px;
+  top: 3px;
 }
 
 #saves-container {
-    background-color: #ddd;
-    font-size: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 1.5rem;
+  background-color: #ddd;
+  font-size: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 1.5rem;
 }
 
 #saves-container-header {
-    font-size: 1.75rem;
+  font-size: 1.75rem;
 }
 
-.save-box, .save-box-header {
-    border-radius: 10px;
-    width: 80%;
-    display: flex;
-    justify-content: space-evenly;
-    padding: 0.5rem 0;
-    margin: 0.5rem 0;
+.save-box,
+.save-box-header {
+  border-radius: 10px;
+  width: 80%;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0.5rem 0;
+  margin: 0.5rem 0;
 }
 
 .save-box {
-    border: 1px solid black;
-    background-color: white;
+  border: 1px solid black;
+  background-color: white;
 }
 
 .save-box-header {
-    font-weight: 500;
+  font-weight: 500;
 }
 
-.save-box span, .save-box-header span {
-    width: 15%;
+.save-box span,
+.save-box-header span {
+  width: 15%;
 }
 
 .save-box-button-container {
-    padding: 0 0.5rem;
-    cursor: pointer;
-    display: inline;
+  padding: 0 0.5rem;
+  cursor: pointer;
+  display: inline;
 }
 
-#load-save-button {
-    color: darkgreen;
+.load-save-button {
+  color: darkgreen;
 }
 
-#delete-save-button {
-    color: red;
+.delete-save-button {
+  color: red;
 }
