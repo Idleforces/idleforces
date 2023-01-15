@@ -1,13 +1,27 @@
-import { findFlagUrlByCountryName } from "country-flags-svg";
+import { findFlagUrlByCountryName, countries } from "country-flags-svg";
+import { addAltSpellings } from "./add-alt-spellings";
 
 const countryNamesWhitelist: Array<string> = [];
 const countryNamesBlacklist: Array<string> = [];
+addAltSpellings(countries);
+const countriesWithAltSpellings = countries.filter(
+  (country) => country.altSpellings?.length
+);
 
 export const Flag = (props: { countryName: string | null }) => {
-  const countryName = props.countryName;
+  let countryName = props.countryName;
+
+  countriesWithAltSpellings.forEach((country) => {
+    if (country.altSpellings)
+      country.altSpellings.forEach((altSpelling) => {
+        if (altSpelling === countryName) countryName = country.name;
+      });
+  });
 
   if (countryName === null || countryNamesBlacklist.includes(countryName))
     return <></>;
+
+  const countryNameString = countryName;
 
   const flagURL = findFlagUrlByCountryName(countryName);
   if (flagURL === null || flagURL === "") {
@@ -22,8 +36,9 @@ export const Flag = (props: { countryName: string | null }) => {
   ) {
     fetch(flagURL)
       .then((response) => {
-        if (response.status === 200) countryNamesWhitelist.push(countryName);
-        else countryNamesBlacklist.push(countryName);
+        if (response.status === 200)
+          countryNamesWhitelist.push(countryNameString);
+        else countryNamesBlacklist.push(countryNameString);
       })
       .catch((err: unknown) => {
         console.warn(err);
