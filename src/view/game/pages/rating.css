@@ -1,3 +1,13 @@
 #rating-page {
   margin: 2rem 10%;
 }
+
+#rating-page-header {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 1rem;
+}
+
+#country-name-picker-container {
+  padding-left: 2rem;
+}

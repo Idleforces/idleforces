@@ -2,7 +2,9 @@
 import { cloneDeep } from "lodash";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { countriesCount } from "../..";
 import { computeRanksConsideringTies } from "../../../app/contest/recalculate-ratings";
+import { selectFriends } from "../../../app/friends/friends-slice";
 import { useAppSelector } from "../../../app/hooks";
 import { selectUsers } from "../../../app/users/users-slice";
 import { transposeArray } from "../../../utils/utils";
@@ -15,6 +17,8 @@ import "./rating.css";
 
 export const Rating = () => {
   const users = useAppSelector(selectUsers);
+  const friends = useAppSelector(selectFriends);
+
   const [friendsOnly, setFriendsOnly] = useState(false);
   const [country, setCountry] = useState<string | null>(null);
   const [selectedPage, setSelectedPage] = useState(1);
@@ -23,37 +27,54 @@ export const Rating = () => {
   const minIndex = (selectedPage - 1) * NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE;
   const maxIndex = selectedPage * NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE;
 
-  const unslicedFilteredUsers = cloneDeep(users)
-    .sort(
-      (a, b) =>
-        b.ratingHistory.slice(-1)[0].rating -
-        a.ratingHistory.slice(-1)[0].rating
-    )
-    .filter((user) => country === null || user.country === country);
-  const unslicedRatings = unslicedFilteredUsers.map(
+  const sortedUsers = cloneDeep(users).sort(
+    (a, b) =>
+      b.ratingHistory.slice(-1)[0].rating - a.ratingHistory.slice(-1)[0].rating
+  );
+
+  const unfilteredRatings = sortedUsers.map(
     (user) => user.ratingHistory.slice(-1)[0].rating
   );
-  const unslicedRanks = computeRanksConsideringTies(unslicedRatings);
 
-  const filteredUsers = unslicedFilteredUsers.slice(minIndex, maxIndex);
-
-  const unfilteredRatings = users.map(
-    (user) => user.ratingHistory.slice(-1)[0].rating
-  );
   const unfilteredRanks = computeRanksConsideringTies(unfilteredRatings);
 
-  const ranksColumn = unslicedRanks.map((rank, index) => {
-    if (country === null && !friendsOnly) return <>{rank}</>;
+  const ranksRecord: Record<string, number> = {};
+  sortedUsers.forEach((user, index) => {
+    ranksRecord[user.handle] = unfilteredRanks[index];
+  });
+
+  const unslicedFilteredUsers = sortedUsers.filter(
+    (user) =>
+      (country === null || user.country === country) &&
+      (!friendsOnly || friends.includes(user.handle))
+  );
+  const unslicedFilteredRatings = unslicedFilteredUsers.map(
+    (user) => user.ratingHistory.slice(-1)[0].rating
+  );
+  const unslicedFilteredRanks = computeRanksConsideringTies(
+    unslicedFilteredRatings
+  );
+
+  const displayedUsers = unslicedFilteredUsers.slice(minIndex, maxIndex);
+  const displayedRanks = unslicedFilteredRanks.slice(minIndex, maxIndex);
+  const displayedRatings = unslicedFilteredRatings.slice(minIndex, maxIndex);
+
+  const ranksColumn = displayedUsers.map((user, index) => {
+    if (country === null && !friendsOnly)
+      return <>{ranksRecord[user.handle]}</>;
     else
       return (
         <>
-          {rank} {unfilteredRanks[index]}
+          {displayedRanks[index]} ({ranksRecord[user.handle]})
         </>
       );
-  }).slice(minIndex, maxIndex);
+  });
 
-  const ratingsColumn = unslicedRatings.slice(minIndex, maxIndex).map((rating) => <>{Math.round(rating)}</>);
-  const handlesColumn = filteredUsers.map((user) => (
+  const ratingsColumn = displayedRatings.map((rating) => (
+    <>{Math.round(rating)}</>
+  ));
+
+  const handlesColumn = displayedUsers.map((user) => (
     <div style={{ textAlign: "left" }}>
       <Flag countryName={user.country} />
       <Link to={`/game/profile/${user.handle}`}>
@@ -65,7 +86,7 @@ export const Rating = () => {
     </div>
   ));
 
-  const numContestsColumn = filteredUsers.map((user) => (
+  const numContestsColumn = displayedUsers.map((user) => (
     <>{user.ratingHistory.length - 1}</>
   ));
 
@@ -80,8 +101,50 @@ export const Rating = () => {
     )
   );
 
+  const countryNameOptions: Array<JSX.Element> = [
+    <option value={"null"} key={"AAA-first-alphabetically"}>
+      any country
+    </option>,
+  ];
+  countriesCount.forEach((countryCount, countryName) => {
+    countryNameOptions.push(
+      <option value={countryName} key={countryName}>
+        {countryName}, {countryCount}
+      </option>
+    );
+  });
+  countryNameOptions.sort((a, b) => String(a.key).localeCompare(String(b.key)));
+
   return (
     <div id="rating-page">
+      <div id="rating-page-header">
+        <div id="friends-only-container">
+          <label htmlFor="friends-only-picker">Display friends only: </label>
+          <input
+            type="checkbox"
+            checked={friendsOnly}
+            onChange={(_e) => {
+              setFriendsOnly((prev) => !prev);
+              setSelectedPage(1);
+            }}
+            name="friends-only-picker"
+            id="friends-only-picker"
+          />
+        </div>
+        <div id="country-name-picker-container">
+          <label htmlFor="country-name-picker">Country: </label>
+          <select
+            onChange={(e) => {
+              setCountry(e.target.value === "null" ? null : e.target.value);
+              setSelectedPage(1);
+            }}
+            name="country-name-picker"
+            id="country-name-picker"
+          >
+            {countryNameOptions}
+          </select>
+        </div>
+      </div>
       <DataTable contents={dataTableContents} />
       <RankingPageLinks
         setSelectedPage={setSelectedPage}
