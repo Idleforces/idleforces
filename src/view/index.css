@@ -4,7 +4,6 @@
 }
 
 .index-description-header-paragraph {
-  margin: 0 10%;
   padding: 1rem 0 3rem 0;
   text-transform: uppercase;
   font-weight: 600;
@@ -13,7 +12,6 @@
 }
 
 #index-description-container li {
-  margin: 0 10%;
   padding: 1rem 0;
   text-align: left;
   font-size: 1.25rem;
