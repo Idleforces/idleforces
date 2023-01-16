@@ -23,7 +23,7 @@
 }
 
 .datatable td {
-  width: auto !important;
+  width: auto;
   max-width: 20em !important;
   overflow: auto;
 }
@@ -63,7 +63,7 @@
 
 .datatable .dark-red-link {
   background-color: darkred;
-  color: white;
+  color: white !important;
   font-weight: 600;
   padding: 2px 4px;
   cursor: pointer;
@@ -86,15 +86,27 @@
   color: red;
 }
 
+.datatable .narrow {
+  width: 40%;
+}
+
+.datatable .wide {
+  width: 60%;
+}
+
 .datatable .dark-blue {
   color: darkblue;
 }
 
-.datatable a {
+.datatable a:not([class="keep-default-style"]) {
   text-decoration: none;
   color: unset;
 }
 
 .datatable a :hover {
   cursor: pointer;
+}
+
+.datatable-no-outer-border {
+  border: none !important;
 }
