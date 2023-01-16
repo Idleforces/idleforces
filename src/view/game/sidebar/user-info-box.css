@@ -1,0 +1,34 @@
+#user-info-box-content {
+  display: flex;
+}
+
+#user-info-box-content-left-bar {
+  display: inline;
+  text-align: left;
+  padding-right: 1rem;
+  flex: 4 5rem;
+}
+
+#user-info-box-content-left-bar ul {
+  list-style: disc;
+  font-size: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+}
+
+#user-info-box-content-right-bar {
+  display: inline;
+  flex: 1 2rem;
+}
+
+#user-info-box-content-right-bar svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 0.25rem;
+}
+
+#user-info-box-content-right-bar a {
+  text-decoration: none;
+}

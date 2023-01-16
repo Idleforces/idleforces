@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import type { User } from "./types";
+import type { Player, User } from "./types";
 import type { RatingPoints } from "../contest/types";
 import { USER_RATING_HISTORY_MAX_LENGTH } from "./constants";
 
@@ -40,6 +40,6 @@ export const selectUsers = (state: RootState) =>
 export const selectTimeOfSnapshot = (state: RootState) =>
   state.users ? state.users.timeOfSnapshot : null;
 export const selectPlayer = (state: RootState) =>
-  state.users ? state.users.users[0] : null;
+  state.users ? (state.users.users[0] as Player) : null;
 
 export const usersReducer = usersSlice.reducer;
