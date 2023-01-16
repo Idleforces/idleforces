@@ -99,7 +99,7 @@ export const Standings = (props: {
       <StandingsStub
         text={
           onlyFriends
-            ? "None of you or your friends has made a submission yet"
+            ? "None of you or your friends has made a submission yet."
             : "No submission has been made yet."
         }
       />
