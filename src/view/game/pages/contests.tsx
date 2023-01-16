@@ -29,6 +29,32 @@ import { declareRecordByInitializer } from "../../../utils/utils";
 import { selectArchivedContests } from "../../../app/contest-archive/contest-archive-slice";
 import { DIVISION_COOLDOWNS } from "../../../app/contest-archive/constants";
 import { cloneDeep } from "lodash";
+import type { ContestArchiveSlice } from "../../../app/contest-archive/types";
+
+export const computeContestCooldownSecondsRemaining = (
+  division: ProblemDivision,
+  contestArchive: ContestArchiveSlice,
+  timestampAtPageLoad: MutableRefObject<number>,
+  secondsSincePageLoad: number
+) => {
+  const lastDivisionTimestamp =
+    cloneDeep(contestArchive)
+      .reverse()
+      .find((contest) => contest.division === division)?.timestamp ?? null;
+
+  const currentTimestamp =
+    timestampAtPageLoad.current + 1000 * secondsSincePageLoad;
+
+  const secondsRemaining =
+    lastDivisionTimestamp !== null
+      ? (lastDivisionTimestamp +
+          DIVISION_COOLDOWNS[division] -
+          currentTimestamp) /
+        1000
+      : 0;
+
+  return secondsRemaining;
+};
 
 const handleContestStart = (
   playerParticipating: boolean,
@@ -58,15 +84,14 @@ export const Contests = (props: {
   setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
   contestTypeRunning: ContestTypeRunning;
   setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
-  secondsSincePageLoad: number
-  timestampAtPageLoad: MutableRefObject<number>
+  secondsSincePageLoad: number;
+  timestampAtPageLoad: MutableRefObject<number>;
 }) => {
   const secondsSincePageLoad = props.secondsSincePageLoad;
   const timestampAtPageLoad = props.timestampAtPageLoad;
   const contestTypeRunning = props.contestTypeRunning;
   const setContestTypeRunning = props.setContestTypeRunning;
   const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
-
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -99,17 +124,8 @@ export const Contests = (props: {
   const computeStartContestFieldContent = (
     division: ProblemDivision,
     playerParticipating: boolean,
-    lastDivisionTimestamp: number | null,
-    currentTimestamp: number
+    secondsRemaining: number
   ): JSX.Element => {
-    const secondsRemaining =
-      lastDivisionTimestamp !== null
-        ? (lastDivisionTimestamp +
-            DIVISION_COOLDOWNS[division] -
-            currentTimestamp) /
-          1000
-        : 0;
-
     return usersSatisfyingRatingBoundsCounts[division] >=
       MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST &&
       secondsRemaining <= 0 ? (
@@ -151,11 +167,12 @@ export const Contests = (props: {
     [<>Name</>, <>Length</>, <>Start</>, <>Simulate</>],
   ].concat(
     reverseProblemDivisions.map((division) => {
-      const lastDivisionTimestamp = cloneDeep(contestArchive)
-        .reverse()
-        .find((contest) => contest.division === division)?.timestamp ?? null;
-
-      const currentTimestamp = timestampAtPageLoad.current + 1000 * secondsSincePageLoad;
+      const secondsRemaining = computeContestCooldownSecondsRemaining(
+        division,
+        contestArchive,
+        timestampAtPageLoad,
+        secondsSincePageLoad
+      );
 
       return [
         <>{contestNames[division]}</>,
@@ -164,8 +181,8 @@ export const Contests = (props: {
             CONTEST_LENGTH / DIVISION_MERGE_TICKS_COUNT[division]
           )}
         </>,
-        computeStartContestFieldContent(division, true, lastDivisionTimestamp, currentTimestamp),
-        computeStartContestFieldContent(division, false, lastDivisionTimestamp, currentTimestamp),
+        computeStartContestFieldContent(division, true, secondsRemaining),
+        computeStartContestFieldContent(division, false, secondsRemaining),
       ];
     })
   );
