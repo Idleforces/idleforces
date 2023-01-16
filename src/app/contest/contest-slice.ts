@@ -91,5 +91,7 @@ export const selectContestFinished = (state: RootState) =>
   state.contest ? state.contest.finished : null;
 export const selectContestName = (state: RootState) =>
   state.contest ? state.contest.name : null;
+export const selectContestDivision = (state: RootState) =>
+  state.contest ? state.contest.division : null;
 
 export const contestReducer = contestSlice.reducer;
