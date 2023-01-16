@@ -22,6 +22,12 @@ export const SpeedSimSlider = (props: {
         onChange={(e) => {
           setNoPlayerContestSimSpeed(Number(e.target.value));
         }}
+        onKeyDown={(e) => {
+          if (e.key === "6" || e.key === "8" || e.key === "PageUp")
+            setNoPlayerContestSimSpeed((prev) => Math.min(1, prev + 0.1));
+          if (e.key === "2" || e.key === "4" || e.key === "PageDown")
+            setNoPlayerContestSimSpeed((prev) => Math.max(0, prev - 0.1));
+        }}
         list="speed-sim-values"
       ></input>
       <datalist id="speed-sim-values">

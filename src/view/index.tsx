@@ -147,23 +147,31 @@ export const Index = (props: {
   };
 
   const deleteSave = (deletedSave: LocalStorageSaveData) => {
-    const savesJSON = localStorage.getItem("saves");
-    if (savesJSON !== null) {
-      localStorage.setItem(
-        "saves",
-        JSON.stringify(
-          (JSON.parse(savesJSON) as LocalStorageSavesValue).filter(
-            (save) => save.saveName !== deletedSave.saveName
-          )
-        )
-      );
-    }
+    const isDeleted = confirm(
+      `Are you sure you want to delete the save '${deletedSave.saveName}'?`
+    );
 
-    localStorage.removeItem(`users-${deletedSave.saveName}`);
-    localStorage.removeItem(`events-${deletedSave.saveName}`);
-    localStorage.removeItem(`contest-${deletedSave.saveName}`);
-    localStorage.removeItem(`archive-contest-${deletedSave.saveName}`);
-    localStorage.removeItem(`friends-${deletedSave.saveName}`);
+    if (isDeleted) {
+      const savesJSON = localStorage.getItem("saves");
+      if (savesJSON !== null) {
+        localStorage.setItem(
+          "saves",
+          JSON.stringify(
+            (JSON.parse(savesJSON) as LocalStorageSavesValue).filter(
+              (save) => save.saveName !== deletedSave.saveName
+            )
+          )
+        );
+      }
+
+      localStorage.removeItem(`users-${deletedSave.saveName}`);
+      localStorage.removeItem(`events-${deletedSave.saveName}`);
+      localStorage.removeItem(`contest-${deletedSave.saveName}`);
+      localStorage.removeItem(`archive-contest-${deletedSave.saveName}`);
+      localStorage.removeItem(`friends-${deletedSave.saveName}`);
+
+      setSaves(getSavesFromLocalStorage);
+    }
   };
 
   return (
@@ -203,6 +211,7 @@ export const Index = (props: {
               }}
               autoComplete="off"
               name="game-save-name-input"
+              id="game-save-name-input"
               maxLength={20}
               placeholder="Enter save name"
               required
@@ -219,6 +228,7 @@ export const Index = (props: {
               }}
               autoComplete="off"
               name="handle-input"
+              id="handle-input"
               maxLength={20}
               placeholder="Enter your handle"
               required
@@ -263,6 +273,9 @@ export const Index = (props: {
                   onClick={(_e) => {
                     loadSave(save);
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") loadSave(save);
+                  }}
                   tabIndex={0}
                 >
                   <FontAwesomeIcon
@@ -274,13 +287,10 @@ export const Index = (props: {
                   className="save-box-button-container"
                   aria-label="Delete this save"
                   onClick={(_e) => {
-                    const isDeleted = confirm(
-                      `Are you sure you want to delete the save '${save.saveName}'?`
-                    );
-                    if (isDeleted) {
-                      deleteSave(save);
-                      setSaves(getSavesFromLocalStorage);
-                    }
+                    deleteSave(save);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") deleteSave(save);
                   }}
                   tabIndex={0}
                 >

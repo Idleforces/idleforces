@@ -16,6 +16,10 @@
   outline: none;
 }
 
+.slider-container input[type="range"]:focus {
+  background: darkred;
+}
+
 .slider-container input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none !important;
   appearance: none !important;
