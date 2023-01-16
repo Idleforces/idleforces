@@ -1,9 +1,13 @@
 /* eslint-disable react/jsx-key */
 import { cloneDeep } from "lodash";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { computeRanksConsideringTies } from "../../../app/contest/recalculate-ratings";
 import { useAppSelector } from "../../../app/hooks";
-import { selectUsers } from "../../../app/users/users-slice";
+import {
+  selectRatingsUpdatedCount,
+  selectUsers,
+} from "../../../app/users/users-slice";
 import { transposeArray } from "../../../utils/utils";
 import { DataTable } from "../utils/datatable";
 import { InfoBox } from "../utils/info-box";
@@ -11,15 +15,24 @@ import { RatingStyled } from "../utils/styled-rating";
 
 export const TopRated = () => {
   const users = useAppSelector(selectUsers);
-  if (!users) return <></>;
+  const ratingsUpdatedCount = useAppSelector(selectRatingsUpdatedCount);
 
-  const sortedUsers = cloneDeep(users)
-    .sort(
-      (a, b) =>
-        b.ratingHistory.slice(-1)[0].rating -
-        a.ratingHistory.slice(-1)[0].rating
-    )
-    .slice(0, 10);
+  const sortedUsers = useMemo(
+    () =>
+      users
+        ? cloneDeep(users)
+            .sort(
+              (a, b) =>
+                b.ratingHistory.slice(-1)[0].rating -
+                a.ratingHistory.slice(-1)[0].rating
+            )
+            .slice(0, 10)
+        : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ratingsUpdatedCount]
+  );
+
+  if (!users || !sortedUsers) return <></>;
 
   const ratings = sortedUsers.map(
     (user) => user.ratingHistory.slice(-1)[0].rating
@@ -37,8 +50,12 @@ export const TopRated = () => {
 
   const topRow = [<>#</>, <>User</>, <>Rating</>];
   const bottomRow = [
-    <span style={{ width: "100%", display: "flex", justifyContent: "flex-end"}}>
-      <Link to="/game/rating" className="keep-default-style">View all →</Link>
+    <span
+      style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+    >
+      <Link to="/game/rating" className="keep-default-style">
+        View all →
+      </Link>
     </span>,
   ];
 
@@ -54,7 +71,6 @@ export const TopRated = () => {
     .fill(0)
     .map((_) => [1, 1, 1])
     .concat([[3]]);
-
 
   const dataTable = (
     <DataTable

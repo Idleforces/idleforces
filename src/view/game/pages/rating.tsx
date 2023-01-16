@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-key */
 import { cloneDeep } from "lodash";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { countriesCount } from "../..";
 import { computeRanksConsideringTies } from "../../../app/contest/recalculate-ratings";
 import { selectFriends } from "../../../app/friends/friends-slice";
 import { useAppSelector } from "../../../app/hooks";
-import { selectUsers } from "../../../app/users/users-slice";
+import { selectRatingsUpdatedCount, selectUsers } from "../../../app/users/users-slice";
 import { transposeArray } from "../../../utils/utils";
 import { NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE } from "../../constants";
 import { DataTable } from "../utils/datatable";
@@ -18,19 +18,28 @@ import "./rating.css";
 export const Rating = () => {
   const users = useAppSelector(selectUsers);
   const friends = useAppSelector(selectFriends);
+  const ratingsUpdatedCount = useAppSelector(selectRatingsUpdatedCount);
 
   const [friendsOnly, setFriendsOnly] = useState(false);
   const [country, setCountry] = useState<string | null>(null);
   const [selectedPage, setSelectedPage] = useState(1);
 
-  if (!users) return <></>;
+  const sortedUsers = useMemo(
+    () =>
+      users
+        ? cloneDeep(users).sort(
+            (a, b) =>
+              b.ratingHistory.slice(-1)[0].rating -
+              a.ratingHistory.slice(-1)[0].rating
+          )
+        : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ratingsUpdatedCount]
+  );
+
+  if (!users || !sortedUsers) return <></>;
   const minIndex = (selectedPage - 1) * NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE;
   const maxIndex = selectedPage * NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE;
-
-  const sortedUsers = cloneDeep(users).sort(
-    (a, b) =>
-      b.ratingHistory.slice(-1)[0].rating - a.ratingHistory.slice(-1)[0].rating
-  );
 
   const unfilteredRatings = sortedUsers.map(
     (user) => user.ratingHistory.slice(-1)[0].rating
