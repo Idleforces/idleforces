@@ -89,7 +89,9 @@ function App() {
             <Game
               leaveGameRef={leaveGameRef}
               contestTypeRunning={contestTypeRunning}
+              setContestTypeRunning={setContestTypeRunning}
               noPlayerContestSimSpeed={noPlayerContestSimSpeed}
+              setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
               secondsSincePageLoad={secondsSincePageLoad}
               timestampAtPageLoad={timestampAtPageLoad}
             />
@@ -111,10 +113,6 @@ function App() {
             path="contest/"
             element={
               <Contest
-                noPlayerContestSimSpeed={noPlayerContestSimSpeed}
-                setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
-                contestTypeRunning={contestTypeRunning}
-                setContestTypeRunning={setContestTypeRunning}
                 setRatingRecomputeData={setRatingRecomputeData}
               />
             }

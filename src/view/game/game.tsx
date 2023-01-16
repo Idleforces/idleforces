@@ -1,5 +1,5 @@
-import {  useEffect, useMemo, useState } from "react";
-import type { MutableRefObject } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { MutableRefObject, Dispatch, SetStateAction } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   selectUsersWithTimeOfSnapshot,
@@ -9,7 +9,7 @@ import {
 import type { UsersSlice } from "../../app/users/users-slice";
 import { sleep } from "../../utils/utils";
 import type { ContestTypeRunning } from "./types";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { NavBar } from "./navbar";
 import { selectSaveData } from "../../app/save/save-slice";
 import {
@@ -31,19 +31,29 @@ import {
   selectArchivedContests,
 } from "../../app/contest-archive/contest-archive-slice";
 import { selectFriends } from "../../app/friends/friends-slice";
+import { SideBar } from "./sidebar/sidebar";
+import "./game.css";
+import { ContestSideBar } from "./contest/contest-sidebar";
+import { convertSecondsToHHMMSS } from "../../utils/time-format";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
   contestTypeRunning: ContestTypeRunning;
+  setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
   noPlayerContestSimSpeed: number;
-  secondsSincePageLoad: number
-  timestampAtPageLoad: MutableRefObject<number>
+  setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
+  secondsSincePageLoad: number;
+  timestampAtPageLoad: MutableRefObject<number>;
 }) => {
   const secondsSincePageLoad = props.secondsSincePageLoad;
   const timestampAtPageLoad = props.timestampAtPageLoad;
   const contestTypeRunning = props.contestTypeRunning;
   const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
+  const setContestTypeRunning = props.setContestTypeRunning;
+  const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
+
   const leaveGame = props.leaveGameRef.current;
+  const location = useLocation();
 
   const [gameSaving, setGameSaving] = useState(false);
 
@@ -134,6 +144,9 @@ export const Game = (props: {
       };
     }
 
+    const secondsRemaining = Math.max(CONTEST_LENGTH - contestTicksPassed, 0);
+    document.title = `Idleforces (${convertSecondsToHHMMSS(secondsRemaining)})`;
+
     const playerParticipating = contestTypeRunning.playerParticipating;
     const divisionMergeTicksCount =
       DIVISION_MERGE_TICKS_COUNT[contest.division];
@@ -200,6 +213,8 @@ export const Game = (props: {
 
       dispatch(addContestToArchive(contest));
       dispatch(updateRatings(newRatingPoints));
+      document.title = "Idleforces";
+
       if (saveData)
         void saveGameData(
           usersWithTimeOfSnapshot,
@@ -228,9 +243,27 @@ export const Game = (props: {
   ]);
 
   return (
-    <>
+    <div id="game-container">
       <NavBar gameSaving={gameSaving} />
-      <Outlet />
-    </>
+      <main id="game">
+        <div id="game-page-container">
+          <Outlet />
+        </div>
+        {location.pathname.startsWith("/game/contest") &&
+        !location.pathname.startsWith("/game/contests") ? (
+          <ContestSideBar
+            noPlayerContestSimSpeed={noPlayerContestSimSpeed}
+            setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
+            contestTypeRunning={contestTypeRunning}
+            setContestTypeRunning={setContestTypeRunning}
+          />
+        ) : (
+          <SideBar
+            secondsSincePageLoad={secondsSincePageLoad}
+            timestampAtPageLoad={timestampAtPageLoad}
+          />
+        )}
+      </main>
+    </div>
   );
 };
