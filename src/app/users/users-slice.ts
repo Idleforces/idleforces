@@ -5,7 +5,11 @@ import type { Player, User } from "./types";
 import type { RatingPoints } from "../contest/types";
 import { USER_RATING_HISTORY_MAX_LENGTH } from "./constants";
 
-export type UsersSlice = { users: Array<User>; timeOfSnapshot: number } | null;
+export type UsersSlice = {
+  users: Array<User>;
+  timeOfSnapshot: number;
+  ratingsUpdatedCount: number;
+} | null;
 
 export const usersSlice = createSlice({
   name: "users",
@@ -27,7 +31,7 @@ export const usersSlice = createSlice({
           user.ratingHistory.shift();
       });
 
-      return state;
+      state.ratingsUpdatedCount += 1;
     },
   },
 });
@@ -41,5 +45,7 @@ export const selectTimeOfSnapshot = (state: RootState) =>
   state.users ? state.users.timeOfSnapshot : null;
 export const selectPlayer = (state: RootState) =>
   state.users ? (state.users.users[0] as Player) : null;
+export const selectRatingsUpdatedCount = (state: RootState) =>
+  state.users ? state.users.ratingsUpdatedCount : null;
 
 export const usersReducer = usersSlice.reducer;
