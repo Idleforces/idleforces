@@ -12,7 +12,11 @@ export const Contest = (props: {
 
   return (
     <>
-      <SubNavBar pages={["problems", "standings", "friends standings"]} setRatingRecomputeData={setRatingRecomputeData} />
+      <SubNavBar
+        baseURL="/game/contest/"
+        pages={["problems", "standings", "friends standings"]}
+        setRatingRecomputeData={setRatingRecomputeData}
+      />
       <main id="contest-main">
         <Outlet />
       </main>

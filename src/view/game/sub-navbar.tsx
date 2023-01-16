@@ -4,10 +4,15 @@ import { NavLink, useLocation } from "react-router-dom";
 import "./navbar.css";
 import type { RatingRecomputeData } from "./contest/standings/standings";
 
-const computePageUrl = (page: string) => {
-  return page === "friends standings"
-    ? "/game/contest/standings/friends"
-    : `/game/contest/${page}`;
+const computePageUrl = (baseURL: string, page: string, handle?: string) => {
+  const pageURL =
+    page === "friends standings"
+      ? `${baseURL}standings/friends`
+      : page === "contests" && handle !== undefined
+      ? `${baseURL}${handle}/${page}`
+      : `${baseURL}${page}`;
+
+  return pageURL;
 };
 
 const computeIfInitialSelected = (
@@ -21,10 +26,12 @@ const computeIfInitialSelected = (
 };
 
 export const SubNavBar = (props: {
+  baseURL: string;
   pages: Array<string>;
+  handle?: string;
   setRatingRecomputeData?: Dispatch<SetStateAction<RatingRecomputeData>>;
 }) => {
-  const { setRatingRecomputeData, pages } = props;
+  const { setRatingRecomputeData, pages, baseURL, handle } = props;
   const location = useLocation();
 
   const [selected, setSelected] = useState(
@@ -36,7 +43,7 @@ export const SubNavBar = (props: {
       <div id="navlinks-container">
         {pages.map((page, index) => (
           <NavLink
-            to={`${computePageUrl(page)}`}
+            to={computePageUrl(baseURL, page, handle)}
             className={selected[index] ? "current" : ""}
             key={page}
             onMouseOver={(_e) => {

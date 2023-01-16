@@ -20,8 +20,9 @@ import type { RatingRecomputeData } from "./view/game/contest/standings/standing
 import { Problems } from "./view/game/contest/problems/problems";
 import { Rating } from "./view/game/pages/rating";
 import { resetContestArchive } from "./app/contest-archive/contest-archive-slice";
-import { Profile } from "./view/game/pages/profile";
+import { Profile } from "./view/game/pages/profile/profile";
 import { resetFriends } from "./app/friends/friends-slice";
+import { ProfileContests } from "./view/game/pages/profile/profile-contests";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -47,7 +48,10 @@ function App() {
             (prev) =>
               prev +
               Math.max(
-                Math.floor((-timestampAtPageLoad.current + Date.now()) / 1000 - secondsSincePageLoad) - 1,
+                Math.floor(
+                  (-timestampAtPageLoad.current + Date.now()) / 1000 -
+                    secondsSincePageLoad
+                ) - 1,
                 1
               )
           );
@@ -97,6 +101,8 @@ function App() {
             />
           }
         >
+          <Route path="profile/:user" element={<Profile />} />
+          <Route path="profile/:user/contests" element={<ProfileContests />} />
           <Route
             path="contests"
             element={
@@ -109,12 +115,11 @@ function App() {
               />
             }
           />
+
           <Route
             path="contest/"
             element={
-              <Contest
-                setRatingRecomputeData={setRatingRecomputeData}
-              />
+              <Contest setRatingRecomputeData={setRatingRecomputeData} />
             }
           >
             <Route
@@ -138,7 +143,6 @@ function App() {
             <Route path="*" element={<Problems />} />
           </Route>
           <Route path="rating" element={<Rating />} />
-          <Route path="profile/:user" element={<Profile />} />
           <Route path="*" element={<Dashboard />} />
         </Route>
         <Route path="/loading" element={<Loading />} />
