@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { Dispatch, SetStateAction} from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import "../../navbar.css";
-import type { RatingRecomputeData } from "../standings/standings";
+import "./navbar.css";
+import type { RatingRecomputeData } from "./contest/standings/standings";
 
 const computePageUrl = (page: string) => {
   return page === "friends standings"
@@ -20,12 +20,12 @@ const computeIfInitialSelected = (
   return locationPathname.match(pageNameRegex) !== null;
 };
 
-export const ContestNavBar = (props: {
-  setRatingRecomputeData: Dispatch<SetStateAction<RatingRecomputeData>>
+export const SubNavBar = (props: {
+  pages: Array<string>;
+  setRatingRecomputeData?: Dispatch<SetStateAction<RatingRecomputeData>>;
 }) => {
-  const {setRatingRecomputeData} = props;
+  const { setRatingRecomputeData, pages } = props;
   const location = useLocation();
-  const pages = ["problems", "standings", "friends standings"];
 
   const [selected, setSelected] = useState(
     pages.map((page) => computeIfInitialSelected(location.pathname, page))
@@ -49,7 +49,13 @@ export const ContestNavBar = (props: {
                 )
               );
             }}
-            onClick={(_e) => { setRatingRecomputeData({placeholder: true}); }}
+            onClick={
+              setRatingRecomputeData
+                ? (_e) => {
+                    setRatingRecomputeData({ placeholder: true });
+                  }
+                : undefined
+            }
           >
             {page}
           </NavLink>
