@@ -82,9 +82,7 @@ export const fetchUsers = () => {
   return { users, timeOfSnapshot };
 };
 
-export const generateUsers = (
-  playerHandle: string
-): { users: Array<User>; timeOfSnapshot: number } => {
+export const generateUsers = (playerHandle: string) => {
   const NPCsWithTimeOfSnapshot = fetchUsers();
   const NPCs = NPCsWithTimeOfSnapshot.users.map((user) =>
     generateUser(user.handle, user.officialRating, user.country, false)
@@ -95,6 +93,7 @@ export const generateUsers = (
       NPCs.filter((user) => user.handle !== playerHandle)
     ),
     timeOfSnapshot: NPCsWithTimeOfSnapshot.timeOfSnapshot,
+    ratingsUpdatedCount: 0,
   };
 
   return usersWithTimeOfSnapshot;

@@ -12,7 +12,9 @@ export const NavBar = (props: { gameSaving: boolean }) => {
         {pages.map((page) => (
           <NavLink
             to={`/game/${page}`}
-            className={location.pathname.includes(page) ? "current" : ""}
+            className={
+              location.pathname.startsWith(`/game/${page}`) ? "current" : ""
+            }
             key={page}
           >
             {page}
@@ -21,7 +23,7 @@ export const NavBar = (props: { gameSaving: boolean }) => {
       </div>
       {props.gameSaving ? (
         <>
-          <FontAwesomeIcon icon={["fas", "spinner"]}/>
+          <FontAwesomeIcon icon={["fas", "spinner"]} />
           <span>Loading...</span>
         </>
       ) : (
