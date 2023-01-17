@@ -111,7 +111,7 @@ export const Rating = () => {
   );
 
   const countryNameOptions: Array<JSX.Element> = [
-    <option value={"null"} key={"AAA-first-alphabetically"}>
+    <option value={"null"} key={"!!!-first-alphabetically"}>
       any country
     </option>,
   ];
