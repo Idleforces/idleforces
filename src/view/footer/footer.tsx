@@ -15,7 +15,7 @@ export const Footer = () => {
         *This game uses real Codeforces handles provided by the Codeforces API.
         Their performance in this game depends only on their real rating
         {timeOfSnapshot !== null
-          ? ` snapshotted at ${new Date(timeOfSnapshot).toString()}`
+          ? ` snapshotted at ${new Date(timeOfSnapshot).toLocaleString()}`
           : ""}
         .
       </p>
