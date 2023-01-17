@@ -107,6 +107,14 @@ export const saveGameData = async (
   const friendsHash = await promisifiedHashSum(friends);
   const saveName = saveData.saveName;
 
+  const localStorageSavesValue = JSON.parse(
+    localStorage.getItem("saves") as string
+  ) as LocalStorageSavesValue;
+
+  const localStorageSaveData = localStorageSavesValue.find(
+    (saveData) => saveData.saveName === saveName
+  );
+
   await updateLocalStorageSavesValue(
     saveData,
     usersHash,
@@ -119,9 +127,11 @@ export const saveGameData = async (
   );
 
   const localStorageUsersValue = localStorage.getItem(`users-${saveName}`);
+
   if (
     localStorageUsersValue === null ||
-    usersHash !== hash_sum(localStorageUsersValue)
+    !localStorageSaveData ||
+    usersHash !== localStorageSaveData.usersHash
   ) {
     await saveUsers(usersWithTimeOfSnapshot, saveName, leaveGame);
   }
