@@ -23,8 +23,7 @@ import { computeUserTitle } from "../../utils/user-titles";
 import "./profile.css";
 
 export const Profile = () => {
-  const params = useParams();
-  const handle = params["user"];
+  const {handle} = useParams();
 
   const playerHandle = useAppSelector(selectHandle);
   const users = useAppSelector(selectUsers);
@@ -170,7 +169,7 @@ export const Profile = () => {
 
               if (index) {
                 const prevRating = ratings[index - 1];
-                const ratingDiff = Math.round(historicalRating - prevRating);
+                const ratingDiff = Math.round(historicalRating) - Math.round(prevRating);
 
                 return (
                   <div
@@ -209,7 +208,7 @@ export const Profile = () => {
                       })`,
                     }}
                   >
-                    <p>Initial rating</p>
+                    <p>{ratingHistory[0].contestName}</p>
                     <p>
                       Rating: {Math.round(historicalRating)},{" "}
                       {lowerCase(computeUserTitle(historicalRating))}

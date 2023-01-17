@@ -101,8 +101,8 @@ function App() {
             />
           }
         >
-          <Route path="profile/:user" element={<Profile />} />
-          <Route path="profile/:user/contests" element={<ProfileContests />} />
+          <Route path="profile/:handle" element={<Profile />} />
+          <Route path="profile/:handle/contests" element={<ProfileContests />} />
           <Route
             path="contests"
             element={
