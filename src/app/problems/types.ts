@@ -24,6 +24,19 @@ export const contestSubmissionWrongVerdicts = [
   "Memory limit exceeded",
 ] as const;
 
+export const contestSubmissionVerdicts: Array<ContestSubmissionVerdict> =
+  contestSubmissionWrongVerdicts
+    .map((wrongVerdict) => {
+      const wrongVerdicts: Array<ContestSubmissionVerdict> = [
+        `${wrongVerdict} on pretests`,
+        `${wrongVerdict} on systests`,
+      ];
+
+      return wrongVerdicts;
+    })
+    .flat()
+    .concat(["Pretests passed", "Systests passed"]);
+
 export type ContestSubmissionWrongVerdict =
   typeof contestSubmissionWrongVerdicts[number];
 

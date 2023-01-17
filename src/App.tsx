@@ -23,6 +23,8 @@ import { resetContestArchive } from "./app/contest-archive/contest-archive-slice
 import { Profile } from "./view/game/pages/profile/profile";
 import { resetFriends } from "./app/friends/friends-slice";
 import { ProfileContests } from "./view/game/pages/profile/profile-contests";
+import { Status } from "./view/game/contest/status/status";
+import type { ContestSubmissionsFilterData } from "./view/game/contest/status/status";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -34,6 +36,12 @@ function App() {
   const [ratingRecomputeData, setRatingRecomputeData] =
     useState<RatingRecomputeData>({
       placeholder: true,
+    });
+  const [contestSubmissionsFilterData, setContestSubmissionsFilterData] =
+    useState<ContestSubmissionsFilterData>({
+      problemPlacement: null,
+      verdict: null,
+      handle: "",
     });
 
   const timestampAtPageLoad = useRef<number>(Date.now());
@@ -98,11 +106,16 @@ function App() {
               setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
               secondsSincePageLoad={secondsSincePageLoad}
               timestampAtPageLoad={timestampAtPageLoad}
+              contestSubmissionsFilterData={contestSubmissionsFilterData}
+              setContestSubmissionsFilterData={setContestSubmissionsFilterData}
             />
           }
         >
           <Route path="profile/:handle" element={<Profile />} />
-          <Route path="profile/:handle/contests" element={<ProfileContests />} />
+          <Route
+            path="profile/:handle/contests"
+            element={<ProfileContests />}
+          />
           <Route
             path="contests"
             element={
@@ -119,7 +132,7 @@ function App() {
           <Route
             path="contest/"
             element={
-              <Contest setRatingRecomputeData={setRatingRecomputeData} />
+              <Contest setRatingRecomputeData={setRatingRecomputeData} setContestSubmissionsFilterData={setContestSubmissionsFilterData} />
             }
           >
             <Route
@@ -130,6 +143,14 @@ function App() {
                   setRatingRecomputeData={setRatingRecomputeData}
                 />
               }
+            />
+            <Route
+              path="my"
+              element={<Status submissionsFilterData={contestSubmissionsFilterData}/>}
+            />
+            <Route
+              path="status"
+              element={<Status submissionsFilterData={contestSubmissionsFilterData}/>}
             />
             <Route
               path="standings/friends"

@@ -35,6 +35,7 @@ import { SideBar } from "./sidebar/sidebar";
 import "./game.css";
 import { ContestSideBar } from "./contest/contest-sidebar";
 import { convertSecondsToHHMMSS } from "../../utils/time-format";
+import type { ContestSubmissionsFilterData } from "./contest/status/status";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
@@ -44,6 +45,8 @@ export const Game = (props: {
   setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
   secondsSincePageLoad: number;
   timestampAtPageLoad: MutableRefObject<number>;
+  contestSubmissionsFilterData: ContestSubmissionsFilterData;
+  setContestSubmissionsFilterData: Dispatch<SetStateAction<ContestSubmissionsFilterData>>;
 }) => {
   const secondsSincePageLoad = props.secondsSincePageLoad;
   const timestampAtPageLoad = props.timestampAtPageLoad;
@@ -51,6 +54,8 @@ export const Game = (props: {
   const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
   const setContestTypeRunning = props.setContestTypeRunning;
   const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
+  const contestSubmissionsFilterData = props.contestSubmissionsFilterData;
+  const setContestSubmissionsFilterData = props.setContestSubmissionsFilterData;
 
   const leaveGame = props.leaveGameRef.current;
   const location = useLocation();
@@ -256,6 +261,8 @@ export const Game = (props: {
             setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
             contestTypeRunning={contestTypeRunning}
             setContestTypeRunning={setContestTypeRunning}
+            setContestSubmissionsFilterData={setContestSubmissionsFilterData}
+            contestSubmissionsFilterData={contestSubmissionsFilterData}
           />
         ) : (
           <SideBar

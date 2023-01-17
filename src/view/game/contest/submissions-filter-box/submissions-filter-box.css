@@ -1,0 +1,25 @@
+#submissions-filter-form {
+  text-align: left;
+}
+
+#submissions-filter-form label {
+  color: rgb(59, 89, 152);
+  font-weight: 700;
+  display: block;
+}
+
+#submissions-filter-form select,
+input {
+  margin-bottom: 0.5rem;
+}
+
+#submissions-filter-form-actions-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#submissions-filter-form input[type="submit"],
+input[type="reset"] {
+  cursor: pointer;
+  padding: 0.1rem 1.5rem;
+}
