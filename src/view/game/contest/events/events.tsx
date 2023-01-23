@@ -31,7 +31,7 @@ export const Events = (props: { heightInRem: number }) => {
         contents={[[<></>]].concat(dataTableColumn)}
         topText="Events"
         containerBorderRadiusPx={8}
-
+        tableClassName="datatable-no-header"
       />
     </div>
   );
