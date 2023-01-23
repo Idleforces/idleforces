@@ -1,4 +1,4 @@
-import type { ProblemSolvingPhases } from "../events/types";
+import type { ProblemSolvingPhase } from "../events/types";
 import type { generateProblem } from "./generate-problem";
 
 export const problemPlacements = ["A", "B", "C", "D", "E", "F"] as const;
@@ -120,12 +120,12 @@ export type ProblemSolveStatus =
 export function isActiveProblemSolveStatus(
   problemSolveStatus: ProblemSolveStatus
 ): problemSolveStatus is ProblemSolveStatusWhileActive {
-  const activeProblemSolvingPhases: Array<ProblemSolvingPhases> = [
+  const activeProblemSolvingPhase: Array<ProblemSolvingPhase> = [
     "during-reading",
     "during-pen-paper-solving",
     "during-implementing",
     "during-searching-for-mistake",
   ];
 
-  return activeProblemSolvingPhases.includes(problemSolveStatus.phase);
+  return activeProblemSolvingPhase.includes(problemSolveStatus.phase);
 }

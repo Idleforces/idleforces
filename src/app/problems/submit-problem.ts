@@ -172,7 +172,7 @@ export const submitProblem = <RootStateType>(
   };
 };
 
-export const isSubmissionCorrect = (submission: ContestSubmission) => {
+export const didSubmissionPass = (submission: ContestSubmission) => {
   switch (submission.verdict) {
     case "Pretests passed":
       return true;

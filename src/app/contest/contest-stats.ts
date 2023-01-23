@@ -1,5 +1,5 @@
 import { sum } from "lodash";
-import { isSubmissionCorrect } from "../problems/submit-problem";
+import { didSubmissionPass } from "../problems/submit-problem";
 import { problemPlacements } from "../problems/types";
 import { computeProblemPositionFromProblemPlacement } from "../problems/utils";
 import type { User } from "../users/types";
@@ -126,7 +126,7 @@ export const computeAccepted = (contestUsersData: Array<ContestUserData>) => {
       (contestUserData) =>
         problemPlacements.map((placement) =>
           contestUserData.problemSolveStatuses[placement].submissions.some(
-            (submission) => isSubmissionCorrect(submission)
+            (submission) => didSubmissionPass(submission)
           )
             ? 1
             : 0

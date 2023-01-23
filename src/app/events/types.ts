@@ -7,11 +7,11 @@ import type {
 } from "../problems/types";
 import type { User } from "../users/types";
 
-export type ProblemSolvingPhases = ProblemSolveStatus["phase"];
-export type ProblemSolvingPhasesWhileActive =
+export type ProblemSolvingPhase = ProblemSolveStatus["phase"];
+export type ProblemSolvingPhaseWhileActive =
   ProblemSolveStatusWhileActive["phase"];
 export type ProblemSolvingPhaseConfigOptions =
-  | Array<ProblemSolvingPhasesWhileActive>
+  | Array<ProblemSolvingPhaseWhileActive>
   | "all";
 
 export type ContestEventBlueprint = {
