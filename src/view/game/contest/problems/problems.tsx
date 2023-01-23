@@ -26,6 +26,7 @@ import { NoisyProgressBar } from "../../utils/noisy-progress-bar";
 import { selectEvents } from "../../../../app/events/events-slice";
 import { reverse } from "lodash";
 import type { ProblemSolvingPhase } from "../../../../app/events/types";
+import { PROGRESS_BAR_DEFAULT_NOISE_LEVEL } from "../../../constants";
 
 export const formatProblemSolvingPhase = (phase: ProblemSolvingPhase) => {
   switch (phase) {
@@ -156,11 +157,12 @@ export const Problems = () => {
                         )}
 
                         {playerProblemSolveStatus.phase ===
-                        "during-implementing" ? (
+                          "during-implementing" ||
+                        playerProblemSolveStatus.phase === "during-reading" ? (
                           <>
-                            &#40;
+                            &nbsp;&#40;
                             <NoisyProgressBar
-                              noiseLevel={0.25}
+                              noiseLevel={PROGRESS_BAR_DEFAULT_NOISE_LEVEL}
                               progress={playerProblemSolveStatus.progress}
                               increment={playerProblemSolveStatus.increment}
                               valMutatedAtUpdates={
