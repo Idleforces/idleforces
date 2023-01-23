@@ -23,14 +23,14 @@ export const EVENTS: Array<ContestEventBlueprint> = [
     probabilityScalingRateWithRateOfIncrement: 0,
     setBreakInTicks: {
       breakRemainingLength: 120,
-      messageOnEndOfBreak: "You are now back from toilet",
+      messageOnEndOfBreak: "You are now back from toilet.",
       isBlocking: true,
     },
   },
 
   {
     name: "Pizza break",
-    message: "A pizza delivery is ready. You have to go pick it up",
+    message: "A pizza delivery is ready. You have to go pick it up.",
     sentiment: "negative",
     isGlobal: true,
     phases: "all",
@@ -38,8 +38,7 @@ export const EVENTS: Array<ContestEventBlueprint> = [
     probabilityScalingRateWithRateOfIncrement: 0,
     setBreakInTicks: {
       breakRemainingLength: 300,
-      messageOnEndOfBreak:
-        "A pizza is here. Everybody party after the contest!",
+      messageOnEndOfBreak: "Pizza is here. Everybody party after the contest!",
       isBlocking: true,
     },
   },
@@ -55,7 +54,7 @@ export const EVENTS: Array<ContestEventBlueprint> = [
     probabilityScalingRateWithRateOfIncrement: 0,
     setBreakInTicks: {
       breakRemainingLength: exponential(1 / CONTEST_LENGTH),
-      messageOnEndOfBreak: "It looks like the power has been restored",
+      messageOnEndOfBreak: "It looks like the power has been restored.",
       isBlocking: true,
     },
   },
@@ -71,7 +70,7 @@ export const EVENTS: Array<ContestEventBlueprint> = [
     probabilityScalingRateWithRateOfIncrement: 0,
     setBreakInTicks: {
       breakRemainingLength: exponential(10 / CONTEST_LENGTH),
-      messageOnEndOfBreak: "Your internet connection has been restored",
+      messageOnEndOfBreak: "Your internet connection has been restored.",
       isBlocking: true,
     },
   },
@@ -253,7 +252,7 @@ export const EVENTS: Array<ContestEventBlueprint> = [
   {
     name: "Unfamiliar technique",
     message:
-      "You found that the problem is testing a technique you are not comfortable with. You need to learn it and then solve the problem with it",
+      "You found that the problem is testing a technique you are not comfortable with. You need to learn it and then solve the problem with it.",
     sentiment: "neutral",
     isGlobal: false,
     phases: ["during-pen-paper-solving"],
@@ -366,7 +365,7 @@ export const EVENTS: Array<ContestEventBlueprint> = [
     probabilityScalingRateWithRateOfIncrement: 0.25,
     setBreakInTicks: {
       breakRemainingLength: 60 * betaPrimeAltParam(1, 5),
-      messageOnEndOfBreak: "Your editor is successfully set up",
+      messageOnEndOfBreak: "Your editor is successfully set up.",
       isBlocking: false,
     },
 
@@ -427,7 +426,7 @@ export const EVENTS: Array<ContestEventBlueprint> = [
     sentiment: "neutral",
     isGlobal: false,
     phases: ["during-implementing"],
-    probability: 1, // TODO - implement personal library and increase probability here.
+    probability: 1, // TODO - implement personal library and modify probability here.
     probabilityScalingRateWithRateOfIncrement: 0.6,
     setBreakInTicks: (params) => {
       return {
