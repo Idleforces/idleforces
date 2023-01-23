@@ -17,7 +17,7 @@ export const UserInfoBox = () => {
     <div id="user-info-box-content">
       <div id="user-info-box-content-left-bar">
         <p>
-          Rating: <RatingStyled stringToStyle={rating} rating={rating}/>
+          Rating: <RatingStyled stringToStyle={Math.round(rating)} rating={rating}/>
         </p>
         <ul>
           <li>
