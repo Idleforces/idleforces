@@ -404,12 +404,17 @@ const StandingsPage = (props: {
   return (
     <div id="standings-page">
       <DataTable
-        topText="Standings"
+        topText={
+          location.pathname.startsWith("/game/contest/standings/friends")
+            ? "Friends standings"
+            : "Standings"
+        }
         containerBorderRadiusPx={5}
         contents={dataTableContents}
         classNames={classNames}
       />
       <RankingPageLinks
+        selectedPage={selectedPage}
         setSelectedPage={setSelectedPage}
         additionalDispatch={{
           dispatch: setRatingRecomputeData,

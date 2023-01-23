@@ -6,9 +6,12 @@ import { countriesCount } from "../..";
 import { computeRanksConsideringTies } from "../../../app/contest/recalculate-ratings";
 import { selectFriends } from "../../../app/friends/friends-slice";
 import { useAppSelector } from "../../../app/hooks";
-import { selectRatingsUpdatedCount, selectUsers } from "../../../app/users/users-slice";
+import {
+  selectRatingsUpdatedCount,
+  selectUsers,
+} from "../../../app/users/users-slice";
 import { transposeArray } from "../../../utils/utils";
-import { NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE } from "../../constants";
+import { USERS_NO_ON_RATING_PAGE } from "../../constants";
 import { DataTable } from "../utils/datatable";
 import { Flag } from "../utils/flag";
 import { RankingPageLinks } from "../utils/ranking-page-links";
@@ -38,8 +41,8 @@ export const Rating = () => {
   );
 
   if (!users || !sortedUsers) return <></>;
-  const minIndex = (selectedPage - 1) * NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE;
-  const maxIndex = selectedPage * NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE;
+  const minIndex = (selectedPage - 1) * USERS_NO_ON_RATING_PAGE;
+  const maxIndex = selectedPage * USERS_NO_ON_RATING_PAGE;
 
   const unfilteredRatings = sortedUsers.map(
     (user) => user.ratingHistory.slice(-1)[0].rating
@@ -156,9 +159,10 @@ export const Rating = () => {
       </div>
       <DataTable contents={dataTableContents} />
       <RankingPageLinks
+        selectedPage={selectedPage}
         setSelectedPage={setSelectedPage}
         dataLength={unslicedFilteredUsers.length}
-        dataOnOnePage={NUMBER_OF_USERS_SHOWN_ON_RATING_PAGE}
+        dataOnOnePage={USERS_NO_ON_RATING_PAGE}
       />
     </div>
   );
