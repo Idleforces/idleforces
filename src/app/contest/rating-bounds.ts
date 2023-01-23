@@ -1,7 +1,10 @@
 import type { ProblemDivision } from "../problems/types";
 import type { User } from "../users/types";
 
-const isWithinRatingBound = (rating: number, division: ProblemDivision) => {
+export const isWithinRatingBound = (
+  rating: number,
+  division: ProblemDivision
+) => {
   switch (division) {
     case 1:
       return rating >= 1900;

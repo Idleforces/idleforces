@@ -22,7 +22,10 @@ import { DataTable } from "../utils/datatable";
 import "./contests.css";
 import "../utils/datatable.css";
 import { setEventsToEmptyArray } from "../../../app/events/events-slice";
-import { filterUsersSatisfyingRatingBound } from "../../../app/contest/rating-bounds";
+import {
+  filterUsersSatisfyingRatingBound,
+  isWithinRatingBound,
+} from "../../../app/contest/rating-bounds";
 import { Link, useNavigate } from "react-router-dom";
 import { setInContest } from "../../../app/save/save-slice";
 import { declareRecordByInitializer } from "../../../utils/utils";
@@ -126,9 +129,33 @@ export const Contests = (props: {
     playerParticipating: boolean,
     secondsRemaining: number
   ): JSX.Element => {
-    return usersSatisfyingRatingBoundsCounts[division] >=
-      MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST &&
-      secondsRemaining <= 0 ? (
+    if (
+      playerParticipating &&
+      !isWithinRatingBound(users[0].ratingHistory.slice(-1)[0].rating, division)
+    )
+      return (
+        <span style={{ color: "gray" }}>
+          You cannot register due to your rating.
+        </span>
+      );
+
+    if (
+      usersSatisfyingRatingBoundsCounts[division] <=
+      MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST
+    )
+      return (
+        <span style={{ color: "gray" }}>Not enough users can participate.</span>
+      );
+
+    if (secondsRemaining > 0) {
+      return (
+        <span style={{ color: "gray" }}>
+          {convertSecondsToHHMMSS(secondsRemaining)}
+        </span>
+      );
+    }
+
+    return (
       <a
         className="dark-red-link"
         tabIndex={0}
@@ -153,13 +180,6 @@ export const Contests = (props: {
       >
         {playerParticipating ? "Register" : "Simulate"}
       </a>
-    ) : usersSatisfyingRatingBoundsCounts[division] <=
-      MIN_USERS_SATISFYING_RATING_BOUND_TO_START_CONTEST ? (
-      <span style={{ color: "gray" }}>Not enough users can participate.</span>
-    ) : (
-      <span style={{ color: "gray" }}>
-        {convertSecondsToHHMMSS(secondsRemaining)}
-      </span>
     );
   };
 
