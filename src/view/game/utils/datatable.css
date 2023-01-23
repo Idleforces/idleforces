@@ -110,3 +110,10 @@
 .datatable-no-outer-border {
   border: none !important;
 }
+
+.datatable .datatable-no-header thead,
+.datatable .datatable-no-header th {
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}

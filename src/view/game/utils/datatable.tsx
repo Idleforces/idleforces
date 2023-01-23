@@ -1,4 +1,4 @@
-export type AllowableTableClassNames = "datatable-no-outer-border"
+export type AllowableTableClassNames = "datatable-no-outer-border" | "datatable-no-header"
 export type AllowableTableIds = never;
 export type AllowableContainerIds = never;
 
