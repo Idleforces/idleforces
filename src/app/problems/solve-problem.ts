@@ -68,7 +68,17 @@ export const processTickOfProblemSolving = <RootStateType>(
 
   switch (problemSolveStatus.phase) {
     case "during-reading":
-      if (problemSolveStatus.progress >= 1)
+      if (problemSolveStatus.progress >= 1) {
+        if (user.isPlayer)
+          dispatch(
+            addEvent({
+              message: `Finished reading problem ${problem.placement}`,
+              sentiment: "positive",
+              ticksSinceBeginning,
+              problemPlacement: problem.placement,
+            })
+          );
+
         return {
           newProblemSolveStatus: startPenPaperSolving(
             user,
@@ -78,6 +88,7 @@ export const processTickOfProblemSolving = <RootStateType>(
           nextEventIn,
           breakData,
         };
+      }
       break;
 
     case "during-pen-paper-solving":
