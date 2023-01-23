@@ -46,6 +46,7 @@ export const SubmissionsFilterBox = (props: {
       <select
         name="submission-filter-problem"
         id="submission-filter-problem"
+        defaultValue={contestSubmissionsFilterData.problemPlacement ?? "null"}
         onChange={(e) => {
           setContestSubmissionsFilterDataLocal((prev) =>
             e.target.value === "null"
@@ -58,12 +59,12 @@ export const SubmissionsFilterBox = (props: {
         }}
       >
         {[
-          <option value={"null"} key={"!!!-first-alphabetically"} selected={contestSubmissionsFilterDataLocal.problemPlacement === null}>
+          <option value={"null"} key={"!!!-first-alphabetically"}>
             any problem
           </option>,
         ].concat(
           problemPlacements.map((placement) => (
-            <option value={placement} key={placement} selected={placement === contestSubmissionsFilterDataLocal.problemPlacement}>
+            <option value={placement} key={placement}>
               {placement}
             </option>
           ))
@@ -73,6 +74,7 @@ export const SubmissionsFilterBox = (props: {
       <select
         name="submission-filter-verdict"
         id="submission-filter-verdict"
+        defaultValue={contestSubmissionsFilterData.verdict ?? "null"}
         onChange={(e) => {
           setContestSubmissionsFilterDataLocal((prev) =>
             e.target.value === "null"
@@ -85,12 +87,12 @@ export const SubmissionsFilterBox = (props: {
         }}
       >
         {[
-          <option value={"null"} key={"!!!-first-alphabetically"} selected={contestSubmissionsFilterDataLocal.verdict === null}>
+          <option value={"null"} key={"!!!-first-alphabetically"}>
             any verdict
           </option>,
         ].concat(
           contestSubmissionVerdicts.map((verdict) => (
-            <option value={verdict} key={verdict} selected={contestSubmissionsFilterDataLocal.verdict === verdict}>
+            <option value={verdict} key={verdict}>
               {verdict}
             </option>
           ))
@@ -118,13 +120,11 @@ export const SubmissionsFilterBox = (props: {
         <input
           type="reset"
           value="Reset"
-          onClick={(e) => {
-            e.preventDefault();
+          onClick={(_e) => {
             handleReset();
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              e.preventDefault();
               handleReset();
             }
           }}
