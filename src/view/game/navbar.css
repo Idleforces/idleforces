@@ -37,6 +37,7 @@ nav a {
   line-height: 22px;
   font-family: "Cuprum", sans-serif;
   border-bottom: 3px solid white;
+  margin-top: 3px;
 }
 
 nav a:hover {
