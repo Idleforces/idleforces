@@ -69,7 +69,7 @@ export const computeContestRanksConsideringTies = <
   });
 };
 
-export const computeNewRatingsSlice = (
+export const computeNewRatings = (
   contestUsersStats: Array<{
     handle: string;
     oldRating: number;
@@ -179,5 +179,5 @@ export const recalculateRatings = (
     problemScoreDecrementsPerMinute
   );
 
-  return computeNewRatingsSlice(contestUsersStats, contestName);
+  return computeNewRatings(contestUsersStats, contestName);
 };

@@ -3,7 +3,7 @@ import { CONTEST_LENGTH } from "../../../src/app/contest/constants";
 import { computeSubmissionsStats } from "../../../src/app/contest/contest-stats";
 import { computeProblemScoreDecrementsPerMinute } from "../../../src/app/contest/problem-scores";
 import {
-  computeNewRatingsSlice,
+  computeNewRatings,
   computeSeed,
 } from "../../../src/app/contest/recalculate-ratings";
 import type { ProblemSolveStatuses } from "../../../src/app/contest/types";
@@ -124,7 +124,7 @@ describe("computeContestScoresAndNumberOfWrongSubmissions function", () => {
   });
 });
 
-describe("computeNewRatingsSlice function", () => {
+describe("computeNewRatings function", () => {
   const contestUsersStatsArray = [
     [
       { handle: "tourist", oldRating: 3700, rank: 1 },
@@ -141,7 +141,7 @@ describe("computeNewRatingsSlice function", () => {
   ];
 
   it("computes new ratings", () => {
-    let newRatings = computeNewRatingsSlice(
+    let newRatings = computeNewRatings(
       contestUsersStatsArray[0],
       null
     ) as Record<string, RatingPoint>;
@@ -149,10 +149,10 @@ describe("computeNewRatingsSlice function", () => {
     assertProbabilisticCloseTo(newRatings.tourist.rating, 3700, 1);
     assertProbabilisticCloseTo(newRatings.fourist.rating, 0, 1);
 
-    newRatings = computeNewRatingsSlice(
-      contestUsersStatsArray[1],
-      null
-    ) as Record<string, RatingPoint>;
+    newRatings = computeNewRatings(contestUsersStatsArray[1], null) as Record<
+      string,
+      RatingPoint
+    >;
     assert.equal(newRatings.chad.rating, 2862.668145751953);
     assert.equal(newRatings.tourist.rating, 3462.2105346679687);
     assert.equal(newRatings.normalHandle.rating, 1359.1896911621093);
@@ -161,7 +161,7 @@ describe("computeNewRatingsSlice function", () => {
   });
 
   it("produces zero-mean rating differences", () => {
-    const newRatings = computeNewRatingsSlice(
+    const newRatings = computeNewRatings(
       contestUsersStatsArray[1],
       null
     ) as Record<string, RatingPoint>;
@@ -176,7 +176,7 @@ describe("computeNewRatingsSlice function", () => {
   });
 
   it("ignores zero-mean correction if given a slice", () => {
-    const newRatings = computeNewRatingsSlice(contestUsersStatsArray[1], null, [
+    const newRatings = computeNewRatings(contestUsersStatsArray[1], null, [
       "chad",
       "tourist",
       "normalHandle",
@@ -195,11 +195,11 @@ describe("computeNewRatingsSlice function", () => {
 
   it("produces similar results whether given a slice or not which only differ by zero-mean correction", () => {
     const handles = ["tourist", "normalHandle"];
-    const newRatingsFull = computeNewRatingsSlice(
+    const newRatingsFull = computeNewRatings(
       contestUsersStatsArray[1],
       null
     ) as Record<string, RatingPoint>;
-    const newRatingsSlice = computeNewRatingsSlice(
+    const newRatingsSlice = computeNewRatings(
       contestUsersStatsArray[1],
       null,
       handles

@@ -12,7 +12,7 @@ import {
   computeTried,
 } from "../../../../app/contest/contest-stats";
 import {
-  computeNewRatingsSlice,
+  computeNewRatings,
   computeRanksConsideringTies,
 } from "../../../../app/contest/recalculate-ratings";
 import type {
@@ -230,7 +230,7 @@ const StandingsPage = (props: {
 
       return newRatingsPartial;
     } else
-      return computeNewRatingsSlice(
+      return computeNewRatings(
         contestUsersStats,
         contest.name,
         displayedContestUsersStats.map(

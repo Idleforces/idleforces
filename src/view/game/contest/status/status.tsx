@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-key */
 import { useMemo, useState } from "react";
 import { useLocation } from "react-router";
+import { Link } from "react-router-dom";
 import { selectContest } from "../../../../app/contest/contest-slice";
 import type { ContestSlice } from "../../../../app/contest/types";
 import { useAppSelector } from "../../../../app/hooks";
@@ -118,10 +119,12 @@ export const Status = (props: {
   );
 
   const handlesColumn = displayedSubmissions.map((submission, index) => (
-    <RatingStyled
-      stringToStyle={submission.handle}
-      rating={userRatings[index]}
-    />
+    <Link to={`/game/profile/${submission.handle}`} >
+      <RatingStyled
+        stringToStyle={submission.handle}
+        rating={userRatings[index]}
+      />
+    </Link>
   ));
 
   const problemsColumn = displayedSubmissions.map((submission) => (
