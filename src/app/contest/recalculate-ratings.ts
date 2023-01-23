@@ -2,6 +2,7 @@ import type { User } from "../users/types";
 import type { ContestUserData, RatingPoints } from "./types";
 import { sum } from "../../utils/utils";
 import { computeContestUsersStatsSortedByRank } from "./contest-stats";
+import { problemPlacements } from "../problems/types";
 
 const probabilitiesOfWinningByRatingDiff = Array(10000)
   .fill(0)
@@ -156,6 +157,17 @@ export const computeNewRatings = (
   return ratingPoints;
 };
 
+export const filterUsersWithAtLeastOneSubmission = (
+  contestUsersData: Array<ContestUserData>
+) => {
+  return contestUsersData.filter((contestUserData) =>
+    problemPlacements.some(
+      (placement) =>
+        contestUserData.problemSolveStatuses[placement].submissions.length
+    )
+  );
+};
+
 /**
  *
  * @param contestUsersData User data relating to the contest coming from `contestSlice`.
@@ -170,8 +182,11 @@ export const recalculateRatings = (
   users: Array<User>,
   contestName: string
 ): RatingPoints => {
+  const contestUsersWithAtLeastOneSubmissionData =
+    filterUsersWithAtLeastOneSubmission(contestUsersData);
+
   const contestUsersStats = computeContestUsersStatsSortedByRank(
-    contestUsersData,
+    contestUsersWithAtLeastOneSubmissionData,
     users,
     true,
     false,

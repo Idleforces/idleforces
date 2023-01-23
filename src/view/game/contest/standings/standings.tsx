@@ -14,10 +14,10 @@ import {
 import {
   computeNewRatings,
   computeRanksConsideringTies,
+  filterUsersWithAtLeastOneSubmission,
 } from "../../../../app/contest/recalculate-ratings";
 import type {
   ContestSlice,
-  ContestUserData,
   ContestUserStats,
   RatingPoints,
 } from "../../../../app/contest/types";
@@ -50,17 +50,6 @@ export type RatingRecomputeData =
   | {
       placeholder: true;
     };
-
-const filterUsersWithAtLeastOneSubmission = (
-  contestUsersStats: Array<ContestUserData>
-) => {
-  return contestUsersStats.filter((contestUserStats) =>
-    problemPlacements.some(
-      (placement) =>
-        contestUserStats.problemSolveStatuses[placement].submissions.length
-    )
-  );
-};
 
 const computeNumberOfTimesRecomputedByContestProgress = (
   ticksSinceBeginning: number,
