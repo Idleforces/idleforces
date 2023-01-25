@@ -2,6 +2,8 @@ import { declareRecordByInitializer } from "../../utils/utils";
 import { attributeNames } from "../users/types";
 import type { Player } from "../users/types";
 import type { XPGain } from "./types";
+import { levelToXP, XPToLevel } from "../users/utils";
+import { USER_ATTRIBUTES_CONSTANTS } from "../users/constants";
 
 export const computeExpectancyMultiplierXPFactor = (
   expectancyMultiplier: number
@@ -20,7 +22,13 @@ export const modifyAttributesAccordingToXPGain = (
   const newAttributes = declareRecordByInitializer(
     attributeNames,
     (attributeName) =>
-      originalAttributes[attributeName] + (XPGain[attributeName] ?? 0)
+      XPToLevel(
+        levelToXP(
+          originalAttributes[attributeName],
+          USER_ATTRIBUTES_CONSTANTS[attributeName]
+        ) + (XPGain[attributeName] ?? 0),
+        USER_ATTRIBUTES_CONSTANTS[attributeName]
+      )
   );
 
   return {
