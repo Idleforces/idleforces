@@ -27,14 +27,16 @@ const automaticallySwitchToAnotherProblem = (
   lastProblemPlacement: ProblemPlacement | null,
   user: User
 ): void => {
-  const activeProblemPlacement = contestUserData.activeProblemPlacement;
   const problemSolveStatuses = contestUserData.problemSolveStatuses;
+  const lastActiveProblemSolveStatus = lastProblemPlacement
+    ? problemSolveStatuses[lastProblemPlacement]
+    : null;
 
   const problemPositionsThatCanBecomeActive = problemPlacements.map(
     (placement) =>
       (isActiveProblemSolveStatus(problemSolveStatuses[placement]) ||
         problemSolveStatuses[placement].phase === "before-reading") &&
-      placement !== activeProblemPlacement
+      placement !== lastProblemPlacement
   );
 
   const firstIndexThatCanBecomeActive: number =
@@ -55,6 +57,13 @@ const automaticallySwitchToAnotherProblem = (
     newActiveProblemPosition !== null
       ? computeProblemPlacementFromProblemPosition(newActiveProblemPosition)
       : null;
+
+  if (
+    !contestUserData.activeProblemPlacement &&
+    lastActiveProblemSolveStatus &&
+    isActiveProblemSolveStatus(lastActiveProblemSolveStatus)
+  )
+    contestUserData.activeProblemPlacement = lastProblemPlacement;
 
   if (!contestUserData.isPlayer) {
     if (lastProblemPlacement)
