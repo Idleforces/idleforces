@@ -12,7 +12,7 @@ export const XPToLevel = (
   }
 
   return (
-    Math.pow((2 * Math.atan(XP / (1000 * hardness))) / Math.PI, 0.4) *
+    Math.pow((2 * Math.atan(XP / (1_000_000 * hardness))) / Math.PI, 0.4) *
       (maxValue - minValue) +
     minValue
   );
@@ -31,7 +31,7 @@ export const levelToXP = (
   }
 
   let lowerBound = 0,
-    upperBound = 1000000000;
+    upperBound = 1_000_000_000;
   for (let i = 0; i < 50; i += 1) {
     const midpoint = (lowerBound + upperBound) / 2;
     const levelAtMidpoint = XPToLevel(midpoint, attributeConstant);
