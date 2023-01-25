@@ -8,10 +8,9 @@ import {
 } from "../../app/users/users-slice";
 import type { UsersSlice } from "../../app/users/users-slice";
 import { sleep } from "../../utils/utils";
-import type { ContestTypeRunning } from "./types";
 import { Outlet, useLocation } from "react-router-dom";
 import { NavBar } from "./navbar";
-import { selectSaveData } from "../../app/save/save-slice";
+import { selectActivity, selectSaveData } from "../../app/save/save-slice";
 import {
   updateContestSlice,
   selectContest,
@@ -39,8 +38,6 @@ import type { ContestSubmissionsFilterData } from "./contest/status/status";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
-  contestTypeRunning: ContestTypeRunning;
-  setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
   noPlayerContestSimSpeed: number;
   setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
   secondsSincePageLoad: number;
@@ -50,9 +47,7 @@ export const Game = (props: {
 }) => {
   const secondsSincePageLoad = props.secondsSincePageLoad;
   const timestampAtPageLoad = props.timestampAtPageLoad;
-  const contestTypeRunning = props.contestTypeRunning;
   const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
-  const setContestTypeRunning = props.setContestTypeRunning;
   const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
   const contestSubmissionsFilterData = props.contestSubmissionsFilterData;
   const setContestSubmissionsFilterData = props.setContestSubmissionsFilterData;
@@ -69,6 +64,8 @@ export const Game = (props: {
   const contestTicksPassed = contest ? contest.ticksSinceBeginning : 0;
   const events = useAppSelector(selectEvents);
   const saveData = useAppSelector(selectSaveData);
+  const activity = useAppSelector(selectActivity);
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -129,18 +126,18 @@ export const Game = (props: {
   const contestTicksPassedAtMaxOfGameLoadStartContest = useMemo(
     () => contestTicksPassed,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [contestTypeRunning]
+    [activity]
   );
 
   const timestampOfMaxOfGameLoadStartContest = useMemo(
     () => Date.now(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [contestTypeRunning]
+    [activity]
   );
 
   useEffect(() => {
     let ignore = false;
-    if (!contest || !contestTypeRunning || !usersWithTimeOfSnapshot) {
+    if (!contest || !activity || !usersWithTimeOfSnapshot) {
       console.warn(
         "Tried to process a tick of contest when there was data missing."
       );
@@ -152,7 +149,7 @@ export const Game = (props: {
     const secondsRemaining = Math.max(CONTEST_LENGTH - contestTicksPassed, 0);
     document.title = `Idleforces (${convertSecondsToHHMMSS(secondsRemaining)})`;
 
-    const playerParticipating = contestTypeRunning.playerParticipating;
+    const playerParticipating = activity === "contest-participation";
     const divisionMergeTicksCount =
       DIVISION_MERGE_TICKS_COUNT[contest.division];
     const numberOfMergedTicks = playerParticipating
@@ -180,7 +177,7 @@ export const Game = (props: {
           const { newContestUsersData, nextEventIn } = processTickOfContest(
             contest,
             numberOfMergedTicks,
-            usersWithTimeOfSnapshot.users,
+            [usersWithTimeOfSnapshot.player, ...usersWithTimeOfSnapshot.NPCs],
             dispatch
           );
           if (!ignore)
@@ -203,7 +200,7 @@ export const Game = (props: {
         newContestUsersData,
         contest.problemScores,
         contest.problemScoreDecrementsPerMinute,
-        usersWithTimeOfSnapshot.users,
+        [usersWithTimeOfSnapshot.player, ...usersWithTimeOfSnapshot.NPCs],
         contest.name
       );
 
@@ -237,7 +234,7 @@ export const Game = (props: {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    contestTypeRunning,
+    activity,
     contestTicksPassed,
     contestTicksPassedAtMaxOfGameLoadStartContest,
     timestampOfMaxOfGameLoadStartContest,
@@ -259,8 +256,6 @@ export const Game = (props: {
           <ContestSideBar
             noPlayerContestSimSpeed={noPlayerContestSimSpeed}
             setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
-            contestTypeRunning={contestTypeRunning}
-            setContestTypeRunning={setContestTypeRunning}
             setContestSubmissionsFilterData={setContestSubmissionsFilterData}
             contestSubmissionsFilterData={contestSubmissionsFilterData}
           />

@@ -1,6 +1,5 @@
 import { ContestInfoBox } from "./contest-info-box/contest-info-box";
 import type { Dispatch, MouseEventHandler, SetStateAction } from "react";
-import type { ContestTypeRunning } from "../types";
 import { SpeedSimSlider } from "./speed-sim-slider/speed-sim-slider";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import {
@@ -9,7 +8,7 @@ import {
 } from "../../../app/contest/contest-slice";
 import { useNavigate } from "react-router";
 import { resetEvents } from "../../../app/events/events-slice";
-import { setInContest } from "../../../app/save/save-slice";
+import { selectActivity, setActivity} from "../../../app/save/save-slice";
 import "./contest.css";
 import type { ContestSubmissionsFilterData } from "./status/status";
 import { useLocation } from "react-router";
@@ -18,8 +17,6 @@ import { SubmissionsFilterBox } from "./submissions-filter-box/submissions-filte
 export const ContestSideBar = (props: {
   noPlayerContestSimSpeed: number;
   setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
-  contestTypeRunning: ContestTypeRunning;
-  setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
   contestSubmissionsFilterData: ContestSubmissionsFilterData;
   setContestSubmissionsFilterData: Dispatch<
     SetStateAction<ContestSubmissionsFilterData>
@@ -27,14 +24,13 @@ export const ContestSideBar = (props: {
 }) => {
   const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
   const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
-  const playerParticipating =
-    props.contestTypeRunning?.playerParticipating ?? false;
+
   const contestSubmissionsFilterData = props.contestSubmissionsFilterData;
   const setContestSubmissionsFilterData = props.setContestSubmissionsFilterData;
 
   const contestFinished = useAppSelector(selectContestFinished);
-
-  const setContestTypeRunning = props.setContestTypeRunning;
+  const activity = useAppSelector(selectActivity);
+  const playerParticipating = activity === "contest-participation";
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -43,8 +39,8 @@ export const ContestSideBar = (props: {
   const endContest: MouseEventHandler<HTMLButtonElement> = (_e) => {
     dispatch(resetContest(null));
     dispatch(resetEvents(null));
-    dispatch(setInContest(false));
-    setContestTypeRunning(null);
+    dispatch(setActivity(null));
+    setActivity(null);
 
     navigate("/game/dashboard");
   };

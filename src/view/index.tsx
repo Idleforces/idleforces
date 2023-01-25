@@ -1,17 +1,16 @@
-import type { Dispatch, FormEvent, SetStateAction } from "react";
+import type { FormEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { setUsers } from "../app/users/users-slice";
 import type {
-  ContestTypeRunning,
   LocalStorageSaveData,
   LocalStorageSavesValue,
 } from "./game/types";
 import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { RatingStyled } from "./game/utils/styled-rating";
-import { setSaveData } from "../app/save/save-slice";
+import { setActivity, setSaveData } from "../app/save/save-slice";
 import { USER_INITIAL_RATING } from "../app/users/constants";
 import { setContest } from "../app/contest/contest-slice";
 import type { ContestSlice } from "../app/contest/types";
@@ -46,7 +45,6 @@ const getSavesFromLocalStorage = (): LocalStorageSavesValue => {
 };
 
 export const Index = (props: {
-  setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
   leaveGameRef: React.MutableRefObject<() => void>;
 }) => {
   const [handle, setHandle] = useState("");
@@ -57,7 +55,6 @@ export const Index = (props: {
   const dispatch = useAppDispatch();
 
   const leaveGame = props.leaveGameRef.current;
-  const setContestTypeRunning = props.setContestTypeRunning;
 
   const allowedToMakeASave =
     !saves.some((save) => save.saveName === newSaveName) &&
@@ -72,13 +69,13 @@ export const Index = (props: {
         handle
       );
       if (!countriesCount.size)
-        populateCountriesCount(newUsersWithTimeOfSnapshot.users);
+        populateCountriesCount(newUsersWithTimeOfSnapshot.NPCs);
 
       const saveData = {
         handle,
         saveName: newSaveName,
         rating: USER_INITIAL_RATING,
-        inContest: false,
+        activity: null
       };
       dispatch(setSaveData(saveData));
       dispatch(setUsers(newUsersWithTimeOfSnapshot));
@@ -110,20 +107,18 @@ export const Index = (props: {
       saveData.handle
     );
     if (!countriesCount.size)
-      populateCountriesCount(usersWithTimeOfSnapshot.users);
+      populateCountriesCount(usersWithTimeOfSnapshot.NPCs);
 
     dispatch(setSaveData(saveData));
     dispatch(setUsers(usersWithTimeOfSnapshot));
 
-    if (saveData.inContest) {
+    if (saveData.activity === "contest-participation" || saveData.activity === "contest-simulation") {
       const contest = JSON.parse(
         localStorage.getItem(`contest-${saveName}`) as string
       ) as ContestSlice;
 
       if (contest) {
-        setContestTypeRunning({
-          playerParticipating: contest.contestUsersData[0].isPlayer,
-        });
+        dispatch(setActivity(saveData.activity));
         dispatch(setContest(contest));
       }
 

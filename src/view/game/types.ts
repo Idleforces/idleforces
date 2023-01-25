@@ -1,3 +1,5 @@
+import type { Activity } from "../../app/save/save-slice";
+
 export type LocalStorageSaveData = {
   rating: number;
   handle: string;
@@ -7,11 +9,8 @@ export type LocalStorageSaveData = {
   contestHash: string;
   contestArchiveHash: string;
   friendsHash: string;
-  inContest: boolean;
+  NPCsHash: string;
+  activity: Activity;
 };
 
 export type LocalStorageSavesValue = Array<LocalStorageSaveData>;
-
-export type ContestTypeRunning = {
-  playerParticipating: boolean;
-} | null;

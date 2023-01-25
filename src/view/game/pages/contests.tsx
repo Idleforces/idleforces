@@ -17,7 +17,6 @@ import {
   convertSecondsToHHMM,
   convertSecondsToHHMMSS,
 } from "../../../utils/time-format";
-import type { ContestTypeRunning } from "../types";
 import { DataTable } from "../utils/datatable";
 import "./contests.css";
 import "../utils/datatable.css";
@@ -27,7 +26,7 @@ import {
   isWithinRatingBound,
 } from "../../../app/contest/rating-bounds";
 import { Link, useNavigate } from "react-router-dom";
-import { setInContest } from "../../../app/save/save-slice";
+import { selectActivity, setActivity } from "../../../app/save/save-slice";
 import { declareRecordByInitializer } from "../../../utils/utils";
 import { selectArchivedContests } from "../../../app/contest-archive/contest-archive-slice";
 import { DIVISION_COOLDOWNS } from "../../../app/contest-archive/constants";
@@ -64,8 +63,7 @@ const handleContestStart = (
   division: ProblemDivision,
   name: string,
   dispatch: ThunkDispatch<RootState, void, AnyAction>,
-  users: Array<User> | null,
-  setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>
+  users: Array<User> | null
 ) => {
   dispatch(
     startContest({
@@ -77,23 +75,20 @@ const handleContestStart = (
   );
   dispatch(setEventsToEmptyArray(null));
 
-  dispatch(setInContest(true));
-  setContestTypeRunning({
-    playerParticipating,
-  });
+  dispatch(
+    setActivity(
+      playerParticipating ? "contest-participation" : "contest-simulation"
+    )
+  );
 };
 
 export const Contests = (props: {
-  setContestTypeRunning: Dispatch<SetStateAction<ContestTypeRunning>>;
-  contestTypeRunning: ContestTypeRunning;
   setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
   secondsSincePageLoad: number;
   timestampAtPageLoad: MutableRefObject<number>;
 }) => {
   const secondsSincePageLoad = props.secondsSincePageLoad;
   const timestampAtPageLoad = props.timestampAtPageLoad;
-  const contestTypeRunning = props.contestTypeRunning;
-  const setContestTypeRunning = props.setContestTypeRunning;
   const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
 
   const dispatch = useAppDispatch();
@@ -101,6 +96,7 @@ export const Contests = (props: {
 
   const users = useAppSelector(selectUsers) ?? [];
   const contestArchive = useAppSelector(selectArchivedContests);
+  const activity = useAppSelector(selectActivity);
 
   const reverseProblemDivisions = [...problemDivisions].reverse();
   const usersSatisfyingRatingBoundsCounts: Record<ProblemDivision, number> =
@@ -116,7 +112,7 @@ export const Contests = (props: {
         `Idleforces round #${contestArchive.length + 1} (Div. ${division})`
     );
 
-  if (contestTypeRunning)
+  if (activity === "contest-participation" || activity === "contest-simulation")
     return (
       <div id="contests-page" style={{ fontSize: "1.5rem" }}>
         <div>A contest is running.</div>
@@ -129,6 +125,14 @@ export const Contests = (props: {
     playerParticipating: boolean,
     secondsRemaining: number
   ): JSX.Element => {
+    if (activity) {
+      return (
+        <span style={{ color: "gray" }}>
+          Please finish your activity first.
+        </span>
+      );
+    }
+
     if (
       playerParticipating &&
       !isWithinRatingBound(users[0].ratingHistory.slice(-1)[0].rating, division)
@@ -166,7 +170,6 @@ export const Contests = (props: {
             contestNames[division],
             dispatch,
             users,
-            setContestTypeRunning
           );
 
           if (!playerParticipating) setNoPlayerContestSimSpeed(0);

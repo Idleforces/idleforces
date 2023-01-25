@@ -11,7 +11,6 @@ import { Footer } from "./view/footer/footer";
 import { Loading } from "./view/loading/loading";
 import { resetContest } from "./app/contest/contest-slice";
 import { resetEvents } from "./app/events/events-slice";
-import type { ContestTypeRunning } from "./view/game/types";
 import { useEffect, useRef, useState } from "react";
 import { Contests } from "./view/game/pages/contests";
 import { Contest } from "./view/game/contest/contest";
@@ -30,8 +29,6 @@ function App() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [contestTypeRunning, setContestTypeRunning] =
-    useState<ContestTypeRunning>(null);
   const [noPlayerContestSimSpeed, setNoPlayerContestSimSpeed] = useState(0);
   const [ratingRecomputeData, setRatingRecomputeData] =
     useState<RatingRecomputeData>({
@@ -82,7 +79,6 @@ function App() {
     dispatch(resetEvents(null));
     dispatch(resetContestArchive(null));
     dispatch(resetFriends(null));
-    setContestTypeRunning(null);
     setNoPlayerContestSimSpeed(0);
   };
 
@@ -100,8 +96,6 @@ function App() {
           element={
             <Game
               leaveGameRef={leaveGameRef}
-              contestTypeRunning={contestTypeRunning}
-              setContestTypeRunning={setContestTypeRunning}
               noPlayerContestSimSpeed={noPlayerContestSimSpeed}
               setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
               secondsSincePageLoad={secondsSincePageLoad}
@@ -120,8 +114,6 @@ function App() {
             path="contests"
             element={
               <Contests
-                setContestTypeRunning={setContestTypeRunning}
-                contestTypeRunning={contestTypeRunning}
                 setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
                 secondsSincePageLoad={secondsSincePageLoad}
                 timestampAtPageLoad={timestampAtPageLoad}
@@ -171,7 +163,6 @@ function App() {
           path="/*"
           element={
             <Index
-              setContestTypeRunning={setContestTypeRunning}
               leaveGameRef={leaveGameRef}
             />
           }
