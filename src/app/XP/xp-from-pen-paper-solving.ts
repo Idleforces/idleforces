@@ -48,7 +48,7 @@ export const computeXPGainFromPenPaperSolving = (
   if (correct)
     return {
       [tag]: 1.5 * attributeXPGain,
-      penPaperCare: 0.5 * penPaperCareXPGain,
+      penPaperCare: 0.7 * penPaperCareXPGain,
     };
   else
     return {

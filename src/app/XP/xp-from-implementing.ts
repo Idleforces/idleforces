@@ -50,7 +50,7 @@ export const computeXPGainFromImplementing = (
   if (correct)
     return {
       implementationSpeed: 1.5 * implementationXPGain,
-      implementationCare: 0.5 * implementationCareXPGain,
+      implementationCare: 0.7 * implementationCareXPGain,
     };
   else
     return {
