@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { Dispatch, SetStateAction } from "react";
 import type { ContestSubmissionsFilterData } from "../status/status";
 import {
   contestSubmissionVerdicts,
@@ -9,15 +8,17 @@ import type { ContestSubmissionVerdict } from "../../../../app/problems/types";
 import type { ProblemPlacement } from "../../../../app/problems/types";
 import { InfoBox } from "../../utils/info-box";
 import "./submissions-filter-box.css";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
+import {
+  selectContestSubmissionsFilterData,
+  setContestSubmissionsFilterData,
+} from "../../../../app/view/view-slice";
 
-export const SubmissionsFilterBox = (props: {
-  contestSubmissionsFilterData: ContestSubmissionsFilterData;
-  setContestSubmissionsFilterData: Dispatch<
-    SetStateAction<ContestSubmissionsFilterData>
-  >;
-}) => {
-  const { contestSubmissionsFilterData, setContestSubmissionsFilterData } =
-    props;
+export const SubmissionsFilterBox = () => {
+  const contestSubmissionsFilterData = useAppSelector(
+    selectContestSubmissionsFilterData
+  );
+  const dispatch = useAppDispatch();
 
   const [
     contestSubmissionsFilterDataLocal,
@@ -31,7 +32,8 @@ export const SubmissionsFilterBox = (props: {
       handle: "",
     };
     setContestSubmissionsFilterDataLocal(initialState);
-    setContestSubmissionsFilterData(initialState);
+
+    dispatch(setContestSubmissionsFilterData(initialState));
   };
 
   const content = (
@@ -39,7 +41,9 @@ export const SubmissionsFilterBox = (props: {
       id="submissions-filter-form"
       onSubmit={(e) => {
         e.preventDefault();
-        setContestSubmissionsFilterData(contestSubmissionsFilterDataLocal);
+        dispatch(
+          setContestSubmissionsFilterData(contestSubmissionsFilterDataLocal)
+        );
       }}
     >
       <label htmlFor="submission-filter-problem">Problem:</label>

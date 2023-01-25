@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { MutableRefObject, SetStateAction, Dispatch } from "react";
+import type { MutableRefObject } from "react";
 import {
   RECOMPUTE_RATINGS_EVERY_N_TICKS,
   USERS_NO_ON_STANDINGS_PAGE,
@@ -21,7 +21,7 @@ import type {
   ContestUserStats,
   RatingPoints,
 } from "../../../../app/contest/types";
-import { useAppSelector } from "../../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import { problemPlacements } from "../../../../app/problems/types";
 import { computeProblemPositionFromProblemPlacement } from "../../../../app/problems/utils";
 import { selectHandle } from "../../../../app/save/save-slice";
@@ -38,6 +38,10 @@ import "./standings.css";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router";
 import { selectFriends } from "../../../../app/friends/friends-slice";
+import {
+  selectRatingRecomputeData,
+  setRatingRecomputeData,
+} from "../../../../app/view/view-slice";
 
 export type RatingRecomputeData =
   | {
@@ -61,12 +65,7 @@ const computeNumberOfTimesRecomputedByContestProgress = (
   );
 };
 
-export const Standings = (props: {
-  ratingRecomputeData: RatingRecomputeData;
-  setRatingRecomputeData: Dispatch<SetStateAction<RatingRecomputeData>>;
-}) => {
-  const { ratingRecomputeData, setRatingRecomputeData } = props;
-
+export const Standings = () => {
   const contest = useAppSelector(selectContest);
   const users = useAppSelector(selectUsers);
   const handle = useAppSelector(selectHandle);
@@ -100,8 +99,6 @@ export const Standings = (props: {
       users={users}
       handle={handle}
       onlyFriends={onlyFriends}
-      ratingRecomputeData={ratingRecomputeData}
-      setRatingRecomputeData={setRatingRecomputeData}
     />
   );
 };
@@ -111,20 +108,14 @@ const StandingsPage = (props: {
   users: Array<User>;
   handle: string;
   onlyFriends: boolean;
-  ratingRecomputeData: RatingRecomputeData;
-  setRatingRecomputeData: Dispatch<SetStateAction<RatingRecomputeData>>;
 }) => {
-  const {
-    contest,
-    users,
-    handle,
-    onlyFriends,
-    ratingRecomputeData,
-    setRatingRecomputeData,
-  } = props;
+  const { contest, users, handle, onlyFriends } = props;
 
   const finished = contest.finished;
   const friends = useAppSelector(selectFriends);
+  const ratingRecomputeData = useAppSelector(selectRatingRecomputeData);
+
+  const dispatch = useAppDispatch();
 
   const contestUsersStats = computeContestUsersStatsSortedByRank(
     contest.contestUsersData,
@@ -230,29 +221,30 @@ const StandingsPage = (props: {
   }, [ratingRecomputeData, finished]);
 
   useEffect(() => {
-    setRatingRecomputeData((prev) => {
-      const newReturnObject = {
-        numberOfTimesRecomputedByContestProgress:
-          computeNumberOfTimesRecomputedByContestProgress(
-            ticksSinceBeginning,
-            ticksSinceBeginningAtMount
-          ),
-        selectedPage,
-        onlyFriends,
-        placeholder: false,
-        finished,
-      };
+    const newRatingRecomputeData: RatingRecomputeData = {
+      numberOfTimesRecomputedByContestProgress:
+        computeNumberOfTimesRecomputedByContestProgress(
+          ticksSinceBeginning,
+          ticksSinceBeginningAtMount
+        ),
+      selectedPage,
+      onlyFriends,
+      placeholder: false,
+      finished,
+    };
 
-      return JSON.stringify(prev) === JSON.stringify(newReturnObject)
-        ? prev
-        : newReturnObject;
-    });
+    if (
+      JSON.stringify(newRatingRecomputeData) !==
+      JSON.stringify(ratingRecomputeData)
+    )
+      dispatch(setRatingRecomputeData(newRatingRecomputeData));
   }, [
     ticksSinceBeginning,
     selectedPage,
     onlyFriends,
-    setRatingRecomputeData,
     finished,
+    dispatch,
+    ratingRecomputeData
   ]);
 
   const accepted = computeAccepted(contest.contestUsersData);
@@ -405,8 +397,8 @@ const StandingsPage = (props: {
       <RankingPageLinks
         selectedPage={selectedPage}
         setSelectedPage={setSelectedPage}
-        additionalDispatch={{
-          dispatch: setRatingRecomputeData,
+        additionalPayloadAction={{
+          action: setRatingRecomputeData,
           param: {
             placeholder: true,
           },

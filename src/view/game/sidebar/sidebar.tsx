@@ -6,15 +6,13 @@ import { TopRated } from "./top-rated";
 import { UserInfoBox } from "./user-info-box";
 
 export const SideBar = (props: {
-  secondsSincePageLoad: number;
   timestampAtPageLoad: MutableRefObject<number>;
 }) => {
-  const { secondsSincePageLoad, timestampAtPageLoad } = props;
+  const { timestampAtPageLoad } = props;
 
   return (
     <div id="side-bar">
       <CooldownsInfoBox
-        secondsSincePageLoad={secondsSincePageLoad}
         timestampAtPageLoad={timestampAtPageLoad}
       />
       <UserInfoBox />

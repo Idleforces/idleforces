@@ -13,6 +13,7 @@ import type {
 } from "../../../../app/problems/types";
 import { problemPlacements } from "../../../../app/problems/types";
 import { selectUsers } from "../../../../app/users/users-slice";
+import { selectContestSubmissionsFilterData } from "../../../../app/view/view-slice";
 import { convertSecondsToHHMMSS } from "../../../../utils/time-format";
 import { transposeArray } from "../../../../utils/utils";
 import { SUBMISSIONS_NO_ON_STATUS_PAGE } from "../../../constants";
@@ -69,10 +70,10 @@ const filterSubmissions = (
   );
 };
 
-export const Status = (props: {
-  submissionsFilterData: ContestSubmissionsFilterData;
-}) => {
-  const { submissionsFilterData } = props;
+export const Status = () => {
+  const submissionsFilterData = useAppSelector(
+    selectContestSubmissionsFilterData
+  );
   const contest = useAppSelector(selectContest);
   const users = useAppSelector(selectUsers);
 
@@ -119,7 +120,7 @@ export const Status = (props: {
   );
 
   const handlesColumn = displayedSubmissions.map((submission, index) => (
-    <Link to={`/game/profile/${submission.handle}`} >
+    <Link to={`/game/profile/${submission.handle}`}>
       <RatingStyled
         stringToStyle={submission.handle}
         rating={userRatings[index]}

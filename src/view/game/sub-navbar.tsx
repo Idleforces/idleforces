@@ -1,11 +1,16 @@
 import { useState } from "react";
-import type { Dispatch, SetStateAction } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./navbar.css";
 import type { RatingRecomputeData } from "./contest/standings/standings";
 import type { ContestSubmissionsFilterData } from "./contest/status/status";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectHandle } from "../../app/save/save-slice";
+import type {
+  ActionCreatorWithPayload,
+  AnyAction,
+  ThunkDispatch,
+} from "@reduxjs/toolkit";
+import type { RootState } from "../../app/store";
 
 function computePageUrl<T extends string>(
   baseURL: string,
@@ -40,9 +45,14 @@ function computeIfInitialSelected<T extends string>(
 
 function handleNavBarClickSideEffects<T extends string>(data: {
   page: T;
-  setRatingRecomputeData?: Dispatch<SetStateAction<RatingRecomputeData>>;
-  setContestSubmissionsFilterData?: Dispatch<
-    SetStateAction<ContestSubmissionsFilterData>
+  dispatch: ThunkDispatch<RootState, undefined, AnyAction>;
+  setRatingRecomputeData?: ActionCreatorWithPayload<
+    RatingRecomputeData,
+    "view/setRatingRecomputeData"
+  >;
+  setContestSubmissionsFilterData?: ActionCreatorWithPayload<
+    ContestSubmissionsFilterData,
+    "view/setContestSubmissionsFilterData"
   >;
   playerHandle?: string;
 }) {
@@ -51,10 +61,11 @@ function handleNavBarClickSideEffects<T extends string>(data: {
     setRatingRecomputeData,
     setContestSubmissionsFilterData,
     playerHandle,
+    dispatch,
   } = data;
 
   if (setRatingRecomputeData) {
-    setRatingRecomputeData({ placeholder: true });
+    dispatch(setRatingRecomputeData({ placeholder: true }));
   }
 
   if (
@@ -62,19 +73,23 @@ function handleNavBarClickSideEffects<T extends string>(data: {
     setContestSubmissionsFilterData &&
     playerHandle !== undefined
   ) {
-    setContestSubmissionsFilterData({
-      handle: playerHandle,
-      problemPlacement: null,
-      verdict: null,
-    });
+    dispatch(
+      setContestSubmissionsFilterData({
+        handle: playerHandle,
+        problemPlacement: null,
+        verdict: null,
+      })
+    );
   }
 
   if (page === "status" && setContestSubmissionsFilterData) {
-    setContestSubmissionsFilterData({
-      handle: "",
-      problemPlacement: null,
-      verdict: null,
-    });
+    dispatch(
+      setContestSubmissionsFilterData({
+        handle: "",
+        problemPlacement: null,
+        verdict: null,
+      })
+    );
   }
 }
 
@@ -82,9 +97,13 @@ export function SubNavBar<T extends string>(props: {
   baseURL: string;
   pages: Array<T>;
   handle?: string;
-  setRatingRecomputeData?: Dispatch<SetStateAction<RatingRecomputeData>>;
-  setContestSubmissionsFilterData?: Dispatch<
-    SetStateAction<ContestSubmissionsFilterData>
+  setRatingRecomputeData?: ActionCreatorWithPayload<
+    RatingRecomputeData,
+    "view/setRatingRecomputeData"
+  >;
+  setContestSubmissionsFilterData?: ActionCreatorWithPayload<
+    ContestSubmissionsFilterData,
+    "view/setContestSubmissionsFilterData"
   >;
 }) {
   const {
@@ -97,6 +116,7 @@ export function SubNavBar<T extends string>(props: {
 
   const location = useLocation();
   const playerHandle = useAppSelector(selectHandle);
+  const dispatch = useAppDispatch();
 
   const [selected, setSelected] = useState(
     pages.map((page) => computeIfInitialSelected(location.pathname, page))
@@ -123,6 +143,7 @@ export function SubNavBar<T extends string>(props: {
             onClick={(_e) => {
               handleNavBarClickSideEffects({
                 page,
+                dispatch,
                 setRatingRecomputeData,
                 setContestSubmissionsFilterData,
                 playerHandle,
@@ -132,6 +153,7 @@ export function SubNavBar<T extends string>(props: {
               if (e.key === "Enter") {
                 handleNavBarClickSideEffects({
                   page,
+                  dispatch,
                   setRatingRecomputeData,
                   setContestSubmissionsFilterData,
                   playerHandle,

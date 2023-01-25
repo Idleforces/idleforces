@@ -1,30 +1,32 @@
+import type { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 import type { Dispatch, SetStateAction } from "react";
 import React from "react";
-import type { RatingRecomputeData } from "../contest/standings/standings";
+import { useAppDispatch } from "../../../app/hooks";
 
 const powersOfTwo: Array<number> = [
   0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384,
   32768, 65536, 131072,
 ];
 
-export const RankingPageLinks = (props: {
+export function RankingPageLinks<T>(props: {
   selectedPage: number;
   setSelectedPage: Dispatch<SetStateAction<number>>;
-  additionalDispatch?: {
-    dispatch: Dispatch<SetStateAction<RatingRecomputeData>>;
-    param: RatingRecomputeData;
+  additionalPayloadAction?: {
+    action: ActionCreatorWithPayload<T>;
+    param: T;
   };
   dataLength: number;
   dataOnOnePage: number;
   usePowerOfTwoGaps?: boolean;
-}) => {
+}) {
   const {
     selectedPage,
     setSelectedPage,
-    additionalDispatch,
+    additionalPayloadAction,
     dataLength,
     dataOnOnePage,
   } = props;
+  const dispatch = useAppDispatch();
 
   const usePowerOfTwoGaps = props.usePowerOfTwoGaps ?? false;
 
@@ -40,8 +42,12 @@ export const RankingPageLinks = (props: {
             <a
               onClick={(_e) => {
                 setSelectedPage(index + 1);
-                if (additionalDispatch)
-                  additionalDispatch.dispatch(additionalDispatch.param);
+                if (additionalPayloadAction)
+                  dispatch(
+                    additionalPayloadAction.action(
+                      additionalPayloadAction.param
+                    )
+                  );
               }}
               tabIndex={0}
               key={index}
@@ -64,4 +70,4 @@ export const RankingPageLinks = (props: {
         )}
     </div>
   );
-};
+}

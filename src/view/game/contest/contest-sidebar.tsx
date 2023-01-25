@@ -1,5 +1,5 @@
 import { ContestInfoBox } from "./contest-info-box/contest-info-box";
-import type { Dispatch, MouseEventHandler, SetStateAction } from "react";
+import type { MouseEventHandler } from "react";
 import { SpeedSimSlider } from "./speed-sim-slider/speed-sim-slider";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import {
@@ -10,24 +10,10 @@ import { useNavigate } from "react-router";
 import { resetEvents } from "../../../app/events/events-slice";
 import { selectActivity, setActivity} from "../../../app/save/save-slice";
 import "./contest.css";
-import type { ContestSubmissionsFilterData } from "./status/status";
 import { useLocation } from "react-router";
 import { SubmissionsFilterBox } from "./submissions-filter-box/submissions-filter-box";
 
-export const ContestSideBar = (props: {
-  noPlayerContestSimSpeed: number;
-  setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
-  contestSubmissionsFilterData: ContestSubmissionsFilterData;
-  setContestSubmissionsFilterData: Dispatch<
-    SetStateAction<ContestSubmissionsFilterData>
-  >;
-}) => {
-  const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
-  const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
-
-  const contestSubmissionsFilterData = props.contestSubmissionsFilterData;
-  const setContestSubmissionsFilterData = props.setContestSubmissionsFilterData;
-
+export const ContestSideBar = () => {
   const contestFinished = useAppSelector(selectContestFinished);
   const activity = useAppSelector(selectActivity);
   const playerParticipating = activity === "contest-participation";
@@ -49,10 +35,7 @@ export const ContestSideBar = (props: {
     <div id="contest-sidebar">
       <ContestInfoBox />
       {!playerParticipating ? (
-        <SpeedSimSlider
-          noPlayerContestSimSpeed={noPlayerContestSimSpeed}
-          setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
-        />
+        <SpeedSimSlider />
       ) : (
         <></>
       )}
@@ -69,10 +52,7 @@ export const ContestSideBar = (props: {
       }
 
       {location.pathname.includes("status") ? (
-        <SubmissionsFilterBox
-          contestSubmissionsFilterData={contestSubmissionsFilterData}
-          setContestSubmissionsFilterData={setContestSubmissionsFilterData}
-        />
+        <SubmissionsFilterBox />
       ) : (
         <></>
       )}

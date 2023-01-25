@@ -1,17 +1,9 @@
-import type { Dispatch, SetStateAction } from "react";
 import { Outlet } from "react-router";
+import { setContestSubmissionsFilterData, setRatingRecomputeData } from "../../../app/view/view-slice";
 import { SubNavBar } from "../sub-navbar";
 import "./contest.css";
 
-import type { RatingRecomputeData } from "./standings/standings";
-import type { ContestSubmissionsFilterData } from "./status/status";
-
-export const Contest = (props: {
-  setRatingRecomputeData: Dispatch<SetStateAction<RatingRecomputeData>>;
-  setContestSubmissionsFilterData: Dispatch<SetStateAction<ContestSubmissionsFilterData>>;
-}) => {
-  const setRatingRecomputeData = props.setRatingRecomputeData;
-  const setContestSubmissionsFilterData = props.setContestSubmissionsFilterData;
+export const Contest = () => {
 
   return (
     <>

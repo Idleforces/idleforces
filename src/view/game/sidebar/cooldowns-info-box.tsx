@@ -5,6 +5,7 @@ import { selectArchivedContests } from "../../../app/contest-archive/contest-arc
 import { selectContestDivision } from "../../../app/contest/contest-slice";
 import { useAppSelector } from "../../../app/hooks";
 import { problemDivisions } from "../../../app/problems/types";
+import { selectSecondsSincePageLoad } from "../../../app/view/view-slice";
 import { convertSecondsToHHMMSS } from "../../../utils/time-format";
 import { transposeArray } from "../../../utils/utils";
 import { computeContestCooldownSecondsRemaining } from "../pages/contests";
@@ -12,10 +13,10 @@ import { DataTable } from "../utils/datatable";
 import { InfoBox } from "../utils/info-box";
 
 export const CooldownsInfoBox = (props: {
-  secondsSincePageLoad: number;
   timestampAtPageLoad: MutableRefObject<number>;
 }) => {
-  const { secondsSincePageLoad, timestampAtPageLoad } = props;
+  const { timestampAtPageLoad } = props;
+  const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
   const contestArchive = useAppSelector(selectArchivedContests);
   const runningContestDivision = useAppSelector(selectContestDivision);
 

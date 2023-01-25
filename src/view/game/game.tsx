@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { MutableRefObject, Dispatch, SetStateAction } from "react";
+import type { MutableRefObject } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   selectUsersWithTimeOfSnapshot,
@@ -34,29 +34,21 @@ import { SideBar } from "./sidebar/sidebar";
 import "./game.css";
 import { ContestSideBar } from "./contest/contest-sidebar";
 import { convertSecondsToHHMMSS } from "../../utils/time-format";
-import type { ContestSubmissionsFilterData } from "./contest/status/status";
+import { selectNoPlayerContestSimSpeed, selectSecondsSincePageLoad } from "../../app/view/view-slice";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
-  noPlayerContestSimSpeed: number;
-  setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
-  secondsSincePageLoad: number;
   timestampAtPageLoad: MutableRefObject<number>;
-  contestSubmissionsFilterData: ContestSubmissionsFilterData;
-  setContestSubmissionsFilterData: Dispatch<SetStateAction<ContestSubmissionsFilterData>>;
 }) => {
-  const secondsSincePageLoad = props.secondsSincePageLoad;
   const timestampAtPageLoad = props.timestampAtPageLoad;
-  const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
-  const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
-  const contestSubmissionsFilterData = props.contestSubmissionsFilterData;
-  const setContestSubmissionsFilterData = props.setContestSubmissionsFilterData;
-
   const leaveGame = props.leaveGameRef.current;
+
   const location = useLocation();
 
   const [gameSaving, setGameSaving] = useState(false);
 
+  const noPlayerContestSimSpeed = useAppSelector(selectNoPlayerContestSimSpeed);
+  const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
   const usersWithTimeOfSnapshot = useAppSelector(selectUsersWithTimeOfSnapshot);
   const contest = useAppSelector(selectContest);
   const contestArchive = useAppSelector(selectArchivedContests);
@@ -253,15 +245,9 @@ export const Game = (props: {
         </div>
         {location.pathname.startsWith("/game/contest") &&
         !location.pathname.startsWith("/game/contests") ? (
-          <ContestSideBar
-            noPlayerContestSimSpeed={noPlayerContestSimSpeed}
-            setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
-            setContestSubmissionsFilterData={setContestSubmissionsFilterData}
-            contestSubmissionsFilterData={contestSubmissionsFilterData}
-          />
+          <ContestSideBar />
         ) : (
           <SideBar
-            secondsSincePageLoad={secondsSincePageLoad}
             timestampAtPageLoad={timestampAtPageLoad}
           />
         )}

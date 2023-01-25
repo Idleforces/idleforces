@@ -1,12 +1,13 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
+import {
+  selectNoPlayerContestSimSpeed,
+  setNoPlayerContestSimSpeed,
+} from "../../../../app/view/view-slice";
 import "./speed-sim-slider.css";
 
-export const SpeedSimSlider = (props: {
-  noPlayerContestSimSpeed: number;
-  setNoPlayerContestSimSpeed: Dispatch<SetStateAction<number>>;
-}) => {
-  const noPlayerContestSimSpeed = props.noPlayerContestSimSpeed;
-  const setNoPlayerContestSimSpeed = props.setNoPlayerContestSimSpeed;
+export const SpeedSimSlider = () => {
+  const noPlayerContestSimSpeed = useAppSelector(selectNoPlayerContestSimSpeed);
+  const dispatch = useAppDispatch();
 
   return (
     <div className="slider-container">
@@ -20,16 +21,24 @@ export const SpeedSimSlider = (props: {
         name="speed-sim-slider"
         value={noPlayerContestSimSpeed}
         onChange={(e) => {
-          setNoPlayerContestSimSpeed(Number(e.target.value));
+          dispatch(setNoPlayerContestSimSpeed(Number(e.target.value)));
         }}
         onKeyDown={(e) => {
           if (e.key === "6" || e.key === "8" || e.key === "PageUp")
-            setNoPlayerContestSimSpeed((prev) => Math.min(1, prev + 0.1));
+            dispatch(
+              setNoPlayerContestSimSpeed(
+                Math.min(1, noPlayerContestSimSpeed + 0.1)
+              )
+            );
           if (e.key === "2" || e.key === "4" || e.key === "PageDown")
-            setNoPlayerContestSimSpeed((prev) => Math.max(0, prev - 0.1));
+            dispatch(
+              setNoPlayerContestSimSpeed(
+                Math.max(0, noPlayerContestSimSpeed - 0.1)
+              )
+            );
         }}
         list="speed-sim-values"
-      ></input>
+      />
       <datalist id="speed-sim-values">
         <option value="0" label="MIN"></option>
         <option value="1" label="MAX"></option>

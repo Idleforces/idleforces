@@ -4,18 +4,17 @@ import { Index } from "./view";
 import { Game } from "./view/game/game";
 import { Dashboard } from "./view/game/pages/dashboard";
 import { Header } from "./view/header/header";
-import { useAppDispatch } from "./app/hooks";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { resetUsers } from "./app/users/users-slice";
 import { resetSaveData } from "./app/save/save-slice";
 import { Footer } from "./view/footer/footer";
 import { Loading } from "./view/loading/loading";
 import { resetContest } from "./app/contest/contest-slice";
 import { resetEvents } from "./app/events/events-slice";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Contests } from "./view/game/pages/contests";
 import { Contest } from "./view/game/contest/contest";
 import { Standings } from "./view/game/contest/standings/standings";
-import type { RatingRecomputeData } from "./view/game/contest/standings/standings";
 import { Problems } from "./view/game/contest/problems/problems";
 import { Rating } from "./view/game/pages/rating";
 import { resetContestArchive } from "./app/contest-archive/contest-archive-slice";
@@ -23,42 +22,35 @@ import { Profile } from "./view/game/pages/profile/profile";
 import { resetFriends } from "./app/friends/friends-slice";
 import { ProfileContests } from "./view/game/pages/profile/profile-contests";
 import { Status } from "./view/game/contest/status/status";
-import type { ContestSubmissionsFilterData } from "./view/game/contest/status/status";
+import {
+  selectSecondsSincePageLoad,
+  setNoPlayerContestSimSpeed,
+  setSecondsSincePageLoad,
+} from "./app/view/view-slice";
 
 function App() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [noPlayerContestSimSpeed, setNoPlayerContestSimSpeed] = useState(0);
-  const [ratingRecomputeData, setRatingRecomputeData] =
-    useState<RatingRecomputeData>({
-      placeholder: true,
-    });
-  const [contestSubmissionsFilterData, setContestSubmissionsFilterData] =
-    useState<ContestSubmissionsFilterData>({
-      problemPlacement: null,
-      verdict: null,
-      handle: "",
-    });
-
   const timestampAtPageLoad = useRef<number>(Date.now());
-  const [secondsSincePageLoad, setSecondsSincePageLoad] = useState(0);
+  const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
 
   useEffect(() => {
     let ignore = false;
     void new Promise((resolve, _reject) => {
       setTimeout(() => {
         if (!ignore) {
-          setSecondsSincePageLoad(
-            (prev) =>
-              prev +
-              Math.max(
-                Math.floor(
-                  (-timestampAtPageLoad.current + Date.now()) / 1000 -
-                    secondsSincePageLoad
-                ) - 1,
-                1
-              )
+          dispatch(
+            setSecondsSincePageLoad(
+              secondsSincePageLoad +
+                Math.max(
+                  Math.floor(
+                    (-timestampAtPageLoad.current + Date.now()) / 1000 -
+                      secondsSincePageLoad
+                  ) - 1,
+                  1
+                )
+            )
           );
           resolve("DONE");
         } else {
@@ -70,7 +62,7 @@ function App() {
     return () => {
       ignore = true;
     };
-  }, [secondsSincePageLoad]);
+  }, [secondsSincePageLoad, dispatch]);
 
   const resetData = () => {
     dispatch(resetUsers(null));
@@ -79,7 +71,7 @@ function App() {
     dispatch(resetEvents(null));
     dispatch(resetContestArchive(null));
     dispatch(resetFriends(null));
-    setNoPlayerContestSimSpeed(0);
+    dispatch(setNoPlayerContestSimSpeed(0));
   };
 
   const leaveGameRef = useRef(() => {
@@ -96,12 +88,7 @@ function App() {
           element={
             <Game
               leaveGameRef={leaveGameRef}
-              noPlayerContestSimSpeed={noPlayerContestSimSpeed}
-              setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
-              secondsSincePageLoad={secondsSincePageLoad}
               timestampAtPageLoad={timestampAtPageLoad}
-              contestSubmissionsFilterData={contestSubmissionsFilterData}
-              setContestSubmissionsFilterData={setContestSubmissionsFilterData}
             />
           }
         >
@@ -114,8 +101,6 @@ function App() {
             path="contests"
             element={
               <Contests
-                setNoPlayerContestSimSpeed={setNoPlayerContestSimSpeed}
-                secondsSincePageLoad={secondsSincePageLoad}
                 timestampAtPageLoad={timestampAtPageLoad}
               />
             }
@@ -124,32 +109,31 @@ function App() {
           <Route
             path="contest/"
             element={
-              <Contest setRatingRecomputeData={setRatingRecomputeData} setContestSubmissionsFilterData={setContestSubmissionsFilterData} />
+              <Contest />
             }
           >
             <Route
               path="standings"
               element={
-                <Standings
-                  ratingRecomputeData={ratingRecomputeData}
-                  setRatingRecomputeData={setRatingRecomputeData}
-                />
+                <Standings />
               }
             />
             <Route
               path="my"
-              element={<Status submissionsFilterData={contestSubmissionsFilterData}/>}
+              element={
+                <Status />
+              }
             />
             <Route
               path="status"
-              element={<Status submissionsFilterData={contestSubmissionsFilterData}/>}
+              element={
+                <Status />
+              }
             />
             <Route
               path="standings/friends"
               element={
                 <Standings
-                  ratingRecomputeData={ratingRecomputeData}
-                  setRatingRecomputeData={setRatingRecomputeData}
                 />
               }
             />
@@ -159,14 +143,7 @@ function App() {
           <Route path="*" element={<Dashboard />} />
         </Route>
         <Route path="/loading" element={<Loading />} />
-        <Route
-          path="/*"
-          element={
-            <Index
-              leaveGameRef={leaveGameRef}
-            />
-          }
-        />
+        <Route path="/*" element={<Index leaveGameRef={leaveGameRef} />} />
       </Routes>
       <Footer />
     </>
