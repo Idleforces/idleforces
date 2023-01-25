@@ -36,7 +36,7 @@ describe("computeProblemScores function", () => {
     assertProbabilisticCloseTo(
       stdev(problemScoresPlacementF.length, 1, problemScoresPlacementF, 1) /
         stdev(problemScoresPlacementA.length, 1, problemScoresPlacementA, 1),
-      1.9,
+      1.85,
       0.1
     );
   });

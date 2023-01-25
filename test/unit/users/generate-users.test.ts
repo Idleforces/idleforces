@@ -1,5 +1,4 @@
 import { describe, it, assert, expect } from "vitest";
-import type { NPC, User } from "../../../src/app/users/types";
 import stdev from "@stdlib/stats/base/stdev";
 import { normalizeLevelOfAttribute } from "../../../src/app/users/utils";
 import { USER_ATTRIBUTES_CONSTANTS } from "../../../src/app/users/constants";
@@ -10,37 +9,30 @@ import { generateUsers } from "../../../src/app/users/load-users";
 import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("generateUsers function", () => {
-  const users = generateUsers("tourist").users;
-
-  it("generates an array of users", () => {
-    expect(users).toBeInstanceOf(Array<User>);
-  });
+  const usersSlice = generateUsers("tourist");
+  const NPCs = usersSlice.NPCs;
+  const player = usersSlice.player;
 
   it("removes the real tourist from the array of users", () => {
-    const tourists = users.filter((user) => user.handle === "tourist");
-    expect(tourists.length).toBe(1);
-    assert(tourists[0].isPlayer);
+    const tourists = NPCs.filter((user) => user.handle === "tourist");
+    expect(tourists.length).toBe(0);
+    assert.equal(player.handle, "tourist");
   });
 
   it("generates a single player user at index 0 with minValue attributes", () => {
-    users.forEach((user) => {
+    NPCs.forEach((user) => {
       assert.hasAnyKeys(user, ["isPlayer"]);
     });
 
-    assert(users[0].isPlayer);
-    const filteredUsers = users.filter((user) => user.isPlayer);
-    expect(filteredUsers).toHaveLength(1);
-
-    const player = filteredUsers[0];
+    assert.ok(player.isPlayer);
     assert.equal(
       player.attributes.adHoc,
       USER_ATTRIBUTES_CONSTANTS["adHoc"].MIN_VALUE
     );
   });
 
-  it("generates npcs with suitably distributed attributes", () => {
-    const npcUsers = users.filter((user) => !user.isPlayer);
-    const usersWithHighDP = npcUsers.filter(
+  it("generates NPCs with suitably distributed attributes", () => {
+    const usersWithHighDP = NPCs.filter(
       (user) =>
         normalizeLevelOfAttribute(
           user.attributes.dp,
@@ -51,7 +43,7 @@ describe("generateUsers function", () => {
     expect(usersWithHighDP.length).toBeGreaterThan(300);
     expect(usersWithHighDP.length).toBeLessThan(900);
 
-    const usersWithLowDP = npcUsers.filter(
+    const usersWithLowDP = NPCs.filter(
       (user) =>
         normalizeLevelOfAttribute(
           user.attributes.dp,
@@ -62,7 +54,7 @@ describe("generateUsers function", () => {
     expect(usersWithLowDP.length).toBeGreaterThan(2000);
     expect(usersWithLowDP.length).toBeLessThan(10000);
 
-    const normalizedAttributes = npcUsers.map((user) =>
+    const normalizedAttributes = NPCs.map((user) =>
       Object.entries(user.attributes).map(([attributeName, level]) =>
         normalizeLevelOfAttribute(
           level,
@@ -85,7 +77,7 @@ describe("generateUsers function", () => {
   });
 
   it("generates all attribute values between the corresponding minValue and maxValue", () => {
-    users.forEach((user) => {
+    NPCs.forEach((user) => {
       ([...problemTags] as Array<AttributeNames>)
         .concat(nonTechnicalAttributeNames)
         .forEach((attributeName) => {
@@ -100,7 +92,6 @@ describe("generateUsers function", () => {
   });
 
   it("given an NPC, it generates additional attributes", () => {
-    const NPCs = users.filter((user) => !user.isPlayer) as Array<NPC>;
     const NPCsLength = NPCs.length;
 
     const likelihoodsOfCompeting = NPCs.map(

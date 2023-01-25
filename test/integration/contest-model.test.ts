@@ -19,13 +19,14 @@ describe("during contest simulation", () => {
   const spyDispatch = sinon.spy(dispatch);
 
   const handle = "someHandle";
-  const users = generateUsers(handle).users.map((user) => {
-    if (user.isPlayer) return user;
-    else {
+  const usersSlice = generateUsers(handle);
+  const users = [
+    usersSlice.player,
+    ...usersSlice.NPCs.map((user) => {
       user.likelihoodOfCompeting = user.likelihoodOfCompeting / 10;
       return user;
-    }
-  });
+    }),
+  ];
 
   const division: ProblemDivision = 3;
   const numberOfMergedTicks = 50;

@@ -5,7 +5,7 @@ import {
   startPenPaperSolving,
 } from "../../../src/app/problems/pen-paper-solve";
 import type { ProblemSolveStatusDuringPenPaperSolving } from "../../../src/app/problems/types";
-import { generateUser } from "../../../src/app/users/load-users";
+import { generateNPC } from "../../../src/app/users/load-users";
 import { computeMockSubmission } from "../../mocks/mock-submission";
 import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
@@ -14,7 +14,7 @@ describe("startPenPaperSolving function", () => {
     const problemSolveStatuses: Array<ProblemSolveStatusDuringPenPaperSolving> =
       [];
     for (let _ = 0; _ < 1000; _++) {
-      const user = generateUser("someUser", 800, null, false);
+      const user = generateNPC("someUser", 800, null);
       const problem = generateProblem(4, "C");
       problemSolveStatuses.push(startPenPaperSolving(user, problem, []));
     }
@@ -23,9 +23,9 @@ describe("startPenPaperSolving function", () => {
       .map((problemSolveStatus) => problemSolveStatus.increment)
       .sort((a, b) => b - a);
 
-    assertProbabilisticCloseTo(increments[500], 1 / 700, 1 / 6000);
-    assertProbabilisticCloseTo(increments[100], 1 / 240, 1 / 1500);
-    assertProbabilisticCloseTo(increments[900], 1 / 1950, 1 / 10000);
+    assertProbabilisticCloseTo(increments[500], 1 / 1050, 1 / 9000);
+    assertProbabilisticCloseTo(increments[100], 1 / 190, 1 / 1300);
+    assertProbabilisticCloseTo(increments[900], 1 / 5000, 1 / 25000);
   });
 });
 
@@ -33,7 +33,7 @@ describe("computeIfPenPaperCorrect function", () => {
   it("returns probability depending on number of submissions", () => {
     const arePenPaperCorrectNoSubmissions: Array<boolean> = [];
     for (let _ = 0; _ < 1000; _++) {
-      const user = generateUser("someHandle", 1800, null, false);
+      const user = generateNPC("someHandle", 1800, null);
       const problem = generateProblem(2, "C");
       arePenPaperCorrectNoSubmissions.push(
         computeIfPenPaperCorrect(user, problem, [])
@@ -42,7 +42,7 @@ describe("computeIfPenPaperCorrect function", () => {
 
     const arePenPaperCorrectWithSubmissions: Array<boolean> = [];
     for (let _ = 0; _ < 1000; _++) {
-      const user = generateUser("someHandle", 1800, null, false);
+      const user = generateNPC("someHandle", 1800, null);
       const problem = generateProblem(2, "C");
       arePenPaperCorrectWithSubmissions.push(
         computeIfPenPaperCorrect(
@@ -59,13 +59,13 @@ describe("computeIfPenPaperCorrect function", () => {
 
     assertProbabilisticCloseTo(
       arePenPaperCorrectNoSubmissions.filter((x) => x).length,
-      690,
+      650,
       40
     );
 
     assertProbabilisticCloseTo(
       arePenPaperCorrectWithSubmissions.filter((x) => x).length,
-      640,
+      590,
       40
     );
   });

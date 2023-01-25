@@ -31,23 +31,23 @@ export const PROBLEM_READING_DIFFICULTY_STDEV = 0.5;
 
 export const READING_TIME_DISTRIBUTION_PRECISION = 8;
 export const READING_TIME_BASE = 200;
-export const READING_TIME_SCALING_FACTOR = Math.E;
+export const READING_TIME_SCALING_FACTOR = 2;
 
 export const PEN_PAPER_SOLVING_DISTRIBUTION_PRECISION = 3;
 export const PEN_PAPER_SOLVING_TIME_BASE = 850;
-export const PEN_PAPER_SOLVING_SCALING_FACTOR = 12;
+export const PEN_PAPER_SOLVING_SCALING_FACTOR = 7;
 
 export const IMPLEMENTATION_DISTRIBUTION_PRECISION = 4;
 export const IMPLEMENTATION_TIME_BASE = 700;
-export const IMPLEMENTATION_SCALING_FACTOR = 9;
+export const IMPLEMENTATION_SCALING_FACTOR = 5;
 
 export const PEN_PAPER_SEARCHING_FOR_MISTAKE_DISTRIBUTION_PRECISION = 1;
 export const PEN_PAPER_SEARCHING_FOR_MISTAKE_TIME_BASE = 150;
-export const PEN_PAPER_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 6;
+export const PEN_PAPER_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 4;
 
 export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_DISTRIBUTION_PRECISION = 0.5;
 export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_TIME_BASE = 300;
-export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 6;
+export const IMPLEMENTATION_SEARCHING_FOR_MISTAKE_SCALING_FACTOR = 4;
 
 export const PROBABILITY_OF_PEN_PAPER_CORRECT_SCALING_FACTOR = 0.8;
 export const PROBABILITY_OF_IMPLEMENTATION_CORRECT_SCALING_FACTOR = 0.8;
@@ -69,21 +69,18 @@ export const computeCombinedPlacementDivisionFactor = (
 ) => {
   switch (division) {
     case 4:
-      return -1;
+      return -0.5;
     case 3:
-      return 0.5;
+      return 1;
     case 2:
-      return 2.4;
+      return 3.25;
     case 1:
-      return 5;
+      return 6.5;
   }
 };
 
 export const computeCombinedPlacementPlacementFactor = (
   placement: ProblemPlacement
 ) => {
-  return (
-    1.1 * (placement.charCodeAt(0) - "A".charCodeAt(0)) +
-    0.05 * Math.pow(placement.charCodeAt(0) - "A".charCodeAt(0), 2)
-  );
+  return 1.1 * (placement.charCodeAt(0) - "A".charCodeAt(0));
 };

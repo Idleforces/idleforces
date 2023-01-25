@@ -1,7 +1,6 @@
 import { describe, it, assert } from "vitest";
 import { computeActiveProblemPosition } from "../../../src/app/contest/active-problem";
-import { generateUser } from "../../../src/app/users/load-users";
-import type { NPC } from "../../../src/app/users/types";
+import { generateNPC } from "../../../src/app/users/load-users";
 import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
 describe("computeActiveProblemPosition function", () => {
@@ -14,7 +13,7 @@ describe("computeActiveProblemPosition function", () => {
   const possibleActivePositions = [0, 3, 5];
   const activeProblemPositions: Array<number | null> = [];
   for (let _ = 0; _ < 1000; _++) {
-    const NPC = generateUser("someUser", 1200, null, false) as NPC;
+    const NPC = generateNPC("someUser", 1200, null);
     activeProblemPositions.push(
       computeActiveProblemPosition(
         canBecomeActiveArray,

@@ -6,7 +6,7 @@ import type {
   ProblemSolveStatusDuringSearchingForMistake,
 } from "../../../src/app/problems/types";
 import { USER_INITIAL_RATING } from "../../../src/app/users/constants";
-import { generateUser } from "../../../src/app/users/load-users";
+import { generateNPC, generatePlayer } from "../../../src/app/users/load-users";
 import { mockStore } from "../../mocks/mock-store";
 import { assertProbabilisticCloseTo } from "../../probabilistic-assert";
 
@@ -22,7 +22,7 @@ describe("submitProblem function", () => {
     const problemSolveStatusArray: Array<ProblemSolveStatus> = [];
 
     for (let _ = 0; _ < 1000; _++) {
-      const user = generateUser("player", USER_INITIAL_RATING, null, true);
+      const user = generatePlayer("player", USER_INITIAL_RATING, null);
       const problem = generateProblem(2, "C");
       problemSolveStatusArray.push(
         submitProblem(
@@ -50,7 +50,7 @@ describe("submitProblem function", () => {
     const problemSolveStatusArray: Array<ProblemSolveStatus> = [];
 
     for (let i = 0; i < 1000; i++) {
-      const user = generateUser("someHandle", USER_INITIAL_RATING, null, false);
+      const user = generateNPC("someHandle", USER_INITIAL_RATING, null);
       const problem = generateProblem(3, "D");
       problemSolveStatusArray.push(
         submitProblem(
@@ -71,19 +71,14 @@ describe("submitProblem function", () => {
     );
 
     const wrongCount = wrongProblemSolveStatusArray.length;
-    assertProbabilisticCloseTo(wrongCount, 955, 15);
+    assertProbabilisticCloseTo(wrongCount, 950, 25);
   });
 
   it("returns reasonable increments if the submission is wrong, ", () => {
     const problemSolveStatusArray: Array<ProblemSolveStatus> = [];
 
     for (let i = 0; i < 5000; i++) {
-      const user = generateUser(
-        "virgin",
-        500,
-        "United States Virgin Islands",
-        false
-      );
+      const user = generateNPC("virgin", 500, "United States Virgin Islands");
       const problem = generateProblem(4, "C");
       problemSolveStatusArray.push(
         submitProblem(
@@ -111,7 +106,7 @@ describe("submitProblem function", () => {
 
     assertProbabilisticCloseTo(
       wrongProblemSolveStatuses[3750].penPaperProgressIncrement.increment,
-      1 / 240,
+      1 / 290,
       1 / 2000
     );
 
@@ -123,7 +118,7 @@ describe("submitProblem function", () => {
 
     assertProbabilisticCloseTo(
       wrongProblemSolveStatuses[3750].implementationProgressIncrement.increment,
-      1 / 510,
+      1 / 660,
       1 / 5000
     );
   });
@@ -132,7 +127,7 @@ describe("submitProblem function", () => {
     const problemSolveStatusArray: Array<ProblemSolveStatus> = [];
 
     for (let i = 0; i < 1000; i++) {
-      const user = generateUser("someHandle", USER_INITIAL_RATING, null, false);
+      const user = generateNPC("someHandle", USER_INITIAL_RATING, null);
       const problem = generateProblem(3, "D");
       problemSolveStatusArray.push(
         submitProblem(
@@ -175,14 +170,14 @@ describe("submitProblem function", () => {
     assertProbabilisticCloseTo(
       wrongVerdicts.filter((verdict) => verdict === "Runtime error on pretests")
         .length,
-      160,
+      150,
       30
     );
     assertProbabilisticCloseTo(
       wrongVerdicts.filter(
         (verdict) => verdict === "Time limit exceeded on pretests"
       ).length,
-      190,
+      180,
       30
     );
 

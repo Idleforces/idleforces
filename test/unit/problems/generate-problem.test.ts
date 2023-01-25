@@ -17,14 +17,14 @@ describe("generateProblem function", () => {
     const placements: Array<ProblemPlacement> = ["A", "B", "D", "F"];
     const divisions: Array<ProblemDivision> = [4, 3, 2, 1];
 
-    const penPaperDifficultyExpectedMeans = [0.14, 0.25, 0.48, 0.8];
+    const penPaperDifficultyExpectedMeans = [0.14, 0.27, 0.53, 0.83];
     const penPaperDifficultyExpectedStdevs = [0.03, 0.04, 0.05, 0.035];
 
-    const implementationDifficultyExpectedMeans = [0.14, 0.25, 0.48, 0.8];
+    const implementationDifficultyExpectedMeans = [0.14, 0.27, 0.53, 0.83];
     const implementationDifficultyExpectedStdevs = [0.03, 0.06, 0.07, 0.05];
 
-    const deceptivenessExpectedMeans = [0.09, 0.2, 0.52, 0.9];
-    const deceptivenessExpectedStdevs = [0.05, 0.11, 0.16, 0.06];
+    const deceptivenessExpectedMeans = [0.1, 0.22, 0.58, 0.9];
+    const deceptivenessExpectedStdevs = [0.06, 0.11, 0.16, 0.06];
 
     const readingDifficultyExpectedMeans = [0.25, 0.35, 0.54, 0.73];
     const readingDifficultyExpectedStdevs = [0.08, 0.11, 0.11, 0.09];

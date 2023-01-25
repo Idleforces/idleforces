@@ -58,7 +58,7 @@ export const computeExpectancyMultiplier = (
 
   return Math.pow(
     scalingFactor,
-    logit((problemAttributeValue - normalizedUserAttributeValue + 1) / 2)
+    logit(problemAttributeValue) - logit(normalizedUserAttributeValue)
   );
 };
 
