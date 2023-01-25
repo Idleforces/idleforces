@@ -1,15 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import type { Player, User } from "./types";
+import type { NPC, Player, User } from "./types";
 import type { RatingPoints } from "../contest/types";
 import { USER_RATING_HISTORY_MAX_LENGTH } from "./constants";
+import type { XPGain } from "../XP/types";
+import { modifyAttributesAccordingToXPGain } from "../XP/xp-calculation-base";
 
 export type UsersSlice = {
-  users: Array<User>;
+  NPCs: Array<NPC>;
+  player: Player;
   timeOfSnapshot: number;
   ratingsUpdatedCount: number;
 } | null;
+
+const updateUserRatingHistory = (user: User, ratingPoints: RatingPoints) => {
+  const newUserRatingPoint = ratingPoints[user.handle];
+  if (newUserRatingPoint) user.ratingHistory.push(newUserRatingPoint);
+  if (
+    !user.isPlayer &&
+    user.ratingHistory.length >= USER_RATING_HISTORY_MAX_LENGTH
+  )
+    user.ratingHistory.shift();
+};
 
 export const usersSlice = createSlice({
   name: "users",
@@ -21,30 +34,38 @@ export const usersSlice = createSlice({
 
     updateRatings: (state: UsersSlice, action: PayloadAction<RatingPoints>) => {
       if (state === null) return null;
-      state.users.forEach((user) => {
-        const newUserRatingPoint = action.payload[user.handle];
-        if (newUserRatingPoint) user.ratingHistory.push(newUserRatingPoint);
-        if (
-          !user.isPlayer &&
-          user.ratingHistory.length >= USER_RATING_HISTORY_MAX_LENGTH
-        )
-          user.ratingHistory.shift();
+      state.NPCs.forEach((user) => {
+        updateUserRatingHistory(user, action.payload);
       });
+      updateUserRatingHistory(state.player, action.payload);
 
       state.ratingsUpdatedCount += 1;
+    },
+
+    applyXPGain: (state: UsersSlice, action: PayloadAction<XPGain>) => {
+      if (state === null) return null;
+      const newPlayer = modifyAttributesAccordingToXPGain(
+        state.player,
+        action.payload
+      );
+      return {
+        ...state,
+        player: newPlayer,
+      };
     },
   },
 });
 
-export const { resetUsers, setUsers, updateRatings } = usersSlice.actions;
+export const { resetUsers, setUsers, updateRatings, applyXPGain } =
+  usersSlice.actions;
 
 export const selectUsersWithTimeOfSnapshot = (state: RootState) => state.users;
 export const selectUsers = (state: RootState) =>
-  state.users ? state.users.users : null;
+  state.users ? [state.users.player, ...state.users.NPCs] : null;
 export const selectTimeOfSnapshot = (state: RootState) =>
   state.users ? state.users.timeOfSnapshot : null;
 export const selectPlayer = (state: RootState) =>
-  state.users ? (state.users.users[0] as Player) : null;
+  state.users ? state.users.player : null;
 export const selectRatingsUpdatedCount = (state: RootState) =>
   state.users ? state.users.ratingsUpdatedCount : null;
 
