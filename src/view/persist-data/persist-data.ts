@@ -3,7 +3,7 @@ import type { ContestArchiveSlice } from "../../app/contest-archive/types";
 import type { ContestSlice } from "../../app/contest/types";
 import type { EventsSlice } from "../../app/events/types";
 import type { FriendsSlice } from "../../app/friends/types";
-import type { SaveSlice } from "../../app/save/save-slice";
+import type { Activity, SaveSlice } from "../../app/save/save-slice";
 import { saveUsers } from "../../app/users/save-users";
 import type { UsersSlice } from "../../app/users/users-slice";
 import { safeSetLocalStorageValue } from "../../utils/utils";
@@ -20,7 +20,8 @@ const updateLocalStorageSavesValue = async (
   eventsHash: string,
   contestArchiveHash: string,
   friendsHash: string,
-  inContest: boolean,
+  NPCsHash: string,
+  activity: Activity,
   leaveGame: () => void
 ): Promise<void> => {
   const savesJSON = localStorage.getItem("saves");
@@ -31,7 +32,8 @@ const updateLocalStorageSavesValue = async (
     eventsHash,
     contestArchiveHash,
     friendsHash,
-    inContest,
+    NPCsHash,
+    activity,
     saveName: saveData.saveName,
     handle: saveData.handle,
   };
@@ -100,12 +102,17 @@ export const saveGameData = async (
   saveData: Exclude<SaveSlice, null>,
   leaveGame: () => void
 ): Promise<void> => {
-  const usersHash = await promisifiedHashSum(usersWithTimeOfSnapshot);
+  const NPCsHash = await promisifiedHashSum(usersWithTimeOfSnapshot?.NPCs);
+  const usersHash = await promisifiedHashSum({
+    ...usersWithTimeOfSnapshot,
+    NPCs: NPCsHash,
+  });
   const contestHash = await promisifiedHashSum(contest);
   const eventsHash = await promisifiedHashSum(events);
   const contestArchiveHash = await promisifiedHashSum(contestArchive);
   const friendsHash = await promisifiedHashSum(friends);
   const saveName = saveData.saveName;
+  const activity = saveData.activity;
 
   const localStorageSavesValue = JSON.parse(
     localStorage.getItem("saves") as string
@@ -122,7 +129,8 @@ export const saveGameData = async (
     eventsHash,
     contestArchiveHash,
     friendsHash,
-    contest !== null,
+    NPCsHash,
+    activity,
     leaveGame
   );
 
@@ -133,7 +141,13 @@ export const saveGameData = async (
     !localStorageSaveData ||
     usersHash !== localStorageSaveData.usersHash
   ) {
-    await saveUsers(usersWithTimeOfSnapshot, saveName, leaveGame);
+    await saveUsers(
+      usersWithTimeOfSnapshot,
+      saveName,
+      localStorageSaveData?.NPCsHash ?? "",
+      NPCsHash,
+      leaveGame
+    );
   }
 
   await saveToLocalStorageIfHashesDiffer(

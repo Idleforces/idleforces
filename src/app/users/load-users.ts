@@ -7,24 +7,25 @@ import {
 } from "./constants";
 import usersJSON from "./trimmed-users.json" assert { type: "json" };
 import { normal } from "@stdlib/random/base";
-import type { AttributeValues, User, UserCore } from "./types";
+import type { AttributeValues, NPC, Player, UserCore } from "./types";
 import { attributeNames } from "./types";
 import { sigmoid } from "../../utils/utils";
 import { betaPrimeAltParam } from "../problems/utils";
 import type { UsersSlice } from "./users-slice";
 import { decompressFromUTF16 } from "lz-string";
+import type { LocalStorageUsersValue } from "./save-users";
 
 export type RatingPoint = {
   contestName: string | null;
   rating: number;
 };
 
-export const generateUser = (
+const generateUserCore = (
   handle: string,
   officialRating: number,
   country: string | null,
   isPlayer: boolean
-): User => {
+): UserCore => {
   const ratingHistory: Array<RatingPoint> = [
     { contestName: null, rating: USER_INITIAL_RATING },
   ];
@@ -57,23 +58,38 @@ export const generateUser = (
     ) as AttributeValues,
   };
 
-  if (!isPlayer) {
-    return {
-      ...userCore,
-      isPlayer,
-      likelihoodOfCompeting:
-        Math.round(100 * sigmoid(normal(-0.8, 0.75))) / 100,
-      willingnessToTryHarderProblems:
-        Math.round(100 * 0.25 * betaPrimeAltParam(1, 0.5)) / 100,
-      expectedTimeMultiplierToSwitchToADifferentProblem:
-        Math.round(100 * 2.5 * betaPrimeAltParam(1, 16)) / 100,
-    };
-  } else {
-    return {
-      ...userCore,
-      isPlayer,
-    };
-  }
+  return userCore;
+};
+
+export const generatePlayer = (
+  handle: string,
+  officialRating: number,
+  country: string | null
+): Player => {
+  const userCore = generateUserCore(handle, officialRating, country, true);
+
+  return {
+    ...userCore,
+    isPlayer: true,
+  };
+};
+
+export const generateNPC = (
+  handle: string,
+  officialRating: number,
+  country: string | null
+): NPC => {
+  const userCore = generateUserCore(handle, officialRating, country, false);
+
+  return {
+    ...userCore,
+    isPlayer: false,
+    likelihoodOfCompeting: Math.round(100 * sigmoid(normal(-0.8, 0.75))) / 100,
+    willingnessToTryHarderProblems:
+      Math.round(100 * 0.25 * betaPrimeAltParam(1, 0.5)) / 100,
+    expectedTimeMultiplierToSwitchToADifferentProblem:
+      Math.round(100 * 2.5 * betaPrimeAltParam(1, 16)) / 100,
+  };
 };
 
 export const fetchUsers = () => {
@@ -84,14 +100,16 @@ export const fetchUsers = () => {
 
 export const generateUsers = (playerHandle: string) => {
   const NPCsWithTimeOfSnapshot = fetchUsers();
-  const NPCs = NPCsWithTimeOfSnapshot.users.map((user) =>
-    generateUser(user.handle, user.officialRating, user.country, false)
+
+  const NPCs = NPCsWithTimeOfSnapshot.users.map((NPC) =>
+    generateNPC(NPC.handle, NPC.officialRating, NPC.country)
   );
 
+  const player = generatePlayer(playerHandle, USER_INITIAL_RATING, null);
+
   const usersWithTimeOfSnapshot = {
-    users: [generateUser(playerHandle, USER_INITIAL_RATING, null, true)].concat(
-      NPCs.filter((user) => user.handle !== playerHandle)
-    ),
+    NPCs: NPCs.filter((NPC) => NPC.handle !== playerHandle),
+    player,
     timeOfSnapshot: NPCsWithTimeOfSnapshot.timeOfSnapshot,
     ratingsUpdatedCount: 0,
   };
@@ -108,10 +126,16 @@ export const loadOrGenerateUsers = (
   );
   if (savedUsersJSON === null) return generateUsers(handle);
 
-  const savedUsers = JSON.parse(
-    decompressFromUTF16(savedUsersJSON) as string
-  ) as UsersSlice;
-  if (!savedUsers) return generateUsers(handle);
+  const savedUsers = JSON.parse(savedUsersJSON) as LocalStorageUsersValue;
+  const savedNPCs = decompressFromUTF16(savedUsers.NPCs);
+  if (savedNPCs === null) return generateUsers(handle);
 
-  return savedUsers;
+  const users: Exclude<UsersSlice, null> = {
+    player: JSON.parse(savedUsers.player) as Player,
+    NPCs: JSON.parse(savedNPCs) as Array<NPC>,
+    timeOfSnapshot: JSON.parse(savedUsers.timeOfSnapshot) as number,
+    ratingsUpdatedCount: JSON.parse(savedUsers.ratingsUpdatedCount) as number,
+  };
+
+  return users;
 };
