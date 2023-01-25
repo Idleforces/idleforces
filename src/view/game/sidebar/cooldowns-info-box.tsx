@@ -34,7 +34,7 @@ export const CooldownsInfoBox = (props: {
     .map((cooldown, index) =>
       runningContestDivision === reverseProblemDivisions[index] ? (
         <div style={{ color: "gray" }}>running!</div>
-      ) : cooldown < 0 ? (
+      ) : cooldown <= 0 ? (
         <div style={{ color: "gray" }}>can start now!</div>
       ) : (
         <div style={{ color: "gray" }}>{convertSecondsToHHMMSS(cooldown)}</div>
