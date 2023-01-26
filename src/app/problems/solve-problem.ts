@@ -5,6 +5,11 @@ import { processEventsAndIncrementProgress } from "../events/process-event";
 import type { BreakDataWithProblemPlacementAndUserContestIndex } from "../events/types";
 import type { MockDispatch } from "../types";
 import type { User } from "../users/types";
+import { applyXPGain } from "../users/users-slice";
+import { setLastXPGainData } from "../view/view-slice";
+import { computeXPGainFromImplementing } from "../XP/xp-from-implementing";
+import { computeXPGainFromPenPaperSolving } from "../XP/xp-from-pen-paper-solving";
+import { computeXPGainFromReading } from "../XP/xp-from-reading";
 import { computeIfImplementationCorrect, startImplementing } from "./implement";
 import {
   computeIfPenPaperCorrect,
@@ -69,7 +74,7 @@ export const processTickOfProblemSolving = <RootStateType>(
   switch (problemSolveStatus.phase) {
     case "during-reading":
       if (problemSolveStatus.progress >= 1) {
-        if (user.isPlayer)
+        if (user.isPlayer) {
           dispatch(
             addEvent({
               message: `Finished reading problem ${problem.placement}`,
@@ -78,6 +83,11 @@ export const processTickOfProblemSolving = <RootStateType>(
               problemPlacement: problem.placement,
             })
           );
+
+          const XPGain = computeXPGainFromReading(user, problem);
+          dispatch(applyXPGain(XPGain));
+          dispatch(setLastXPGainData({ XPGain, secondsVisible: 10 }));
+        }
 
         return {
           newProblemSolveStatus: startPenPaperSolving(
@@ -93,7 +103,13 @@ export const processTickOfProblemSolving = <RootStateType>(
 
     case "during-pen-paper-solving":
       if (problemSolveStatus.progress >= 1) {
-        if (user.isPlayer)
+        const penPaperCorrect = computeIfPenPaperCorrect(
+          user,
+          problem,
+          problemSolveStatus.submissions
+        );
+
+        if (user.isPlayer) {
           dispatch(
             addEvent({
               message: `Found a pen-paper solution for problem ${problem.placement}`,
@@ -103,11 +119,15 @@ export const processTickOfProblemSolving = <RootStateType>(
             })
           );
 
-        const penPaperCorrect = computeIfPenPaperCorrect(
-          user,
-          problem,
-          problemSolveStatus.submissions
-        );
+          const XPGain = computeXPGainFromPenPaperSolving(
+            user,
+            problem,
+            penPaperCorrect
+          );
+          dispatch(applyXPGain(XPGain));
+          dispatch(setLastXPGainData({ XPGain, secondsVisible: 10 }));
+        }
+
         return {
           newProblemSolveStatus: startImplementing(
             user,
@@ -128,6 +148,16 @@ export const processTickOfProblemSolving = <RootStateType>(
           problem,
           problemSolveStatus.submissions
         );
+
+        if (user.isPlayer) {
+          const XPGain = computeXPGainFromImplementing(
+            user,
+            problem,
+            implementationCorrect
+          );
+          dispatch(applyXPGain(XPGain));
+          dispatch(setLastXPGainData({ XPGain, secondsVisible: 10 }));
+        }
 
         return {
           newProblemSolveStatus: submitProblem<RootStateType>(

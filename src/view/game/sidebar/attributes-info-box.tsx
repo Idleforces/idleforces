@@ -2,6 +2,7 @@
 import { useAppSelector } from "../../../app/hooks";
 import { attributeNames } from "../../../app/users/types";
 import { selectPlayer } from "../../../app/users/users-slice";
+import { selectVisibleXPGain } from "../../../app/view/view-slice";
 import { transposeArray } from "../../../utils/utils";
 import { Bar } from "../utils/bar";
 import { DataTable } from "../utils/datatable";
@@ -9,11 +10,15 @@ import { InfoBox } from "../utils/info-box";
 import { printAttributeName } from "../utils/print-attribute-name";
 
 export const AttributeInfoBox = () => {
+  const visibleXPGain = useAppSelector(selectVisibleXPGain);
   const player = useAppSelector(selectPlayer);
   if (!player) return <></>;
 
   const attributeBarsColumn = attributeNames.map((attributeName) => {
     const attributeValue = player.attributes[attributeName];
+    const attributeXPGain = visibleXPGain
+      ? visibleXPGain[attributeName]
+      : undefined;
 
     return (
       <Bar
@@ -25,6 +30,7 @@ export const AttributeInfoBox = () => {
         leftLabel={String(Math.floor(attributeValue))}
         rightLabel={String(Math.floor(attributeValue) + 1)}
         ratioFilled={attributeValue - Math.floor(attributeValue)}
+        centerDiff={attributeXPGain}
       />
     );
   });
@@ -51,10 +57,10 @@ export const AttributeInfoBox = () => {
   );
 
   return (
-      <InfoBox
-        content={<>{dataTable}</>}
-        topText="Attributes"
-        contentPadding="0"
-      />
+    <InfoBox
+      content={<>{dataTable}</>}
+      topText="Attributes"
+      contentPadding="0"
+    />
   );
 };
