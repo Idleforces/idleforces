@@ -54,3 +54,23 @@ button {
 .verdict-rejected {
   color: #00a;
 }
+
+.green {
+  color: green;
+}
+
+.dark-green {
+  color: darkgreen;
+}
+
+.red {
+  color: red;
+}
+
+.dark-red {
+  color: darkred;
+}
+
+.bold {
+  font-weight: bold;
+}
