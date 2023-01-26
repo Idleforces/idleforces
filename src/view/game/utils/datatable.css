@@ -69,10 +69,6 @@
   cursor: pointer;
 }
 
-.datatable .green {
-  color: green;
-}
-
 .datatable .gray {
   font-weight: 300;
   color: gray;
@@ -80,10 +76,6 @@
 
 .datatable .align-left {
   text-align: left;
-}
-
-.datatable .red {
-  color: red;
 }
 
 .datatable .narrow {

@@ -1,4 +1,5 @@
 import "./bar.css";
+import { FormattedDiff } from "./formatted-diff";
 
 export type BarProps = {
   kind: "gradient";
@@ -10,10 +11,12 @@ export type BarProps = {
   leftLabel: string;
   rightLabel: string;
   ratioFilled: number;
+  centerDiff?: number;
 };
 
 export const Bar = (props: BarProps) => {
-  const { labelPosition, leftLabel, rightLabel, ratioFilled } = props;
+  const { labelPosition, leftLabel, rightLabel, ratioFilled, centerDiff } =
+    props;
 
   const percentageFilled = ratioFilled * 100;
 
@@ -27,7 +30,9 @@ export const Bar = (props: BarProps) => {
           props.gradientRightColor
         } ${percentageFilled}% ,white ${percentageFilled}%)`,
       }}
-    ></div>
+    >
+      {centerDiff !== undefined ? <FormattedDiff diff={centerDiff} /> : <></>}
+    </div>
   );
 
   if (labelPosition === "below")
