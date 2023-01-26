@@ -42,6 +42,7 @@ import {
   selectRatingRecomputeData,
   setRatingRecomputeData,
 } from "../../../../app/view/view-slice";
+import { FormattedDiff } from "../../utils/formatted-diff";
 
 export type RatingRecomputeData =
   | {
@@ -334,13 +335,7 @@ const StandingsPage = (props: {
             })
           )
           .concat([
-            <div
-              className={
-                ratingDiff > 0 ? "green bold" : ratingDiff < 0 ? "red bold" : ""
-              }
-            >
-              {ratingDiff > 0 ? `+${ratingDiff}` : ratingDiff}
-            </div>,
+            <FormattedDiff diff={ratingDiff}/>,
           ]);
       })
     )
