@@ -24,6 +24,7 @@ import { ProfileContests } from "./view/game/pages/profile/profile-contests";
 import { Status } from "./view/game/contest/status/status";
 import {
   selectSecondsSincePageLoad,
+  selectTimestampAtPageLoad,
   setNoPlayerContestSimSpeed,
   setSecondsSincePageLoad,
 } from "./app/view/view-slice";
@@ -32,8 +33,8 @@ function App() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const timestampAtPageLoad = useRef<number>(Date.now());
   const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
+  const timestampAtPageLoad = useAppSelector(selectTimestampAtPageLoad);
 
   useEffect(() => {
     let ignore = false;
@@ -45,7 +46,7 @@ function App() {
               secondsSincePageLoad +
                 Math.max(
                   Math.floor(
-                    (-timestampAtPageLoad.current + Date.now()) / 1000 -
+                    (-timestampAtPageLoad + Date.now()) / 1000 -
                       secondsSincePageLoad
                   ) - 1,
                   1
@@ -56,13 +57,13 @@ function App() {
         } else {
           resolve("IGNORED");
         }
-      }, Math.max(timestampAtPageLoad.current - Date.now() + 1000 * (secondsSincePageLoad + 1), 0));
+      }, Math.max(timestampAtPageLoad - Date.now() + 1000 * (secondsSincePageLoad + 1), 0));
     });
 
     return () => {
       ignore = true;
     };
-  }, [secondsSincePageLoad, dispatch]);
+  }, [secondsSincePageLoad, dispatch, timestampAtPageLoad]);
 
   const resetData = () => {
     dispatch(resetUsers(null));
@@ -83,60 +84,19 @@ function App() {
     <>
       <Header leaveGameRef={leaveGameRef} />
       <Routes>
-        <Route
-          path="/game/*"
-          element={
-            <Game
-              leaveGameRef={leaveGameRef}
-              timestampAtPageLoad={timestampAtPageLoad}
-            />
-          }
-        >
+        <Route path="/game/*" element={<Game leaveGameRef={leaveGameRef} />}>
           <Route path="profile/:handle" element={<Profile />} />
           <Route
             path="profile/:handle/contests"
             element={<ProfileContests />}
           />
-          <Route
-            path="contests"
-            element={
-              <Contests
-                timestampAtPageLoad={timestampAtPageLoad}
-              />
-            }
-          />
+          <Route path="contests" element={<Contests />} />
 
-          <Route
-            path="contest/"
-            element={
-              <Contest />
-            }
-          >
-            <Route
-              path="standings"
-              element={
-                <Standings />
-              }
-            />
-            <Route
-              path="my"
-              element={
-                <Status />
-              }
-            />
-            <Route
-              path="status"
-              element={
-                <Status />
-              }
-            />
-            <Route
-              path="standings/friends"
-              element={
-                <Standings
-                />
-              }
-            />
+          <Route path="contest/" element={<Contest />}>
+            <Route path="standings" element={<Standings />} />
+            <Route path="my" element={<Status />} />
+            <Route path="status" element={<Status />} />
+            <Route path="standings/friends" element={<Standings />} />
             <Route path="*" element={<Problems />} />
           </Route>
           <Route path="rating" element={<Rating />} />

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import type { MutableRefObject } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   selectUsersWithTimeOfSnapshot,
@@ -34,13 +33,16 @@ import { SideBar } from "./sidebar/sidebar";
 import "./game.css";
 import { ContestSideBar } from "./contest/contest-sidebar";
 import { convertSecondsToHHMMSS } from "../../utils/time-format";
-import { selectNoPlayerContestSimSpeed, selectSecondsSincePageLoad } from "../../app/view/view-slice";
+import {
+  selectNoPlayerContestSimSpeed,
+  selectSecondsSincePageLoad,
+  selectTimestampAtPageLoad,
+} from "../../app/view/view-slice";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
-  timestampAtPageLoad: MutableRefObject<number>;
 }) => {
-  const timestampAtPageLoad = props.timestampAtPageLoad;
+  const timestampAtPageLoad = useAppSelector(selectTimestampAtPageLoad);
   const leaveGame = props.leaveGameRef.current;
 
   const location = useLocation();
@@ -247,9 +249,7 @@ export const Game = (props: {
         !location.pathname.startsWith("/game/contests") ? (
           <ContestSideBar />
         ) : (
-          <SideBar
-            timestampAtPageLoad={timestampAtPageLoad}
-          />
+          <SideBar />
         )}
       </main>
     </div>

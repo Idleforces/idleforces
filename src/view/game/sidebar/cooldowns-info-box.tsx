@@ -1,21 +1,18 @@
 /* eslint-disable react/jsx-key */
 import { cloneDeep, reverse } from "lodash";
-import type { MutableRefObject } from "react";
 import { selectArchivedContests } from "../../../app/contest-archive/contest-archive-slice";
 import { selectContestDivision } from "../../../app/contest/contest-slice";
 import { useAppSelector } from "../../../app/hooks";
 import { problemDivisions } from "../../../app/problems/types";
-import { selectSecondsSincePageLoad } from "../../../app/view/view-slice";
+import { selectSecondsSincePageLoad, selectTimestampAtPageLoad } from "../../../app/view/view-slice";
 import { convertSecondsToHHMMSS } from "../../../utils/time-format";
 import { transposeArray } from "../../../utils/utils";
 import { computeContestCooldownSecondsRemaining } from "../pages/contests";
 import { DataTable } from "../utils/datatable";
 import { InfoBox } from "../utils/info-box";
 
-export const CooldownsInfoBox = (props: {
-  timestampAtPageLoad: MutableRefObject<number>;
-}) => {
-  const { timestampAtPageLoad } = props;
+export const CooldownsInfoBox = () => {
+  const timestampAtPageLoad = useAppSelector(selectTimestampAtPageLoad);
   const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
   const contestArchive = useAppSelector(selectArchivedContests);
   const runningContestDivision = useAppSelector(selectContestDivision);

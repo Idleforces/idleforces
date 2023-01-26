@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-key */
 import type { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import type { MutableRefObject } from "react";
 import {
   CONTEST_LENGTH,
   DIVISION_MERGE_TICKS_COUNT,
@@ -34,13 +33,14 @@ import { cloneDeep } from "lodash";
 import type { ContestArchiveSlice } from "../../../app/contest-archive/types";
 import {
   selectSecondsSincePageLoad,
+  selectTimestampAtPageLoad,
   setNoPlayerContestSimSpeed,
 } from "../../../app/view/view-slice";
 
 export const computeContestCooldownSecondsRemaining = (
   division: ProblemDivision,
   contestArchive: ContestArchiveSlice,
-  timestampAtPageLoad: MutableRefObject<number>,
+  timestampAtPageLoad: number,
   secondsSincePageLoad: number
 ) => {
   const lastDivisionTimestamp =
@@ -49,7 +49,7 @@ export const computeContestCooldownSecondsRemaining = (
       .find((contest) => contest.division === division)?.timestamp ?? null;
 
   const currentTimestamp =
-    timestampAtPageLoad.current + 1000 * secondsSincePageLoad;
+    timestampAtPageLoad + 1000 * secondsSincePageLoad;
 
   const secondsRemaining =
     lastDivisionTimestamp !== null
@@ -86,15 +86,12 @@ const handleContestStart = (
   );
 };
 
-export const Contests = (props: {
-  timestampAtPageLoad: MutableRefObject<number>;
-}) => {
-  const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
-  const timestampAtPageLoad = props.timestampAtPageLoad;
-
+export const Contests = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
+  const timestampAtPageLoad = useAppSelector(selectTimestampAtPageLoad);
   const users = useAppSelector(selectUsers) ?? [];
   const contestArchive = useAppSelector(selectArchivedContests);
   const activity = useAppSelector(selectActivity);
