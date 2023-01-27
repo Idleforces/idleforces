@@ -23,10 +23,13 @@ export const modifyAttributesAccordingToXPGain = (
     attributeNames,
     (attributeName) =>
       XPToLevel(
-        levelToXP(
-          originalAttributes[attributeName],
-          USER_ATTRIBUTES_CONSTANTS[attributeName]
-        ) + (XPGain[attributeName] ?? 0),
+        Math.max(
+          levelToXP(
+            originalAttributes[attributeName],
+            USER_ATTRIBUTES_CONSTANTS[attributeName]
+          ) + (XPGain[attributeName] ?? 0),
+          0
+        ),
         USER_ATTRIBUTES_CONSTANTS[attributeName]
       )
   );
