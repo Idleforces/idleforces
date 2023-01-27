@@ -7,6 +7,7 @@ This is a silly game inspired by competitive programming. You take on a role of 
 - Simulate a contest to unlock more problems to solve.
 - Participate in a contest to show off your skills.
 - Train on real problems from previous contests.
+- Read informative books to acquire skills.
 - Get a job that pays a fat paycheck.
 - Buy cool perks and upgrades.
 - Watch detailed stats and see yourself improve.

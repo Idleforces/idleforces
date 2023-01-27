@@ -7,6 +7,7 @@ import { contestReducer } from "./contest/contest-slice";
 import { contestArchiveReducer } from "./contest-archive/contest-archive-slice";
 import { friendsReducer } from "./friends/friends-slice";
 import { viewReducer } from "./view/view-slice";
+import { booksReducer } from "./books/books-slice";
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
@@ -20,6 +21,7 @@ export const store = configureStore({
     contestArchive: contestArchiveReducer,
     friends: friendsReducer,
     view: viewReducer,
+    books: booksReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
