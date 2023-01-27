@@ -10,20 +10,22 @@ export const Events = (props: { heightInRem: number }) => {
   const events = useAppSelector(selectEvents);
   if (!events) return <></>;
 
-  const dataTableColumn = transposeArray([events.map((event, index) => (
-    <div
-      className={`event-container event-container-${event.sentiment}`}
-      key={index}
-    >
-      <span>
-        [{event.problemPlacement} -{" "}
-        {convertSecondsToHHMMSS(event.ticksSinceBeginning)}]
-      </span>
-      <span style={{ textAlign: "left", paddingLeft: "1rem" }}>
-        {event.message}
-      </span>
-    </div>
-  ))]);
+  const dataTableColumn = transposeArray([
+    events.map((event, index) => (
+      <div
+        className={`event-container event-container-${event.sentiment}`}
+        key={index}
+      >
+        <span>
+          [{event.problemPlacement} -{" "}
+          {convertSecondsToHHMMSS(event.ticksSinceBeginning)}]
+        </span>
+        <span style={{ textAlign: "left", paddingLeft: "1rem" }}>
+          {event.message}
+        </span>
+      </div>
+    )),
+  ]);
 
   return (
     <div id="events-container" style={{ maxHeight: `${height}rem` }}>

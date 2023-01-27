@@ -75,7 +75,7 @@ export const Index = (props: {
         handle,
         saveName: newSaveName,
         rating: USER_INITIAL_RATING,
-        activity: null
+        activity: null,
       };
       dispatch(setSaveData(saveData));
       dispatch(setUsers(newUsersWithTimeOfSnapshot));
@@ -112,7 +112,10 @@ export const Index = (props: {
     dispatch(setSaveData(saveData));
     dispatch(setUsers(usersWithTimeOfSnapshot));
 
-    if (saveData.activity === "contest-participation" || saveData.activity === "contest-simulation") {
+    if (
+      saveData.activity === "contest-participation" ||
+      saveData.activity === "contest-simulation"
+    ) {
       const contest = JSON.parse(
         localStorage.getItem(`contest-${saveName}`) as string
       ) as ContestSlice;

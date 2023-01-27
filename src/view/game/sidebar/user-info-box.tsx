@@ -17,18 +17,17 @@ export const UserInfoBox = () => {
     <div id="user-info-box-content">
       <div id="user-info-box-content-left-bar">
         <p>
-          Rating: <RatingStyled stringToStyle={Math.round(rating)} rating={rating}/>
+          Rating:{" "}
+          <RatingStyled stringToStyle={Math.round(rating)} rating={rating} />
         </p>
         <ul>
           <li>
-            <Link to={`/game/profile/${handle}/contests`}>
-              Contests
-            </Link>
+            <Link to={`/game/profile/${handle}/contests`}>Contests</Link>
           </li>
         </ul>
       </div>
       <div id="user-info-box-content-right-bar">
-        <FontAwesomeIcon icon={["fas", "user"]}/>
+        <FontAwesomeIcon icon={["fas", "user"]} />
         <Link to={`/game/profile/${handle}`}>
           <RatingStyled stringToStyle={handle} rating={rating} />
         </Link>
@@ -36,6 +35,5 @@ export const UserInfoBox = () => {
     </div>
   );
 
-  return <InfoBox content={infoBoxContent} topText={handle}/>;
-
+  return <InfoBox content={infoBoxContent} topText={handle} />;
 };

@@ -7,7 +7,7 @@ import { UserInfoBox } from "./user-info-box";
 export const SideBar = () => {
   return (
     <div id="side-bar">
-      <CooldownsInfoBox/>
+      <CooldownsInfoBox />
       <UserInfoBox />
       <TopRated />
       <AttributeInfoBox />

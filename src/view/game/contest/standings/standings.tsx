@@ -245,7 +245,7 @@ const StandingsPage = (props: {
     onlyFriends,
     finished,
     dispatch,
-    ratingRecomputeData
+    ratingRecomputeData,
   ]);
 
   const accepted = computeAccepted(contest.contestUsersData);
@@ -334,9 +334,7 @@ const StandingsPage = (props: {
               );
             })
           )
-          .concat([
-            <FormattedDiff diff={ratingDiff}/>,
-          ]);
+          .concat([<FormattedDiff diff={ratingDiff} />]);
       })
     )
     .concat([

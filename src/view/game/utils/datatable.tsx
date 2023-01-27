@@ -1,4 +1,6 @@
-export type AllowableTableClassNames = "datatable-no-outer-border" | "datatable-no-header"
+export type AllowableTableClassNames =
+  | "datatable-no-outer-border"
+  | "datatable-no-header";
 export type AllowableTableIds = never;
 export type AllowableContainerIds = never;
 
@@ -10,7 +12,7 @@ export const DataTable = (props: {
   tableClassName?: AllowableTableClassNames;
   tableId?: AllowableTableIds;
   containerId?: AllowableContainerIds;
-  colspanValues?: Array<Array<number>>
+  colspanValues?: Array<Array<number>>;
 }) => {
   const contents = props.contents;
   const classNames = props.classNames;
@@ -46,7 +48,9 @@ export const DataTable = (props: {
             {contents[0].map((cellContent, columnIndex) => (
               <th
                 key={columnIndex}
-                colSpan={colspanValues ? colspanValues[0][columnIndex] : undefined}
+                colSpan={
+                  colspanValues ? colspanValues[0][columnIndex] : undefined
+                }
                 className={`top ${
                   classNames ? classNames[0][columnIndex] : ""
                 } ${columnIndex === 0 ? "left" : ""} ${
@@ -64,7 +68,11 @@ export const DataTable = (props: {
               {rowContents.map((cellContent, columnIndex) => (
                 <td
                   key={columnIndex}
-                  colSpan={colspanValues ? colspanValues[rowIndex + 1][columnIndex] : undefined}
+                  colSpan={
+                    colspanValues
+                      ? colspanValues[rowIndex + 1][columnIndex]
+                      : undefined
+                  }
                   className={`${
                     classNames ? classNames[rowIndex + 1][columnIndex] : ""
                   } ${columnIndex === 0 ? "left" : ""} ${

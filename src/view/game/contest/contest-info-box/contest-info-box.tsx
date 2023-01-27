@@ -45,9 +45,7 @@ export const ContestInfoBox = () => {
     [
       contestFinished ? (
         <div id="time-left-container" style={{ fontWeight: 500 }}>
-          {convertSecondsToHHMMSS(
-            0
-          )}
+          {convertSecondsToHHMMSS(0)}
         </div>
       ) : (
         <div id="time-left-container" style={{ fontWeight: 500 }}>

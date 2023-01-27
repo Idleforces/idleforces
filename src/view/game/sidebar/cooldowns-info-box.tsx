@@ -4,7 +4,10 @@ import { selectArchivedContests } from "../../../app/contest-archive/contest-arc
 import { selectContestDivision } from "../../../app/contest/contest-slice";
 import { useAppSelector } from "../../../app/hooks";
 import { problemDivisions } from "../../../app/problems/types";
-import { selectSecondsSincePageLoad, selectTimestampAtPageLoad } from "../../../app/view/view-slice";
+import {
+  selectSecondsSincePageLoad,
+  selectTimestampAtPageLoad,
+} from "../../../app/view/view-slice";
 import { convertSecondsToHHMMSS } from "../../../utils/time-format";
 import { transposeArray } from "../../../utils/utils";
 import { computeContestCooldownSecondsRemaining } from "../pages/contests";

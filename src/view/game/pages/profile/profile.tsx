@@ -23,7 +23,7 @@ import { computeUserTitle } from "../../utils/user-titles";
 import "./profile.css";
 
 export const Profile = () => {
-  const {handle} = useParams();
+  const { handle } = useParams();
 
   const playerHandle = useAppSelector(selectHandle);
   const users = useAppSelector(selectUsers);
@@ -70,7 +70,11 @@ export const Profile = () => {
 
   return (
     <>
-      <SubNavBar pages={[`${handle}`, "contests"]} baseURL="/game/profile/" handle={handle}/>
+      <SubNavBar
+        pages={[`${handle}`, "contests"]}
+        baseURL="/game/profile/"
+        handle={handle}
+      />
       <div id="profile-page">
         <div id="user-info-container">
           <p>
@@ -87,7 +91,9 @@ export const Profile = () => {
               id="toggle-friend-button"
               tabIndex={0}
               onClick={(_e) => dispatch(toggleFriend(handle))}
-              onKeyDown={(e) => {if (e.key === "Enter") dispatch(toggleFriend(handle));}}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") dispatch(toggleFriend(handle));
+              }}
             >
               <FontAwesomeIcon
                 icon={[`fa${isFriend ? "s" : "r"}`, "star"]}
@@ -169,7 +175,8 @@ export const Profile = () => {
 
               if (index) {
                 const prevRating = ratings[index - 1];
-                const ratingDiff = Math.round(historicalRating) - Math.round(prevRating);
+                const ratingDiff =
+                  Math.round(historicalRating) - Math.round(prevRating);
 
                 return (
                   <div

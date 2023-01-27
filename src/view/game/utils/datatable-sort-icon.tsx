@@ -48,7 +48,7 @@ export function DataTableSortIcon<T extends string>(props: {
         computeFontAwesomeIconName(field, dataTableSortBy, reverseDataTable),
       ]}
       tabIndex={0}
-      style={{cursor: "pointer", padding: "0 0.2rem"}}
+      style={{ cursor: "pointer", padding: "0 0.2rem" }}
       onClick={(_e) => {
         handleSortClick(
           field,

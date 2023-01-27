@@ -48,8 +48,7 @@ export const computeContestCooldownSecondsRemaining = (
       .reverse()
       .find((contest) => contest.division === division)?.timestamp ?? null;
 
-  const currentTimestamp =
-    timestampAtPageLoad + 1000 * secondsSincePageLoad;
+  const currentTimestamp = timestampAtPageLoad + 1000 * secondsSincePageLoad;
 
   const secondsRemaining =
     lastDivisionTimestamp !== null

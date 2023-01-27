@@ -8,7 +8,7 @@ import {
 } from "../../../app/contest/contest-slice";
 import { useNavigate } from "react-router";
 import { resetEvents } from "../../../app/events/events-slice";
-import { selectActivity, setActivity} from "../../../app/save/save-slice";
+import { selectActivity, setActivity } from "../../../app/save/save-slice";
 import "./contest.css";
 import { useLocation } from "react-router";
 import { SubmissionsFilterBox } from "./submissions-filter-box/submissions-filter-box";
@@ -34,28 +34,20 @@ export const ContestSideBar = () => {
   return (
     <div id="contest-sidebar">
       <ContestInfoBox />
-      {!playerParticipating ? (
-        <SpeedSimSlider />
-      ) : (
-        <></>
-      )}
+      {!playerParticipating ? <SpeedSimSlider /> : <></>}
 
       {
         <button
           disabled={contestFinished === null || !contestFinished}
           onClick={endContest}
           tabIndex={0}
-          style={{marginBottom: "1rem"}}
+          style={{ marginBottom: "1rem" }}
         >
           End contest
         </button>
       }
 
-      {location.pathname.includes("status") ? (
-        <SubmissionsFilterBox />
-      ) : (
-        <></>
-      )}
+      {location.pathname.includes("status") ? <SubmissionsFilterBox /> : <></>}
     </div>
   );
 };
