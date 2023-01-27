@@ -12,7 +12,7 @@ import {
   computeExpectancyMultiplier,
 } from "../problems/utils";
 
-export const EVENTS: Array<ContestEventBlueprint> = [
+export const EVENTS: Readonly<Array<ContestEventBlueprint>> = [
   {
     name: "Toilet break",
     message: "You have an urge to go to the restroom. You try to be quick.",
@@ -513,4 +513,4 @@ export const EVENTS: Array<ContestEventBlueprint> = [
       return params.increment * beta(8, 3);
     },
   },
-];
+] as const;

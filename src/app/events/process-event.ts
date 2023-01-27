@@ -28,7 +28,7 @@ const scaleWithCurrentIncrement = (
 };
 
 export const computeProbabilitiesOfEvents = (
-  events: Array<ContestEventBlueprint>,
+  events: Readonly<Array<ContestEventBlueprint>>,
   increment: number,
   eventProbabilityParams: EventProbabilityParams
 ): Array<number> => {
@@ -91,28 +91,28 @@ const processEventAndReturnBreakData = <RootStateType>(
   if (event.setBreakInTicks) {
     if (event.setBreakInTicks instanceof Function) {
       return {
-          ...event.setBreakInTicks({
-            tag: problem.tag,
-            user,
-            penPaperDifficulty: problem.penPaperDifficulty,
-            implementationDifficulty: problem.implementationDifficulty,
-          }),
-          problemPlacement: problem.placement,
-          userContestIndex,
-        };
+        ...event.setBreakInTicks({
+          tag: problem.tag,
+          user,
+          penPaperDifficulty: problem.penPaperDifficulty,
+          implementationDifficulty: problem.implementationDifficulty,
+        }),
+        problemPlacement: problem.placement,
+        userContestIndex,
+      };
     } else
       return {
-          ...event.setBreakInTicks,
-          problemPlacement: problem.placement,
-          userContestIndex,
-        };
+        ...event.setBreakInTicks,
+        problemPlacement: problem.placement,
+        userContestIndex,
+      };
   }
 
   return null;
 };
 
 export const processEventsAndIncrementProgress = <RootStateType>(
-  events: Array<ContestEventBlueprint>,
+  events: Readonly<Array<ContestEventBlueprint>>,
   user: User,
   indexOfUser: number,
   problem: Problem,

@@ -21,7 +21,7 @@ export type ContestEventBlueprint = {
   /**
    * Array of phase names or "all" for all phases
    */
-  phases: ProblemSolvingPhaseConfigOptions;
+  phases: Readonly<ProblemSolvingPhaseConfigOptions>;
 
   /**
    * Multiplier, general suggestion is to give more that 1 to common events, and less than 1 to rare events.
