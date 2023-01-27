@@ -95,6 +95,7 @@ export const selectVisibleXPGain = (state: RootState) => {
 export const selectTimestampAtPageLoad = (state: RootState) =>
   state.view.timestampAtPageLoad;
 export const selectCurrentTimeInSeconds = (state: RootState) =>
-  state.view.timestampAtPageLoad / 1000 + state.view.secondsSincePageLoad;
+  Math.round(state.view.timestampAtPageLoad / 1000) +
+  state.view.secondsSincePageLoad;
 
 export const viewReducer = viewSlice.reducer;
