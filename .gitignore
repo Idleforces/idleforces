@@ -26,7 +26,6 @@ dist-ssr
 *.sw?
 
 # Misc
-public/trimmed-users.json
 dependency-graph.svg
 rating-graph-sample.svg
 .eslintcache
