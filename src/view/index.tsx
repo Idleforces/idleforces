@@ -23,6 +23,11 @@ import type { ContestArchiveSlice } from "../app/contest-archive/types";
 import type { FriendsSlice } from "../app/friends/types";
 import { setFriends } from "../app/friends/friends-slice";
 import type { User } from "../app/users/types";
+import { setBooksSlice } from "../app/books/books-slice";
+import type { BooksSlice } from "../app/books/books-slice";
+import { BOOKS_DATA } from "../app/books/books";
+import { computeInitialBookReadingData } from "../app/books/read-book";
+import { computeBookLengthByHoursToRead } from "../app/books/utils";
 
 export const countriesCount = new Map<string, number>();
 
@@ -86,6 +91,12 @@ export const Index = (props: {
         null,
         [],
         [],
+        BOOKS_DATA.map((bookData) =>
+          computeInitialBookReadingData(
+            computeBookLengthByHoursToRead(bookData.hoursToRead),
+            bookData.id
+          )
+        ),
         saveData,
         leaveGame
       )
@@ -131,15 +142,26 @@ export const Index = (props: {
       dispatch(setEvents(events));
     }
 
-    const contestArchive = JSON.parse(
+    const contestArchive = (JSON.parse(
       localStorage.getItem(`archive-contest-${saveName}`) as string
-    ) as ContestArchiveSlice;
+    ) ?? []) as ContestArchiveSlice;
     dispatch(setContestArchive(contestArchive));
 
     const friends = (JSON.parse(
       localStorage.getItem(`friends-${saveName}`) as string
     ) ?? []) as FriendsSlice;
     dispatch(setFriends(friends));
+
+    const booksReadingData = (JSON.parse(
+      localStorage.getItem(`books-${saveName}`) as string
+    ) ??
+      BOOKS_DATA.map((bookData) =>
+        computeInitialBookReadingData(
+          computeBookLengthByHoursToRead(bookData.hoursToRead),
+          bookData.id
+        )
+      )) as BooksSlice;
+    dispatch(setBooksSlice(booksReadingData));
 
     navigate("/game/dashboard");
   };
@@ -167,6 +189,7 @@ export const Index = (props: {
       localStorage.removeItem(`contest-${deletedSave.saveName}`);
       localStorage.removeItem(`archive-contest-${deletedSave.saveName}`);
       localStorage.removeItem(`friends-${deletedSave.saveName}`);
+      localStorage.removeItem(`books-${deletedSave.saveName}`);
 
       setSaves(getSavesFromLocalStorage);
     }

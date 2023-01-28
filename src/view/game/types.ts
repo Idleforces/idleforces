@@ -9,6 +9,7 @@ export type LocalStorageSaveData = {
   contestHash: string;
   contestArchiveHash: string;
   friendsHash: string;
+  booksHash: string;
   NPCsHash: string;
   activity: Activity;
 };

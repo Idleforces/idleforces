@@ -46,11 +46,20 @@ export const booksSlice = createSlice({
         ...bookReadingData,
         currentStintStartTimestampInSecondsExclusive: null,
       })),
+
+    resetBooksSlice: (_state: BooksSlice, _action: PayloadAction<null>) => [],
+    setBooksSlice: (_state: BooksSlice, action: PayloadAction<BooksSlice>) =>
+      action.payload,
   },
 });
 
-export const { updateBookReadingData, stopBookReading, startBookReadingById } =
-  booksSlice.actions;
+export const {
+  updateBookReadingData,
+  stopBookReading,
+  startBookReadingById,
+  resetBooksSlice,
+  setBooksSlice,
+} = booksSlice.actions;
 export const selectBooksReadingData = (state: RootState) => state.books;
 export const selectBooksReadingDataByIdFactory =
   (id: number) => (state: RootState) =>

@@ -1,4 +1,5 @@
 import hash_sum from "hash-sum";
+import type { BooksSlice } from "../../app/books/books-slice";
 import type { ContestArchiveSlice } from "../../app/contest-archive/types";
 import type { ContestSlice } from "../../app/contest/types";
 import type { EventsSlice } from "../../app/events/types";
@@ -21,6 +22,7 @@ const updateLocalStorageSavesValue = async (
   contestArchiveHash: string,
   friendsHash: string,
   NPCsHash: string,
+  booksHash: string,
   activity: Activity,
   leaveGame: () => void
 ): Promise<void> => {
@@ -33,6 +35,7 @@ const updateLocalStorageSavesValue = async (
     contestArchiveHash,
     friendsHash,
     NPCsHash,
+    booksHash,
     activity,
     saveName: saveData.saveName,
     handle: saveData.handle,
@@ -99,6 +102,7 @@ export const saveGameData = async (
   events: EventsSlice,
   contestArchive: ContestArchiveSlice,
   friends: FriendsSlice,
+  booksReadingData: BooksSlice,
   saveData: Exclude<SaveSlice, null>,
   leaveGame: () => void
 ): Promise<void> => {
@@ -111,6 +115,8 @@ export const saveGameData = async (
   const eventsHash = await promisifiedHashSum(events);
   const contestArchiveHash = await promisifiedHashSum(contestArchive);
   const friendsHash = await promisifiedHashSum(friends);
+  const booksHash = await promisifiedHashSum(booksReadingData);
+
   const saveName = saveData.saveName;
   const activity = saveData.activity;
 
@@ -130,6 +136,7 @@ export const saveGameData = async (
     contestArchiveHash,
     friendsHash,
     NPCsHash,
+    booksHash,
     activity,
     leaveGame
   );
@@ -176,6 +183,13 @@ export const saveGameData = async (
     friendsHash,
     saveName,
     friends,
+    leaveGame
+  );
+  await saveToLocalStorageIfHashesDiffer(
+    "books",
+    booksHash,
+    saveName,
+    booksReadingData,
     leaveGame
   );
 };

@@ -3,4 +3,5 @@ export type LocalStorageKeys =
   | "contest"
   | "archive-contest"
   | "events"
-  | "friends";
+  | "friends"
+  | "books";

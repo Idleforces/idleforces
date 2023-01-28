@@ -38,29 +38,31 @@ import {
   selectSecondsSincePageLoad,
   selectTimestampAtPageLoad,
 } from "../../app/view/view-slice";
+import { selectBooksReadingData } from "../../app/books/books-slice";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
 }) => {
-  const timestampAtPageLoad = useAppSelector(selectTimestampAtPageLoad);
   const leaveGame = props.leaveGameRef.current;
-
-  const location = useLocation();
 
   const [gameSaving, setGameSaving] = useState(false);
 
+  const timestampAtPageLoad = useAppSelector(selectTimestampAtPageLoad);
   const noPlayerContestSimSpeed = useAppSelector(selectNoPlayerContestSimSpeed);
   const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
   const usersWithTimeOfSnapshot = useAppSelector(selectUsersWithTimeOfSnapshot);
   const contest = useAppSelector(selectContest);
   const contestArchive = useAppSelector(selectArchivedContests);
   const friends = useAppSelector(selectFriends);
-  const contestTicksPassed = contest ? contest.ticksSinceBeginning : 0;
   const events = useAppSelector(selectEvents);
   const saveData = useAppSelector(selectSaveData);
   const activity = useAppSelector(selectActivity);
+  const booksReadingData = useAppSelector(selectBooksReadingData);
 
+  const location = useLocation();
   const dispatch = useAppDispatch();
+
+  const contestTicksPassed = contest ? contest.ticksSinceBeginning : 0;
 
   useEffect(() => {
     const persistDataDuringTick = () => {
@@ -89,6 +91,7 @@ export const Game = (props: {
             events,
             contestArchive,
             friends,
+            booksReadingData,
             saveData,
             leaveGame
           )
@@ -115,6 +118,7 @@ export const Game = (props: {
     usersWithTimeOfSnapshot,
     saveData,
     contestArchive,
+    booksReadingData,
   ]);
 
   const contestTicksPassedAtMaxOfGameLoadStartContest = useMemo(
@@ -218,6 +222,7 @@ export const Game = (props: {
           events,
           contestArchive,
           friends,
+          booksReadingData,
           saveData,
           leaveGame
         );

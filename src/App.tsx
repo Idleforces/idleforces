@@ -25,9 +25,9 @@ import { Status } from "./view/game/contest/status/status";
 import {
   selectSecondsSincePageLoad,
   selectTimestampAtPageLoad,
-  setNoPlayerContestSimSpeed,
   setSecondsSincePageLoad,
 } from "./app/view/view-slice";
+import { resetBooksSlice } from "./app/books/books-slice";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -72,7 +72,7 @@ function App() {
     dispatch(resetEvents(null));
     dispatch(resetContestArchive(null));
     dispatch(resetFriends(null));
-    dispatch(setNoPlayerContestSimSpeed(0));
+    dispatch(resetBooksSlice(null));
   };
 
   const leaveGameRef = useRef(() => {

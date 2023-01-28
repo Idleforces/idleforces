@@ -3,7 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import { USER_INITIAL_RATING } from "../users/constants";
 
-export type Activity = "contest-simulation" | "contest-participation" | null;
+export type Activity =
+  | "contest-simulation"
+  | "contest-participation"
+  | "book-reading"
+  | null;
 export type SaveSlice = {
   handle: string;
   rating: number;
