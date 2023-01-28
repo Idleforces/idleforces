@@ -2,7 +2,7 @@
 
 This is a silly game inspired by competitive programming. You take on a role of an aspiring yet terrible competitive programmer. By training persistently, you can bring them to the path towards greatness.
 
-The app is hosted at Netlify using the domain https://www.idleforces.com.
+The app is hosted at Netlify using the domain <https://www.idleforces.com>.
 
 ## Features
 
