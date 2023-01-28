@@ -1,6 +1,6 @@
+import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { setUsers } from "../app/users/users-slice";
 import type {
@@ -56,6 +56,10 @@ export const Index = (props: {
   const dispatch = useAppDispatch();
 
   const leaveGame = props.leaveGameRef.current;
+
+  useEffect(() => {
+    document.title = "Idleforces";
+  }, []);
 
   const allowedToMakeASave =
     !saves.some((save) => save.saveName === newSaveName) &&
