@@ -32,16 +32,10 @@ npm run dev
 VITE_weak=true
 ```
 
-- Get all the necessary stuff for husky pre-commit hooks:
-
-```bash
-npm run prepare
-```
-
 - Get dependency cruiser output in an eslint format:
 
 ```bash
-npx depcruise --config .dependency-cruiser.cjs
+npx depcruise --config .dependency-cruiser.cjs src
 ```
 
 - Get dependency graph visualized as svg:
