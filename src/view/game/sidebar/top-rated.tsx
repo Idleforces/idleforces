@@ -2,7 +2,7 @@
 import { cloneDeep } from "lodash";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { computeRanksConsideringTies } from "../../../app/contest/recalculate-ratings";
+import { computeRanksConsideringTies } from "../../../app/contest/contest-stats";
 import { useAppSelector } from "../../../app/hooks";
 import {
   selectRatingsUpdatedCount,

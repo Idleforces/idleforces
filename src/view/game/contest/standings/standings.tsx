@@ -9,11 +9,11 @@ import { selectContest } from "../../../../app/contest/contest-slice";
 import {
   computeAccepted,
   computeContestUsersStatsSortedByRank,
+  computeRanksConsideringTies,
   computeTried,
 } from "../../../../app/contest/contest-stats";
 import {
   computeNewRatings,
-  computeRanksConsideringTies,
   filterUsersWithAtLeastOneSubmission,
 } from "../../../../app/contest/recalculate-ratings";
 import type {

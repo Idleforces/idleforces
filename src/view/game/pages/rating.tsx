@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { countriesCount } from "../..";
-import { computeRanksConsideringTies } from "../../../app/contest/recalculate-ratings";
+import { computeRanksConsideringTies } from "../../../app/contest/contest-stats";
 import { selectFriends } from "../../../app/friends/friends-slice";
 import { useAppSelector } from "../../../app/hooks";
 import {
