@@ -1,11 +1,11 @@
 import { describe, it, assert, expect } from "vitest";
 import { CONTEST_LENGTH } from "../../../src/app/contest/constants";
-import { computeSubmissionsStats } from "../../../src/app/contest/contest-stats";
-import { computeProblemScoreDecrementsPerMinute } from "../../../src/app/contest/problem-scores";
 import {
-  computeNewRatings,
   computeSeed,
-} from "../../../src/app/contest/recalculate-ratings";
+  computeSubmissionsStats,
+} from "../../../src/app/contest/contest-stats";
+import { computeProblemScoreDecrementsPerMinute } from "../../../src/app/contest/problem-scores";
+import { computeNewRatings } from "../../../src/app/contest/recalculate-ratings";
 import type { ProblemSolveStatuses } from "../../../src/app/contest/types";
 import type { RatingPoint } from "../../../src/app/users/load-users";
 import { sum } from "../../../src/utils/utils";

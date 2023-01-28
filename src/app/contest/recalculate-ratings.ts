@@ -1,74 +1,11 @@
 import type { User } from "../users/types";
 import type { ContestUserData, RatingPoints } from "./types";
 import { sum } from "../../utils/utils";
-import { computeContestUsersStatsSortedByRank } from "./contest-stats";
+import {
+  computeContestUsersStatsSortedByRank,
+  computeSeed,
+} from "./contest-stats";
 import { problemPlacements } from "../problems/types";
-
-const probabilitiesOfWinningByRatingDiff = Array(10000)
-  .fill(0)
-  .map((_, index) => 1 / (1 + Math.pow(10, (index - 5000) / 400)));
-
-const computeProbabilityRatingABeastRatingB = (
-  ratingA: number,
-  ratingB: number
-) => {
-  return probabilitiesOfWinningByRatingDiff[
-    5000 + Math.round(ratingB - ratingA)
-  ];
-};
-
-/**
- *
- * @param userRating User rating.
- * @param opponentRatings Rating of opponents **including** the user themselves.
- * @returns Seed corresponding to the rating.
- */
-export const computeSeed = (
-  userRating: number,
-  opponentRatings: Array<number>
-) => {
-  return (
-    0.5 +
-    sum(
-      opponentRatings.map((opponentRating) =>
-        computeProbabilityRatingABeastRatingB(opponentRating, userRating)
-      )
-    )
-  );
-};
-
-export const computeRanksConsideringTies = (
-  criterion: Array<number>
-): Array<number> => {
-  let curRank = 1;
-  let lastScore = 999999;
-
-  return criterion.map((criterionValue, index) => {
-    if (Math.round(lastScore) !== Math.round(criterionValue)) {
-      curRank = index + 1;
-      lastScore = Math.round(criterionValue);
-    }
-
-    return curRank;
-  });
-};
-
-export const computeContestRanksConsideringTies = <
-  T extends { scores: Array<number> }
->(
-  contestUsersStats: Array<T>
-): Array<T & { rank: number }> => {
-  const ranks = computeRanksConsideringTies(
-    contestUsersStats.map((contestUserStats) => sum(contestUserStats.scores))
-  );
-
-  return contestUsersStats.map((contestUserStats, index) => {
-    return {
-      ...contestUserStats,
-      rank: ranks[index],
-    };
-  });
-};
 
 export const computeNewRatings = (
   contestUsersStats: Array<{
