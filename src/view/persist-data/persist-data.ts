@@ -14,6 +14,13 @@ import type {
 } from "../game/types";
 import type { LocalStorageKeys } from "./types";
 
+export const getSavesFromLocalStorage = (): LocalStorageSavesValue => {
+  const savesJSON = localStorage.getItem("saves");
+  return savesJSON !== null
+    ? (JSON.parse(savesJSON) as LocalStorageSavesValue)
+    : [];
+};
+
 const updateLocalStorageSavesValue = async (
   saveData: Exclude<SaveSlice, null>,
   usersHash: string,
@@ -48,7 +55,7 @@ const updateLocalStorageSavesValue = async (
       leaveGame
     );
   } else {
-    const saves = JSON.parse(savesJSON) as LocalStorageSavesValue;
+    const saves = (JSON.parse(savesJSON) ?? []) as LocalStorageSavesValue;
     await safeSetLocalStorageValue(
       "saves",
       JSON.stringify([
@@ -120,8 +127,9 @@ export const saveGameData = async (
   const saveName = saveData.saveName;
   const activity = saveData.activity;
 
+  const localStorageSavesJSON = localStorage.getItem("saves") ?? "[]";
   const localStorageSavesValue = JSON.parse(
-    localStorage.getItem("saves") as string
+    localStorageSavesJSON
   ) as LocalStorageSavesValue;
 
   const localStorageSaveData = localStorageSavesValue.find(

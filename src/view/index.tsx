@@ -16,7 +16,10 @@ import { setContest } from "../app/contest/contest-slice";
 import type { ContestSlice } from "../app/contest/types";
 import { setEvents } from "../app/events/events-slice";
 import type { EventsSlice } from "../app/events/types";
-import { saveGameData } from "./persist-data/persist-data";
+import {
+  getSavesFromLocalStorage,
+  saveGameData,
+} from "./persist-data/persist-data";
 import { loadOrGenerateUsers } from "../app/users/load-users";
 import { setContestArchive } from "../app/contest-archive/contest-archive-slice";
 import type { ContestArchiveSlice } from "../app/contest-archive/types";
@@ -40,13 +43,6 @@ const populateCountriesCount = (users: Array<User>) => {
       else countriesCount.set(countryName, countryCount + 1);
     }
   });
-};
-
-const getSavesFromLocalStorage = (): LocalStorageSavesValue => {
-  const savesJSON = localStorage.getItem("saves");
-  return savesJSON !== null
-    ? (JSON.parse(savesJSON) as LocalStorageSavesValue)
-    : [];
 };
 
 export const Index = (props: {
@@ -82,8 +78,16 @@ export const Index = (props: {
         rating: USER_INITIAL_RATING,
         activity: null,
       };
+      const booksReadingData = BOOKS_DATA.map((bookData) =>
+        computeInitialBookReadingData(
+          computeBookLengthByHoursToRead(bookData.hoursToRead),
+          bookData.id
+        )
+      );
+
       dispatch(setSaveData(saveData));
       dispatch(setUsers(newUsersWithTimeOfSnapshot));
+      dispatch(setBooksSlice(booksReadingData));
 
       saveGameData(
         newUsersWithTimeOfSnapshot,
@@ -91,12 +95,7 @@ export const Index = (props: {
         null,
         [],
         [],
-        BOOKS_DATA.map((bookData) =>
-          computeInitialBookReadingData(
-            computeBookLengthByHoursToRead(bookData.hoursToRead),
-            bookData.id
-          )
-        ),
+        booksReadingData,
         saveData,
         leaveGame
       )
