@@ -1,4 +1,5 @@
 import "./header.css";
+import logoUrl from "/logo.svg";
 
 export const Header = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
@@ -16,7 +17,7 @@ export const Header = (props: {
           if (e.key === "Enter") leaveGame();
         }}
       >
-        <img src="/logo.svg" alt="Idleforces" />
+        <img src={logoUrl} alt="Idleforces" />
       </a>
     </header>
   );
