@@ -7,8 +7,7 @@ export const BOOKS_DATA: Readonly<Array<BookData>> = [
     title: "Cracking the Coding Interview",
     author: "Gayle Laakmann McDowell",
     goodFor: "Improving reasoning",
-    description: `
-Now in the 5th edition, Cracking the Coding Interview gives you the interview preparation you need to get the top software developer jobs. This is a deeply technical book and focuses on the software engineering skills to ace your interview. The book is over 500 pages and includes 150 programming interview questions and answers, as well as other advice.
+    description: `Now in the 5th edition, *Cracking the Coding Interview* gives you the interview preparation you need to get the top software developer jobs. This is a deeply technical book and focuses on the software engineering skills to ace your interview. The book is over 500 pages and includes 150 programming interview questions and answers, as well as other advice.
 
 For the widest degree of readability, the solutions are almost entirely written with Java (with the exception of C / C++ questions). A link is provided with the book so that you can download, compile, and play with the solutions yourself.
       `,
@@ -39,7 +38,7 @@ For the widest degree of readability, the solutions are almost entirely written 
     description: `
 Even bad code can function. But if code isn't clean, it can bring a development organization to its knees. Every year, countless hours and significant resources are lost because of poorly written code. But it doesn't have to be that way.
 
-Noted software expert Robert C. Martin presents a revolutionary paradigm with Clean Code: A Handbook of Agile Software Craftsmanship . Martin has teamed up with his colleagues from Object Mentor to distill their best agile practice of cleaning code on the fly into a book that will instill within you the values of a software craftsman and make you a better programmer but only if you work at it.
+Noted software expert Robert C. Martin presents a revolutionary paradigm with *Clean Code: A Handbook of Agile Software Craftsmanship*. Martin has teamed up with his colleagues from Object Mentor to distill their best agile practice of cleaning code on the fly into a book that will instill within you the values of a software craftsman and make you a better programmer but only if you work at it.
 
 What kind of work will you be doing? You'll be reading code - lots of code. And you will be challenged to think about what's right about that code, and what's wrong with it. More importantly, you will be challenged to reassess your professional values and your commitment to your craft.
 
@@ -163,11 +162,11 @@ If you're having trouble changing your habits, the problem isn't you. The proble
     author: "Steven S. Skiena, Miguel A. Revilla",
     goodFor: "Mainly theory",
     description: `
-    This book is a comprehensive guide to training for programming contests. It includes an introduction to the basic problems and techniques, as well as a collection of over 300 challenging practice problems with solutions. The book is designed to be used both as a training tool and as a reference guide.
+This book is a comprehensive guide to training for programming contests. It includes an introduction to the basic problems and techniques, as well as a collection of over 300 challenging practice problems with solutions. The book is designed to be used both as a training tool and as a reference guide.
 
-    The book covers a wide range of topics, including data structures, algorithms, graph theory, and number theory. It also includes chapters on advanced topics such as dynamic programming, backtracking, and heuristics. The problems in the book are organized by topic and difficulty level, making it easy to find the right problem for your skill level.
+The book covers a wide range of topics, including data structures, algorithms, graph theory, and number theory. It also includes chapters on advanced topics such as dynamic programming, backtracking, and heuristics. The problems in the book are organized by topic and difficulty level, making it easy to find the right problem for your skill level.
 
-    With Programming Challenges, you will learn how to think like a competitive programmer and develop the skills you need to succeed in programming contests.
+With Programming Challenges, you will learn how to think like a competitive programmer and develop the skills you need to succeed in programming contests.
     `,
     id: 7,
     hoursToRead: 7,
