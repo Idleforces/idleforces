@@ -27,4 +27,5 @@ export type BookData = {
    */
   hoursToRead: number;
   baseXPGain: XPGain;
-} & ({ imageURL?: string } | { imageSVG: JSX.Element });
+  imageURL?: string;
+};
