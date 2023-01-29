@@ -38,7 +38,10 @@ export const booksSlice = createSlice({
               currentStintStartTimestampInSecondsExclusive:
                 action.payload.currentTimeInSeconds,
             }
-          : bookReadingData
+          : {
+              ...bookReadingData,
+              currentStintStartTimestampInSecondsExclusive: null,
+            }
       ),
 
     stopBookReading: (state: BooksSlice, _action: PayloadAction<null>) =>
@@ -62,7 +65,15 @@ export const {
 } = booksSlice.actions;
 export const selectBooksReadingData = (state: RootState) => state.books;
 export const selectBooksReadingDataByIdFactory =
-  (id: number) => (state: RootState) =>
+  (id: number | null) => (state: RootState) =>
     state.books.find((bookReadingData) => bookReadingData.id === id);
+export const selectIdOfCurrentlyReadBook = (state: RootState) => {
+  return (
+    state.books.find(
+      (bookReadingData) =>
+        bookReadingData.currentStintStartTimestampInSecondsExclusive !== null
+    )?.id ?? null
+  );
+};
 
 export const booksReducer = booksSlice.reducer;
