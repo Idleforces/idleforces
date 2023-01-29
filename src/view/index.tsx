@@ -321,7 +321,7 @@ export const Index = (props: {
                   stringToStyle={save.handle}
                 />
               </span>
-              <span>{save.rating}</span>
+              <span>{Math.round(save.rating)}</span>
               <span className="saves-action-container">
                 <button
                   className="save-box-button remove-default-styles"

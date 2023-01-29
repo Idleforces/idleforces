@@ -10,7 +10,12 @@ import type { UsersSlice } from "../../app/users/users-slice";
 import { sleep } from "../../utils/utils";
 import { Outlet, useLocation } from "react-router-dom";
 import { NavBar } from "./navbar";
-import { selectActivity, selectSaveData } from "../../app/save/save-slice";
+import {
+  selectActivity,
+  selectHandle,
+  selectSaveData,
+  setPlayerRating,
+} from "../../app/save/save-slice";
 import {
   updateContestSlice,
   selectContest,
@@ -75,6 +80,7 @@ export const Game = (props: {
     selectBooksReadingDataByIdFactory(currentlyReadBookId)
   );
   const currentTimeInSeconds = useAppSelector(selectCurrentTimeInSeconds);
+  const handle = useAppSelector(selectHandle);
 
   const location = useLocation();
   const dispatch = useAppDispatch();
@@ -256,6 +262,9 @@ export const Game = (props: {
 
       dispatch(addContestToArchive(contest));
       dispatch(updateRatings(newRatingPoints));
+      if (playerParticipating && handle !== undefined) {
+        dispatch(setPlayerRating(newRatingPoints[handle]?.rating));
+      }
       document.title = "Idleforces";
 
       if (saveData)

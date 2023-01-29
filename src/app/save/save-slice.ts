@@ -31,16 +31,22 @@ const saveSlice = createSlice({
       return state ? { ...state, activity: action.payload } : null;
     },
 
-    setRating(state: SaveSlice, action: PayloadAction<number>) {
-      return state ? { ...state, rating: action.payload } : null;
+    setPlayerRating(
+      state: SaveSlice,
+      action: PayloadAction<number | undefined>
+    ) {
+      return state
+        ? { ...state, rating: action.payload ?? state.rating }
+        : null;
     },
   },
 });
 
-export const { setSaveData, resetSaveData, setActivity } = saveSlice.actions;
+export const { setSaveData, resetSaveData, setActivity, setPlayerRating } =
+  saveSlice.actions;
 export const selectSaveData = (state: RootState) => state.save;
 export const selectHandle = (state: RootState) => state.save?.handle;
-export const selectRating = (state: RootState) =>
+export const selectPlayerRating = (state: RootState) =>
   state.save ? state.save.rating : USER_INITIAL_RATING;
 export const selectActivity = (state: RootState) =>
   state.save ? state.save.activity : null;

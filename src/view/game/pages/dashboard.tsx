@@ -10,7 +10,7 @@ export const Dashboard = () => {
     <div id="dashboard">
       <p>Logged in as {saveData.handle}.</p>
       <p>The game save name is {saveData.saveName}.</p>
-      <p>Rating: {saveData.rating}</p>
+      <p>Rating: {Math.round(saveData.rating)}</p>
     </div>
   );
 };
