@@ -51,7 +51,7 @@ export const submitProblem = <RootStateType>(
       dispatch(
         addEvent({
           ticksSinceBeginning,
-          message: `Your submission to the problem ${problem.placement} was accepted.`,
+          message: `Your submission for the problem ${problem.placement} was accepted.`,
           sentiment: "positive",
           problemPlacement: problem.placement,
         })
@@ -98,7 +98,7 @@ export const submitProblem = <RootStateType>(
     dispatch(
       addEvent({
         ticksSinceBeginning,
-        message: `Your submission to the problem ${problem.placement} was rejected (verdict = "${verdict}").`,
+        message: `Your submission for the problem ${problem.placement} was rejected (verdict = "${verdict}").`,
         sentiment: "negative",
         problemPlacement: problem.placement,
       })
