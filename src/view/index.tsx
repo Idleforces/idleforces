@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { FormEvent } from "react";
+import type { FormEvent, Dispatch, SetStateAction } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAppDispatch } from "../app/hooks";
 import { setUsers } from "../app/users/users-slice";
@@ -31,6 +31,25 @@ import type { BooksSlice } from "../app/books/books-slice";
 import { BOOKS_DATA } from "../app/books/books";
 import { computeInitialBookReadingData } from "../app/books/read-book";
 import { computeBookLengthByHoursToRead } from "../app/books/utils";
+import {
+  computeSaveNamesFromGameData,
+  exportGameData,
+  importGameData,
+} from "./persist-data/import-export";
+
+const catchImportExportError = (
+  e: unknown,
+  setImportExportInfo: Dispatch<SetStateAction<string | null>>
+) => {
+  if (
+    typeof e === "object" &&
+    e &&
+    "message" in e &&
+    typeof e.message === "string"
+  )
+    setImportExportInfo(e.message);
+  else setImportExportInfo("Unknown error occurred");
+};
 
 export const countriesCount = new Map<string, number>();
 
@@ -51,11 +70,24 @@ export const Index = (props: {
   const [handle, setHandle] = useState("");
   const [newSaveName, setNewSaveName] = useState("");
   const [saves, setSaves] = useState(getSavesFromLocalStorage);
+  const [importExportInfo, setImportExportInfo] = useState<string | null>(null);
+  const [clipboardTextFirefox, setClipboardTextFirefox] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
   const leaveGame = props.leaveGameRef.current;
+
+  const handleImportGameData = async (clipboardText: string) => {
+    const saveNames = computeSaveNamesFromGameData(clipboardText);
+    if (!saveNames.length) {
+      setImportExportInfo("Error: Could not find saves.");
+      return;
+    }
+
+    await importGameData(clipboardText, leaveGame);
+    setImportExportInfo(`Saves [${saveNames.join()}] successfully imported`);
+    setSaves(getSavesFromLocalStorage);
+  };
 
   useEffect(() => {
     document.title = "Idleforces";
@@ -291,38 +323,30 @@ export const Index = (props: {
               </span>
               <span>{save.rating}</span>
               <span className="saves-action-container">
-                <div
-                  className="save-box-button-container"
+                <button
+                  className="save-box-button remove-default-styles"
                   aria-label="Load this save"
                   onClick={(_e) => {
                     loadSave(save);
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") loadSave(save);
-                  }}
-                  tabIndex={0}
                 >
                   <FontAwesomeIcon
                     icon={["fas", "right-to-bracket"]}
-                    className="load-save-button"
+                    className="load-save-icon"
                   />
-                </div>
-                <div
-                  className="save-box-button-container"
+                </button>
+                <button
+                  className="save-box-button remove-default-styles"
                   aria-label="Delete this save"
                   onClick={(_e) => {
                     deleteSave(save);
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") deleteSave(save);
-                  }}
-                  tabIndex={0}
                 >
                   <FontAwesomeIcon
                     icon={["fas", "trash-can"]}
-                    className="delete-save-button"
+                    className="delete-save-icon"
                   />
-                </div>
+                </button>
               </span>
             </div>
           ))}
@@ -330,6 +354,83 @@ export const Index = (props: {
       ) : (
         <></>
       )}
+      <div id="import-export-container">
+        <div id="import-export-container-header">
+          Or, import or export saves between devices.
+        </div>
+        {!navigator.userAgent.includes("Firefox") ? (
+          <button
+            onClick={(_e) => {
+              try {
+                navigator.clipboard
+                  .readText()
+                  .then((clipboardText) => handleImportGameData(clipboardText))
+                  .catch((e: unknown) => {
+                    catchImportExportError(e, setImportExportInfo);
+                  });
+              } catch (e: unknown) {
+                catchImportExportError(e, setImportExportInfo);
+                setImportExportInfo(
+                  (prev) =>
+                    (prev ?? "") +
+                    "\r\n It seems like your browser disallows accessing clipboard content due to security reasons. Please report the browser you are using."
+                );
+              }
+            }}
+          >
+            Import saves
+          </button>
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleImportGameData(clipboardTextFirefox).catch((e: unknown) => {
+                catchImportExportError(e, setImportExportInfo);
+              });
+            }}
+          >
+            <label htmlFor="input-game-data">Game data:</label>
+            <input
+              type="text"
+              value={clipboardTextFirefox}
+              onChange={(e) => {
+                setClipboardTextFirefox(e.target.value);
+              }}
+              name="input-game-data"
+              id="input-game-data"
+              required
+            />
+            <input type="submit" value="Import saves" />
+          </form>
+        )}
+        <button
+          onClick={(_e) => {
+            navigator.clipboard
+              .writeText(exportGameData())
+              .then(() => {
+                setImportExportInfo("Game data successfully exported");
+              })
+              .catch((e: unknown) => {
+                catchImportExportError(e, setImportExportInfo);
+              });
+          }}
+        >
+          Export saves
+        </button>
+        {importExportInfo !== null ? (
+          <div
+            className={
+              importExportInfo.includes("successful")
+                ? "dark-green"
+                : "dark-red"
+            }
+          >
+            {importExportInfo}
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 };

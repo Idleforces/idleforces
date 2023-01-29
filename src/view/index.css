@@ -80,7 +80,8 @@
   padding-bottom: 1.5rem;
 }
 
-#saves-container-header {
+#saves-container-header,
+#import-export-container-header {
   font-size: 1.75rem;
 }
 
@@ -106,18 +107,50 @@
 .save-box span,
 .save-box-header span {
   width: 15%;
+  vertical-align: middle;
 }
 
-.save-box-button-container {
+.save-box-button {
   padding: 0 0.5rem;
   cursor: pointer;
   display: inline;
+  height: 100%;
+  width: inherit;
 }
 
-.load-save-button {
+.load-save-icon {
   color: darkgreen;
 }
 
-.delete-save-button {
+.delete-save-icon {
   color: red;
+}
+
+.load-save-icon,
+.delete-save-icon {
+  height: 100%;
+  width: auto;
+}
+
+#import-export-container {
+  background-color: #ddd;
+  font-size: 1.25rem;
+  padding: 1rem;
+}
+
+#import-export-container-header {
+  padding-bottom: 1rem;
+}
+
+#import-export-container button,
+#import-export-container input[type="submit"] {
+  margin: 0 1rem;
+  min-width: 6rem;
+}
+
+#import-export-container form {
+  display: inline;
+}
+#import-export-container input {
+  margin-left: 0.5rem;
 }
