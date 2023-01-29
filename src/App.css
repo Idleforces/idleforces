@@ -33,13 +33,28 @@ table {
   border-spacing: 0;
 }
 
-button {
+button,
+input[type="submit"] {
   min-width: 5rem;
-  height: 2.5rem;
   cursor: pointer;
   border-radius: 0.5rem;
   border: 1px solid black;
   padding: 0.5rem;
+}
+
+button.remove-default-styles {
+  outline: none;
+  background: transparent;
+  border: 1px solid transparent;
+  min-width: 0;
+}
+
+button.remove-default-styles:active,
+button.remove-default-styles:focus {
+  outline: none;
+  background: transparent;
+  border: 2px solid blue;
+  min-width: 0;
 }
 
 *:disabled {
