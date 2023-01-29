@@ -23,9 +23,9 @@ export const AttributeInfoBox = () => {
     return (
       <Bar
         kind="gradient"
-        gradientLeftColor="#0077ed"
-        gradientMidColor="#2700ed"
-        gradientRightColor="#9e00ed"
+        gradientLeftColor="#bdd2e7"
+        gradientMidColor="#b8b0df"
+        gradientRightColor="#c5a1d7"
         labelPosition="inline"
         leftLabel={String(Math.floor(attributeValue))}
         rightLabel={String(Math.floor(attributeValue) + 1)}
