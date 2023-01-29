@@ -28,6 +28,7 @@ import {
   setSecondsSincePageLoad,
 } from "./app/view/view-slice";
 import { resetBooksSlice } from "./app/books/books-slice";
+import { Library } from "./view/game/pages/library";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -100,6 +101,7 @@ function App() {
             <Route path="*" element={<Problems />} />
           </Route>
           <Route path="rating" element={<Rating />} />
+          <Route path="library" element={<Library />} />
           <Route path="*" element={<Dashboard />} />
         </Route>
         <Route path="/loading" element={<Loading />} />
