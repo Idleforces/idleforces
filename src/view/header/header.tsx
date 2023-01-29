@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./header.css";
 import logoUrl from "/logo.svg";
 
@@ -7,7 +8,8 @@ export const Header = (props: {
   const leaveGame = props.leaveGameRef.current;
   return (
     <header>
-      <a
+      <Link
+        to="/"
         onClick={(_e) => {
           leaveGame();
         }}
@@ -18,7 +20,7 @@ export const Header = (props: {
         }}
       >
         <img src={logoUrl} alt="Idleforces" />
-      </a>
+      </Link>
     </header>
   );
 };
