@@ -11,6 +11,7 @@ import type {
   ThunkDispatch,
 } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
+import { setStandingsSelectedPage } from "../../app/view/view-slice";
 
 function computePageUrl<T extends string>(
   baseURL: string,
@@ -54,6 +55,10 @@ function handleNavBarClickSideEffects<T extends string>(data: {
     ContestSubmissionsFilterData,
     "view/setContestSubmissionsFilterData"
   >;
+  setStandingsSelectedPage?: ActionCreatorWithPayload<
+    number,
+    "view/setStandingsSelectedPage"
+  >;
   playerHandle?: string;
 }) {
   const {
@@ -61,6 +66,7 @@ function handleNavBarClickSideEffects<T extends string>(data: {
     setRatingRecomputeData,
     setContestSubmissionsFilterData,
     playerHandle,
+    setStandingsSelectedPage,
     dispatch,
   } = data;
 
@@ -91,6 +97,12 @@ function handleNavBarClickSideEffects<T extends string>(data: {
       })
     );
   }
+
+  if (
+    (page === "standings" || page === "friends standings") &&
+    setStandingsSelectedPage
+  )
+    dispatch(setStandingsSelectedPage(1));
 }
 
 export function SubNavBar<T extends string>(props: {
@@ -115,8 +127,9 @@ export function SubNavBar<T extends string>(props: {
   } = props;
 
   const location = useLocation();
-  const playerHandle = useAppSelector(selectHandle);
   const dispatch = useAppDispatch();
+
+  const playerHandle = useAppSelector(selectHandle);
 
   const [selected, setSelected] = useState(
     pages.map((page) => computeIfInitialSelected(location.pathname, page))
@@ -147,6 +160,7 @@ export function SubNavBar<T extends string>(props: {
                 setRatingRecomputeData,
                 setContestSubmissionsFilterData,
                 playerHandle,
+                setStandingsSelectedPage,
               });
             }}
             onKeyDown={(e) => {
@@ -157,6 +171,7 @@ export function SubNavBar<T extends string>(props: {
                   setRatingRecomputeData,
                   setContestSubmissionsFilterData,
                   playerHandle,
+                  setStandingsSelectedPage,
                 });
               }
             }}

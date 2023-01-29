@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { MutableRefObject } from "react";
 import {
   RECOMPUTE_RATINGS_EVERY_N_TICKS,
@@ -40,7 +40,9 @@ import { useLocation } from "react-router";
 import { selectFriends } from "../../../../app/friends/friends-slice";
 import {
   selectRatingRecomputeData,
+  selectStandingsSelectedPage,
   setRatingRecomputeData,
+  setStandingsSelectedPage,
 } from "../../../../app/view/view-slice";
 import { FormattedDiff } from "../../utils/formatted-diff";
 
@@ -70,6 +72,7 @@ export const Standings = () => {
   const contest = useAppSelector(selectContest);
   const users = useAppSelector(selectUsers);
   const handle = useAppSelector(selectHandle);
+
   const location = useLocation();
   const onlyFriends = location.pathname.includes("friends");
 
@@ -115,6 +118,7 @@ const StandingsPage = (props: {
   const finished = contest.finished;
   const friends = useAppSelector(selectFriends);
   const ratingRecomputeData = useAppSelector(selectRatingRecomputeData);
+  const selectedPage = useAppSelector(selectStandingsSelectedPage);
 
   const dispatch = useAppDispatch();
 
@@ -156,14 +160,6 @@ const StandingsPage = (props: {
     );
   }
 
-  const handleIndex = contestUsersStats.findIndex(
-    (userStats) => userStats.handle === handle
-  );
-  const preloadedPage =
-    handleIndex === -1
-      ? 1
-      : Math.ceil(handleIndex / USERS_NO_ON_STANDINGS_PAGE);
-  const [selectedPage, setSelectedPage] = useState(preloadedPage);
   const minIndex = (selectedPage - 1) * USERS_NO_ON_STANDINGS_PAGE;
   const maxIndex = selectedPage * USERS_NO_ON_STANDINGS_PAGE;
 
@@ -369,14 +365,37 @@ const StandingsPage = (props: {
         const className = index === 1 ? "bold align-left" : ("bold" as string);
         return className;
       }),
-  ].concat(
-    Array(displayedContestUsersStats.length + 1)
-      .fill(0)
-      .map((_) => Array<string>(4 + accepted.length).fill(""))
+  ]
+    .concat(
+      displayedContestUsersStats.map((contestUserStats) =>
+        Array<string>(4 + accepted.length).fill(
+          contestUserStats.handle === handle ? "player-row" : ""
+        )
+      )
+    )
+    .concat([Array<string>(4 + accepted.length).fill("")]);
+
+  const handleIndex = contestUsersStats.findIndex(
+    (userStats) => userStats.handle === handle
   );
+  const playerOrTopPage =
+    handleIndex === -1
+      ? 1
+      : Math.ceil(handleIndex / USERS_NO_ON_STANDINGS_PAGE);
 
   return (
     <div id="standings-page">
+      {!onlyFriends && playerOrTopPage !== selectedPage ? (
+        <button
+          className="remove-default-styles text-button"
+          onClick={(_e) => dispatch(setStandingsSelectedPage(playerOrTopPage))}
+          style={{ color: "gray" }}
+        >
+          {handleIndex === -1 ? "Back to top -->" : "Back to your position -->"}
+        </button>
+      ) : (
+        <></>
+      )}
       <DataTable
         topText={
           location.pathname.startsWith("/game/contest/standings/friends")
@@ -389,13 +408,19 @@ const StandingsPage = (props: {
       />
       <RankingPageLinks
         selectedPage={selectedPage}
-        setSelectedPage={setSelectedPage}
-        additionalPayloadAction={{
-          action: setRatingRecomputeData,
-          param: {
-            placeholder: true,
+        additionalPayloadActions={[
+          {
+            action: setRatingRecomputeData,
+            param: {
+              placeholder: true,
+            },
+            useIndex: false,
           },
-        }}
+          {
+            action: setStandingsSelectedPage,
+            useIndex: true,
+          },
+        ]}
         dataLength={friendsContestUsersStats.length}
         dataOnOnePage={USERS_NO_ON_STANDINGS_PAGE}
       />

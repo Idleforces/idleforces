@@ -10,11 +10,18 @@ const powersOfTwo: Array<number> = [
 
 export function RankingPageLinks<T>(props: {
   selectedPage: number;
-  setSelectedPage: Dispatch<SetStateAction<number>>;
-  additionalPayloadAction?: {
-    action: ActionCreatorWithPayload<T>;
-    param: T;
-  };
+  setSelectedPage?: Dispatch<SetStateAction<number>>;
+  additionalPayloadActions?: Array<
+    | {
+        action: ActionCreatorWithPayload<T>;
+        param: T;
+        useIndex: false;
+      }
+    | {
+        action: ActionCreatorWithPayload<number>;
+        useIndex: true;
+      }
+  >;
   dataLength: number;
   dataOnOnePage: number;
   usePowerOfTwoGaps?: boolean;
@@ -22,7 +29,7 @@ export function RankingPageLinks<T>(props: {
   const {
     selectedPage,
     setSelectedPage,
-    additionalPayloadAction,
+    additionalPayloadActions,
     dataLength,
     dataOnOnePage,
   } = props;
@@ -41,12 +48,20 @@ export function RankingPageLinks<T>(props: {
           index === arr.length - 1 ? (
             <a
               onClick={(_e) => {
-                setSelectedPage(index + 1);
-                if (additionalPayloadAction)
-                  dispatch(
-                    additionalPayloadAction.action(
-                      additionalPayloadAction.param
-                    )
+                if (setSelectedPage) setSelectedPage(index + 1);
+
+                if (additionalPayloadActions)
+                  additionalPayloadActions.forEach(
+                    (additionalPayloadAction) => {
+                      if (additionalPayloadAction.useIndex)
+                        dispatch(additionalPayloadAction.action(index + 1));
+                      else
+                        dispatch(
+                          additionalPayloadAction.action(
+                            additionalPayloadAction.param
+                          )
+                        );
+                    }
                   );
               }}
               tabIndex={0}

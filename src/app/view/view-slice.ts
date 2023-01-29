@@ -16,6 +16,7 @@ export type ViewSlice = {
     secondSincePageLoad: number;
     secondsVisible: number;
   } | null;
+  standingsSelectedPage: number;
 };
 
 export const viewSlice = createSlice({
@@ -32,6 +33,7 @@ export const viewSlice = createSlice({
     },
     secondsSincePageLoad: 0,
     timestampAtPageLoad: Date.now(),
+    standingsSelectedPage: 1,
     lastXPGainData: null,
   } as ViewSlice,
   reducers: {
@@ -63,6 +65,10 @@ export const viewSlice = createSlice({
           }
         : null,
     }),
+    setStandingsSelectedPage: (
+      state: ViewSlice,
+      action: PayloadAction<number>
+    ) => ({ ...state, standingsSelectedPage: action.payload }),
   },
 });
 
@@ -72,6 +78,7 @@ export const {
   setRatingRecomputeData,
   setSecondsSincePageLoad,
   setLastXPGainData,
+  setStandingsSelectedPage,
 } = viewSlice.actions;
 
 export const selectNoPlayerContestSimSpeed = (state: RootState) =>
@@ -97,5 +104,7 @@ export const selectTimestampAtPageLoad = (state: RootState) =>
 export const selectCurrentTimeInSeconds = (state: RootState) =>
   Math.round(state.view.timestampAtPageLoad / 1000) +
   state.view.secondsSincePageLoad;
+export const selectStandingsSelectedPage = (state: RootState) =>
+  state.view.standingsSelectedPage;
 
 export const viewReducer = viewSlice.reducer;
