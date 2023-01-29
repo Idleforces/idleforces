@@ -1,0 +1,13 @@
+#find-users-submit-button-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  padding-right: 1rem;
+  padding-top: 0.25rem;
+  box-sizing: border-box;
+}
+
+#find-users-submit-button-container input {
+  padding: 0.25rem 1rem;
+  min-width: 0;
+}
