@@ -1,9 +1,25 @@
 header {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 2rem 0;
+  align-items: center;
+  font-size: 1.5rem;
 }
 
 #logo {
   cursor: pointer;
+}
+
+#logo img {
+  height: 4rem;
+  width: auto;
+}
+
+header svg {
+  padding-right: 1rem;
+}
+
+header a {
+  color: black;
+  text-decoration: none;
 }

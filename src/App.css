@@ -58,7 +58,7 @@ button.remove-default-styles:focus {
 }
 
 .text-button:hover,
-.text-button:focus {
+a.text-link:hover {
   color: #222;
   text-decoration: underline;
 }
