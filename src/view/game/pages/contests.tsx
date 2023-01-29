@@ -36,6 +36,7 @@ import {
   selectTimestampAtPageLoad,
   setNoPlayerContestSimSpeed,
 } from "../../../app/view/view-slice";
+import { computeActivityErrorMessage } from "../utils/activity-error-message";
 
 export const computeContestCooldownSecondsRemaining = (
   division: ProblemDivision,
@@ -125,7 +126,7 @@ export const Contests = () => {
     if (activity) {
       return (
         <span style={{ color: "gray" }}>
-          Please finish your activity first.
+          {computeActivityErrorMessage(activity)}
         </span>
       );
     }
