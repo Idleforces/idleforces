@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
+  applyXPGain,
   selectUsersWithTimeOfSnapshot,
   setUsers,
   updateRatings,
@@ -34,11 +35,22 @@ import "./game.css";
 import { ContestSideBar } from "./contest/contest-sidebar";
 import { convertSecondsToHHMMSS } from "../../utils/time-format";
 import {
+  selectCurrentTimeInSeconds,
   selectNoPlayerContestSimSpeed,
   selectSecondsSincePageLoad,
   selectTimestampAtPageLoad,
+  setLastXPGainData,
 } from "../../app/view/view-slice";
-import { selectBooksReadingData } from "../../app/books/books-slice";
+import {
+  selectBooksReadingData,
+  selectBooksReadingDataByIdFactory,
+  selectIdOfCurrentlyReadBook,
+  updateBookReadingData,
+} from "../../app/books/books-slice";
+import { processTickOfBookReading } from "../../app/books/read-book";
+import { BOOKS_DATA } from "../../app/books/books";
+import type { BookReadingData } from "../../app/books/types";
+import type { XPGain } from "../../app/XP/types";
 
 export const Game = (props: {
   leaveGameRef: React.MutableRefObject<() => void>;
@@ -58,6 +70,11 @@ export const Game = (props: {
   const saveData = useAppSelector(selectSaveData);
   const activity = useAppSelector(selectActivity);
   const booksReadingData = useAppSelector(selectBooksReadingData);
+  const currentlyReadBookId = useAppSelector(selectIdOfCurrentlyReadBook);
+  const currentlyReadBookReadingData = useAppSelector(
+    selectBooksReadingDataByIdFactory(currentlyReadBookId)
+  );
+  const currentTimeInSeconds = useAppSelector(selectCurrentTimeInSeconds);
 
   const location = useLocation();
   const dispatch = useAppDispatch();
@@ -120,6 +137,32 @@ export const Game = (props: {
     contestArchive,
     booksReadingData,
   ]);
+
+  const currentlyReadBookData = BOOKS_DATA.find(
+    (bookData) => bookData.id === currentlyReadBookId
+  );
+  useEffect(() => {
+    if (
+      activity === "book-reading" &&
+      currentlyReadBookReadingData &&
+      currentlyReadBookData
+    ) {
+      let bookReadingData: BookReadingData;
+      let XPGain: XPGain;
+
+      ({ bookReadingData, XPGain } = processTickOfBookReading(
+        currentlyReadBookReadingData,
+        currentlyReadBookData.baseXPGain,
+        currentlyReadBookData.hoursToRead,
+        currentTimeInSeconds
+      ));
+
+      dispatch(updateBookReadingData(bookReadingData));
+      dispatch(applyXPGain(XPGain));
+      dispatch(setLastXPGainData({ XPGain, secondsVisible: 1 }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activity, currentTimeInSeconds]);
 
   const contestTicksPassedAtMaxOfGameLoadStartContest = useMemo(
     () => contestTicksPassed,
