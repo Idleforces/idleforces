@@ -86,7 +86,7 @@ export const selectVisibleXPGain = (state: RootState) => {
   const XPGainData = state.view.lastXPGainData;
   if (
     !XPGainData ||
-    XPGainData.secondSincePageLoad + XPGainData.secondsVisible >=
+    XPGainData.secondSincePageLoad + XPGainData.secondsVisible <
       state.view.secondsSincePageLoad
   )
     return null;
