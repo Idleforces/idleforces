@@ -103,6 +103,10 @@
   border: none !important;
 }
 
+.datatable .player-row {
+  background-color: rgb(202, 233, 251);
+}
+
 .datatable .datatable-no-header thead,
 .datatable .datatable-no-header th {
   height: 0;
