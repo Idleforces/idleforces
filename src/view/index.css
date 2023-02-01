@@ -115,7 +115,7 @@
   cursor: pointer;
   display: inline;
   height: 100%;
-  width: inherit;
+  width: auto;
 }
 
 .load-save-icon {
