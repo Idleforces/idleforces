@@ -13,7 +13,7 @@ export const NavBar = () => {
 
   return (
     <nav>
-      <div id="navlinks-container">
+      <div className="navlinks-container">
         {pages.map((page) => (
           <NavLink
             to={`/game/${page}`}

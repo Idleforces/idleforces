@@ -137,7 +137,7 @@ export function SubNavBar<T extends string>(props: {
 
   return (
     <nav className="sub-navbar">
-      <div id="navlinks-container">
+      <div className="navlinks-container">
         {pages.map((page, index) => (
           <NavLink
             to={computePageUrl(baseURL, page, handle)}
