@@ -4,14 +4,13 @@ import { Index } from "./view";
 import { Game } from "./view/game/game";
 import { Dashboard } from "./view/game/pages/dashboard";
 import { Header } from "./view/header/header";
-import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { useAppDispatch } from "./app/hooks";
 import { resetUsers } from "./app/users/users-slice";
 import { resetSaveData } from "./app/save/save-slice";
 import { Footer } from "./view/footer/footer";
 import { Loading } from "./view/loading/loading";
 import { resetContest } from "./app/contest/contest-slice";
 import { resetEvents } from "./app/events/events-slice";
-import { useEffect, useRef } from "react";
 import { Contests } from "./view/game/pages/contests";
 import { Contest } from "./view/game/contest/contest";
 import { Standings } from "./view/game/contest/standings/standings";
@@ -22,49 +21,14 @@ import { Profile } from "./view/game/pages/profile/profile";
 import { resetFriends } from "./app/friends/friends-slice";
 import { ProfileContests } from "./view/game/pages/profile/profile-contests";
 import { Status } from "./view/game/contest/status/status";
-import {
-  selectSecondsSincePageLoad,
-  selectTimestampAtPageLoad,
-  setSecondsSincePageLoad,
-} from "./app/view/view-slice";
 import { resetBooksSlice } from "./app/books/books-slice";
 import { Library } from "./view/game/pages/library";
+import { useRef } from "react";
+import { Clock } from "./clock";
 
 function App() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const secondsSincePageLoad = useAppSelector(selectSecondsSincePageLoad);
-  const timestampAtPageLoad = useAppSelector(selectTimestampAtPageLoad);
-
-  useEffect(() => {
-    let ignore = false;
-    void new Promise((resolve, _reject) => {
-      setTimeout(() => {
-        if (!ignore) {
-          dispatch(
-            setSecondsSincePageLoad(
-              secondsSincePageLoad +
-                Math.max(
-                  Math.floor(
-                    (-timestampAtPageLoad + Date.now()) / 1000 -
-                      secondsSincePageLoad
-                  ) - 1,
-                  1
-                )
-            )
-          );
-          resolve("DONE");
-        } else {
-          resolve("IGNORED");
-        }
-      }, Math.max(timestampAtPageLoad - Date.now() + 1000 * (secondsSincePageLoad + 1), 0));
-    });
-
-    return () => {
-      ignore = true;
-    };
-  }, [secondsSincePageLoad, dispatch, timestampAtPageLoad]);
 
   const resetData = () => {
     dispatch(resetUsers(null));
@@ -83,6 +47,8 @@ function App() {
 
   return (
     <>
+      <Clock />
+
       <Header leaveGameRef={leaveGameRef} />
       <Routes>
         <Route path="/game/*" element={<Game leaveGameRef={leaveGameRef} />}>
