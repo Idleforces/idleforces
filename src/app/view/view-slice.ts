@@ -4,6 +4,7 @@ import type { RatingRecomputeData } from "../../view/game/contest/standings/stan
 import type { ContestSubmissionsFilterData } from "../../view/game/contest/status/status";
 import type { RootState } from "../store";
 import type { XPGain } from "../XP/types";
+import { problemPlacements } from "../problems/types";
 
 export type ViewSlice = {
   noPlayerContestSimSpeed: number;
@@ -17,6 +18,7 @@ export type ViewSlice = {
     secondsVisible: number;
   } | null;
   standingsSelectedPage: number;
+  remainingTimesToSolve: Array<string>;
 };
 
 export const viewSlice = createSlice({
@@ -35,6 +37,7 @@ export const viewSlice = createSlice({
     timestampAtPageLoad: Date.now(),
     standingsSelectedPage: 1,
     lastXPGainData: null,
+    remainingTimesToSolve: problemPlacements.map((_placement) => ""),
   } as ViewSlice,
   reducers: {
     setNoPlayerContestSimSpeed: (
@@ -69,6 +72,18 @@ export const viewSlice = createSlice({
       state: ViewSlice,
       action: PayloadAction<number>
     ) => ({ ...state, standingsSelectedPage: action.payload }),
+    setRemainingTimeToSolveByIndex: (
+      state: ViewSlice,
+      action: PayloadAction<{ remainingTime: string; index: number }>
+    ) => ({
+      ...state,
+      remainingTimesToSolve: state.remainingTimesToSolve.map(
+        (prevValue, prevIndex) =>
+          prevIndex === action.payload.index
+            ? action.payload.remainingTime
+            : prevValue
+      ),
+    }),
   },
 });
 
@@ -79,6 +94,7 @@ export const {
   setSecondsSincePageLoad,
   setLastXPGainData,
   setStandingsSelectedPage,
+  setRemainingTimeToSolveByIndex,
 } = viewSlice.actions;
 
 export const selectNoPlayerContestSimSpeed = (state: RootState) =>
@@ -106,5 +122,7 @@ export const selectCurrentTimeInSeconds = (state: RootState) =>
   state.view.secondsSincePageLoad;
 export const selectStandingsSelectedPage = (state: RootState) =>
   state.view.standingsSelectedPage;
+export const selectRemainingTimesToSolve = (state: RootState) =>
+  state.view.remainingTimesToSolve;
 
 export const viewReducer = viewSlice.reducer;

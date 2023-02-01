@@ -22,11 +22,9 @@ import { DataTable } from "../../utils/datatable";
 import { Link } from "react-router-dom";
 import "./problems.css";
 import { Events } from "../events/events";
-import { NoisyProgressBar } from "../../utils/noisy-progress-bar";
 import { selectEvents } from "../../../../app/events/events-slice";
-import { reverse } from "lodash";
 import type { ProblemSolvingPhase } from "../../../../app/events/types";
-import { PROGRESS_BAR_DEFAULT_NOISE_LEVEL } from "../../../constants";
+import { selectRemainingTimesToSolve } from "../../../../app/view/view-slice";
 
 export const formatProblemSolvingPhase = (phase: ProblemSolvingPhase) => {
   switch (phase) {
@@ -53,6 +51,8 @@ export const Problems = () => {
   const dispatch = useAppDispatch();
   const contest = useAppSelector(selectContest);
   const events = useAppSelector(selectEvents);
+  const remainingTimesToSolve = useAppSelector(selectRemainingTimesToSolve);
+
   if (!contest || !events) return <></>;
 
   const contestUsersData = contest.contestUsersData;
@@ -156,29 +156,7 @@ export const Problems = () => {
                         {formatProblemSolvingPhase(
                           playerProblemSolveStatus.phase
                         )}
-
-                        {playerProblemSolveStatus.phase ===
-                          "during-implementing" ||
-                        playerProblemSolveStatus.phase === "during-reading" ? (
-                          <>
-                            &nbsp;&#40;
-                            <NoisyProgressBar
-                              noiseLevel={PROGRESS_BAR_DEFAULT_NOISE_LEVEL}
-                              progress={playerProblemSolveStatus.progress}
-                              increment={playerProblemSolveStatus.increment}
-                              valMutatedAtUpdates={
-                                reverse([...events]).find(
-                                  (event) =>
-                                    event.problemPlacement ===
-                                    problemPlacements[index]
-                                )?.ticksSinceBeginning
-                              }
-                            />
-                            &#41;
-                          </>
-                        ) : (
-                          <></>
-                        )}
+                        {remainingTimesToSolve[index]}
                       </div>
                     );
                   }
