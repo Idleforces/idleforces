@@ -1,5 +1,4 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./navbar.css";
 
 const computeURLFromCodeforcesPage = (codeforcesPage: string) => {
@@ -7,7 +6,7 @@ const computeURLFromCodeforcesPage = (codeforcesPage: string) => {
   return `https://codeforces.com/${codeforcesPage}`;
 };
 
-export const NavBar = (props: { gameSaving: boolean }) => {
+export const NavBar = () => {
   const location = useLocation();
   const pages = ["dashboard", "contests", "rating", "library"];
   const codeforcesLinks = ["api"];
@@ -40,14 +39,6 @@ export const NavBar = (props: { gameSaving: boolean }) => {
           </a>
         ))}
       </div>
-      {props.gameSaving ? (
-        <>
-          <FontAwesomeIcon icon={["fas", "spinner"]} />
-          <span>Loading...</span>
-        </>
-      ) : (
-        <div></div>
-      )}
     </nav>
   );
 };
