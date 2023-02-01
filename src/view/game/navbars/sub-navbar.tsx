@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./navbar.css";
-import type { RatingRecomputeData } from "./contest/standings/standings";
-import type { ContestSubmissionsFilterData } from "./contest/status/status";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { selectHandle } from "../../app/save/save-slice";
+import type { RatingRecomputeData } from "../contest/standings/standings";
+import type { ContestSubmissionsFilterData } from "../contest/status/status";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { selectHandle } from "../../../app/save/save-slice";
 import type {
   ActionCreatorWithPayload,
   AnyAction,
   ThunkDispatch,
 } from "@reduxjs/toolkit";
-import type { RootState } from "../../app/store";
-import { setStandingsSelectedPage } from "../../app/view/view-slice";
+import type { RootState } from "../../../app/store";
+import { setStandingsSelectedPage } from "../../../app/view/view-slice";
 
 function computePageUrl<T extends string>(
   baseURL: string,

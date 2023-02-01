@@ -10,7 +10,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import { selectHandle } from "../../../../app/save/save-slice";
 import { selectUsers } from "../../../../app/users/users-slice";
-import { SubNavBar } from "../../sub-navbar";
+import { SubNavBar } from "../../navbars/sub-navbar";
 import { Flag } from "../../utils/flag";
 import {
   computeContestIdFromRatingPoint,

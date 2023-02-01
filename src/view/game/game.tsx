@@ -9,7 +9,7 @@ import {
 import type { UsersSlice } from "../../app/users/users-slice";
 import { sleep } from "../../utils/utils";
 import { Outlet, useLocation } from "react-router-dom";
-import { NavBar } from "./navbar";
+import { NavBar } from "./navbars/navbar";
 import {
   selectActivity,
   selectHandle,

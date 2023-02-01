@@ -3,7 +3,7 @@ import {
   setContestSubmissionsFilterData,
   setRatingRecomputeData,
 } from "../../../app/view/view-slice";
-import { SubNavBar } from "../sub-navbar";
+import { SubNavBar } from "../navbars/sub-navbar";
 import "./contest.css";
 
 export const Contest = () => {

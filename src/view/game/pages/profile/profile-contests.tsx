@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import { selectArchivedContests } from "../../../../app/contest-archive/contest-archive-slice";
 import { useAppSelector } from "../../../../app/hooks";
 import { selectUsers } from "../../../../app/users/users-slice";
-import { SubNavBar } from "../../sub-navbar";
+import { SubNavBar } from "../../navbars/sub-navbar";
 import { DataTable } from "../../utils/datatable";
 import { DataTableSortIcon } from "../../utils/datatable-sort-icon";
 import {
