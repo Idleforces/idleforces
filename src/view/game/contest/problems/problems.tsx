@@ -94,6 +94,7 @@ export const Problems = () => {
   if (playerParticipating) {
     switchActiveProblemsButtons = problemPlacements.map((placement) => (
       <button
+        type="button"
         onClick={(_e) => {
           handleSwitchActiveProblem(placement);
         }}

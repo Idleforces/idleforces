@@ -49,6 +49,7 @@ export const Library = () => {
               </div>
               <span className="book-author-container">{bookData.author}</span>
               <button
+                type="button"
                 className="remove-default-styles book-dropdown-toggle"
                 onClick={(_e) => {
                   setShowExtendedById((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -94,6 +95,7 @@ export const Library = () => {
                 </div>
                 {activity === "book-reading" && id === currentlyReadBookId ? (
                   <button
+                    type="button"
                     onClick={(_e) => {
                       dispatch(stopBookReading(null));
                       dispatch(setActivity(null));
@@ -103,6 +105,7 @@ export const Library = () => {
                   </button>
                 ) : !activity || activity === "book-reading" ? (
                   <button
+                    type="button"
                     onClick={(_e) => {
                       dispatch(
                         startBookReadingById({ id, currentTimeInSeconds })
@@ -113,7 +116,7 @@ export const Library = () => {
                     Start book reading
                   </button>
                 ) : (
-                  <button disabled>
+                  <button type="button" disabled>
                     {computeActivityErrorMessage(activity)}
                   </button>
                 )}

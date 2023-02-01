@@ -324,6 +324,7 @@ export const Index = (props: {
               <span>{Math.round(save.rating)}</span>
               <span className="saves-action-container">
                 <button
+                  type="button"
                   className="save-box-button remove-default-styles"
                   aria-label="Load this save"
                   onClick={(_e) => {
@@ -336,6 +337,7 @@ export const Index = (props: {
                   />
                 </button>
                 <button
+                  type="button"
                   className="save-box-button remove-default-styles"
                   aria-label="Delete this save"
                   onClick={(_e) => {
@@ -360,6 +362,7 @@ export const Index = (props: {
         </div>
         {!navigator.userAgent.includes("Firefox") ? (
           <button
+            type="submit"
             onClick={(_e) => {
               try {
                 navigator.clipboard
@@ -404,6 +407,7 @@ export const Index = (props: {
           </form>
         )}
         <button
+          type="submit"
           onClick={(_e) => {
             navigator.clipboard
               .writeText(exportGameData())

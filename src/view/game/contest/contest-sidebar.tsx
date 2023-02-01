@@ -38,6 +38,7 @@ export const ContestSideBar = () => {
 
       {
         <button
+          type="button"
           disabled={contestFinished === null || !contestFinished}
           onClick={endContest}
           tabIndex={0}

@@ -387,6 +387,7 @@ const StandingsPage = (props: {
     <div id="standings-page">
       {!onlyFriends && playerOrTopPage !== selectedPage ? (
         <button
+          type="button"
           className="remove-default-styles text-button"
           onClick={(_e) => dispatch(setStandingsSelectedPage(playerOrTopPage))}
           style={{ color: "gray" }}
