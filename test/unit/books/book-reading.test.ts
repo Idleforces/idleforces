@@ -78,7 +78,7 @@ describe("during book reading process", () => {
       0
     );
 
-    expect(XPGain.implementationCare).toBe(baseXPGain.implementationCare);
+    expect(XPGain.implementationCare).toBeGreaterThan(0);
   });
 
   it("does not matter if some ticks are never explicitly performed", () => {

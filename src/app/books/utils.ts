@@ -1,9 +1,11 @@
 import { atan } from "@stdlib/math/base/special/";
+import { betaPrimeAltParam } from "../problems/utils";
 import type { XPGain } from "../XP/types";
 import { multiplyXPGainByScalar } from "../XP/utils";
 import {
   BOOK_READING_PROGRESS_GAIN_EXPONENT,
   BOOK_READING_PROGRESS_SCALING_FACTOR,
+  BOOK_XP_GAIN_DISTRIBUTION_PRECISION,
   BOOK_XP_GAIN_EXPONENT,
 } from "./constants";
 import type { ProgressPageInterval } from "./types";
@@ -29,11 +31,18 @@ export const computeXPGainMultiplierFromProgress = (progress: number) => {
 export const computeXPGainFromProgressDiff = (
   oldProgress: number,
   newProgress: number,
-  baseXPGain: XPGain
+  baseXPGain: XPGain,
+  XPGainStdevMultiplier?: number
 ) => {
-  const XPGainMultiplier =
+  const baseXPGainMultiplier =
     computeXPGainMultiplierFromProgress(newProgress) -
     computeXPGainMultiplierFromProgress(oldProgress);
+
+  const XPGainMultiplier =
+    baseXPGainMultiplier *
+    (1 +
+      (betaPrimeAltParam(1, BOOK_XP_GAIN_DISTRIBUTION_PRECISION) - 1) *
+        (XPGainStdevMultiplier ?? 1));
 
   return multiplyXPGainByScalar(baseXPGain, XPGainMultiplier);
 };

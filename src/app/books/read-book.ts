@@ -81,7 +81,12 @@ export const processTickOfBookReading = (
             progressDiffPerRound * numReadingRounds;
 
           const currentXPGain = multiplyXPGainByScalar(
-            computeXPGainFromProgressDiff(oldProgress, newProgress, baseXPGain),
+            computeXPGainFromProgressDiff(
+              oldProgress,
+              newProgress,
+              baseXPGain,
+              1 / Math.sqrt(bookLength * numReadingRounds)
+            ),
             progressPageInterval.progressPageIntervalEndInclusive -
               progressPageInterval.progressPageIntervalStartInclusive +
               1
