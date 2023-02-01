@@ -2,7 +2,6 @@
 import { cloneDeep } from "lodash";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { countriesCount } from "../..";
 import { computeRanksConsideringTies } from "../../../app/contest/contest-stats";
 import { selectFriends } from "../../../app/friends/friends-slice";
 import { useAppSelector } from "../../../app/hooks";
@@ -12,6 +11,7 @@ import {
 } from "../../../app/users/users-slice";
 import { transposeArray } from "../../../utils/utils";
 import { USERS_NO_ON_RATING_PAGE } from "../../constants";
+import { countriesCount } from "../../index/countries-count";
 import { DataTable } from "../utils/datatable";
 import { Flag } from "../utils/flag";
 import { RankingPageLinks } from "../utils/ranking-page-links";

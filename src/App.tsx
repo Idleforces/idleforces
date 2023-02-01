@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { Index } from "./view";
+import { Index } from "./view/index";
 import { Game } from "./view/game/game";
 import { Dashboard } from "./view/game/pages/dashboard";
 import { Header } from "./view/header/header";
