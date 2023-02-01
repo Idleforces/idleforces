@@ -112,10 +112,10 @@
 
 .save-box-button {
   padding: 0 0.5rem;
-  cursor: pointer;
   display: inline;
   height: 100%;
-  width: auto;
+  aspect-ratio: 1;
+  box-sizing: content-box;
 }
 
 .load-save-icon {
