@@ -16,15 +16,19 @@ export const FormattedBookXPGain = (props: { id: number }) => {
   if (!officialBookReadingData || !book) return <></>;
 
   const baseXPGain = book.baseXPGain;
+
   const mockBookReadingData = {
     ...officialBookReadingData,
     currentStintStartTimestampInSecondsExclusive: currentTimeInSeconds - 1,
+    lastCountedTimeInSeconds: currentTimeInSeconds - 1
   };
+
   const { XPGain } = processTickOfBookReading(
     mockBookReadingData,
     baseXPGain,
     book.hoursToRead,
-    currentTimeInSeconds
+    currentTimeInSeconds,
+    0
   );
 
   let ratio = 0;

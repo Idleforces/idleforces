@@ -36,7 +36,8 @@ export const processTickOfBookReading = (
   bookReadingData: BookReadingData,
   baseXPGain: XPGain,
   hoursToRead: number,
-  currentTimeInSeconds: number
+  currentTimeInSeconds: number,
+  overrideXPGainStdevMultiplier?: number
 ): { XPGain: XPGain; bookReadingData: BookReadingData } => {
   let XPGain: XPGain = {};
   const newBookReadingData = cloneDeep(bookReadingData);
@@ -85,7 +86,8 @@ export const processTickOfBookReading = (
               oldProgress,
               newProgress,
               baseXPGain,
-              1 / Math.sqrt(bookLength * numReadingRounds)
+              overrideXPGainStdevMultiplier ??
+                1 / Math.sqrt(bookLength * numReadingRounds)
             ),
             progressPageInterval.progressPageIntervalEndInclusive -
               progressPageInterval.progressPageIntervalStartInclusive +
@@ -138,7 +140,12 @@ export const processTickOfBookReading = (
 
     XPGain = addXPGains(
       XPGain,
-      computeXPGainFromProgressDiff(oldProgress, newProgress, baseXPGain)
+      computeXPGainFromProgressDiff(
+        oldProgress,
+        newProgress,
+        baseXPGain,
+        overrideXPGainStdevMultiplier ?? 1
+      )
     );
 
     newBookReadingData.progressPageIntervals = addDataToProgressPageIntervals(

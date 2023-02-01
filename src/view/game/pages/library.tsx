@@ -14,6 +14,7 @@ import { selectActivity, setActivity } from "../../../app/save/save-slice";
 import { selectCurrentTimeInSeconds } from "../../../app/view/view-slice";
 import { declareRecordByInitializer } from "../../../utils/utils";
 import { computeActivityErrorMessage } from "../utils/activity-error-message";
+import { FormattedBookXPGain } from "../utils/formatted-book-xp-gain";
 import "./library.css";
 
 export const Library = () => {
@@ -76,6 +77,10 @@ export const Library = () => {
                     className="book-image"
                   />
                 )}
+                <p>
+                  <b>Ability to gain insights:</b>{" "}
+                  <FormattedBookXPGain id={id} />
+                </p>
                 <p>
                   <b>Good for:</b> {BOOKS_DATA[id].goodFor}
                 </p>
