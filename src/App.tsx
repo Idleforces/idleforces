@@ -8,7 +8,6 @@ import { useAppDispatch } from "./app/hooks";
 import { resetUsers } from "./app/users/users-slice";
 import { resetSaveData } from "./app/save/save-slice";
 import { Footer } from "./view/footer/footer";
-import { Loading } from "./view/loading/loading";
 import { resetContest } from "./app/contest/contest-slice";
 import { resetEvents } from "./app/events/events-slice";
 import { Contests } from "./view/game/pages/contests";
@@ -70,7 +69,6 @@ function App() {
           <Route path="library" element={<Library />} />
           <Route path="*" element={<Dashboard />} />
         </Route>
-        <Route path="/loading" element={<Loading />} />
         <Route path="/*" element={<Index leaveGameRef={leaveGameRef} />} />
       </Routes>
       <Footer />
