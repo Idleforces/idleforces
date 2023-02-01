@@ -10,8 +10,9 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { problemDivisions } from "../../../app/problems/types";
 import type { ProblemDivision } from "../../../app/problems/types";
 import type { RootState } from "../../../app/store";
+import { attributeNames } from "../../../app/users/types";
 import type { User } from "../../../app/users/types";
-import { selectUsers } from "../../../app/users/users-slice";
+import { selectPlayer, selectUsers } from "../../../app/users/users-slice";
 import {
   convertSecondsToHHMM,
   convertSecondsToHHMMSS,
@@ -37,6 +38,8 @@ import {
   setNoPlayerContestSimSpeed,
 } from "../../../app/view/view-slice";
 import { computeActivityErrorMessage } from "../utils/activity-error-message";
+import { normalizeLevelOfAttribute } from "../../../app/users/utils";
+import { USER_ATTRIBUTES_CONSTANTS } from "../../../app/users/constants";
 
 export const computeContestCooldownSecondsRemaining = (
   division: ProblemDivision,
@@ -95,6 +98,9 @@ export const Contests = () => {
   const users = useAppSelector(selectUsers) ?? [];
   const contestArchive = useAppSelector(selectArchivedContests);
   const activity = useAppSelector(selectActivity);
+  const player = useAppSelector(selectPlayer);
+
+  if (!player) return <></>;
 
   const reverseProblemDivisions = [...problemDivisions].reverse();
   const usersSatisfyingRatingBoundsCounts: Record<ProblemDivision, number> =
@@ -156,6 +162,25 @@ export const Contests = () => {
         </span>
       );
     }
+
+    const playerNormalizedAttributeValues = attributeNames.map(
+      (attributeName) =>
+        normalizeLevelOfAttribute(
+          player.attributes[attributeName],
+          USER_ATTRIBUTES_CONSTANTS[attributeName]
+        )
+    );
+
+    const playerMinNormalizedAttributeValue = Math.min(
+      ...playerNormalizedAttributeValues
+    );
+
+    if (playerMinNormalizedAttributeValue < 0.04 && playerParticipating)
+      return (
+        <span style={{ color: "gray" }}>
+          You are too ashamed to take part in contest due to your low skills.
+        </span>
+      );
 
     return (
       <a
