@@ -143,7 +143,7 @@ export const SaveBox = (props: {
             <button
               type="button"
               className="save-box-button remove-default-styles"
-              aria-label="Load this save"
+              aria-label={`Load save ${save.saveName}`}
               onClick={(_e) => {
                 loadSave(save);
               }}
@@ -153,7 +153,7 @@ export const SaveBox = (props: {
             <button
               type="button"
               className="save-box-button remove-default-styles"
-              aria-label="Delete this save"
+              aria-label={`Delete save ${save.saveName}`}
               onClick={(_e) => {
                 deleteSave(save);
               }}
