@@ -6,6 +6,7 @@ import type {
   ProblemProgressIncrement,
   ProblemSolveStatusWhileActive,
 } from "../problems/types";
+import type { RootState } from "../store";
 import type { MockDispatch } from "../types";
 import type { User } from "../users/types";
 import { BASE_EVENT_PROBABILITY } from "./constants";
@@ -49,14 +50,14 @@ export const computeProbabilitiesOfEvents = (
   );
 };
 
-const processEventAndReturnBreakData = <RootStateType>(
+const processEventAndReturnBreakData = (
   event: ContestEventBlueprint,
   user: User,
   userContestIndex: number,
   problem: Problem,
   progressIncrement: ProblemProgressIncrement,
   ticksSinceBeginning: number,
-  dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch
+  dispatch: ThunkDispatch<RootState, void, AnyAction> | MockDispatch
 ): BreakDataWithProblemPlacementAndUserContestIndex | null => {
   const problemPlacement = event.isGlobal ? "global" : problem.placement;
 
@@ -111,7 +112,7 @@ const processEventAndReturnBreakData = <RootStateType>(
   return null;
 };
 
-export const processEventsAndIncrementProgress = <RootStateType>(
+export const processEventsAndIncrementProgress = (
   events: Readonly<Array<ContestEventBlueprint>>,
   user: User,
   indexOfUser: number,
@@ -120,7 +121,7 @@ export const processEventsAndIncrementProgress = <RootStateType>(
   nextEventIn: number,
   numberOfMergedTicks: number,
   ticksSinceBeginning: number,
-  dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch
+  dispatch: ThunkDispatch<RootState, void, AnyAction> | MockDispatch
 ): {
   problemSolveStatus: ProblemSolveStatusWhileActive;
   nextEventIn: number;

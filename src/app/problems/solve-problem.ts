@@ -3,6 +3,7 @@ import { EVENTS } from "../events/events";
 import { addEvent } from "../events/events-slice";
 import { processEventsAndIncrementProgress } from "../events/process-event";
 import type { BreakDataWithProblemPlacementAndUserContestIndex } from "../events/types";
+import type { RootState } from "../store";
 import type { MockDispatch } from "../types";
 import type { User } from "../users/types";
 import { applyXPGain } from "../users/users-slice";
@@ -32,7 +33,7 @@ export const generateInitialProblemSolveStatus = (): ProblemSolveStatus => {
   };
 };
 
-export const processTickOfProblemSolving = <RootStateType>(
+export const processTickOfProblemSolving = (
   user: User,
   indexOfUser: number,
   problem: Problem,
@@ -42,7 +43,7 @@ export const processTickOfProblemSolving = <RootStateType>(
   nextEventIn: number,
   numberOfMergedTicks: number,
   ticksSinceBeginning: number,
-  dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch
+  dispatch: ThunkDispatch<RootState, void, AnyAction> | MockDispatch
 ): {
   newProblemSolveStatus:
     | ProblemSolveStatusWhileActive
@@ -160,7 +161,7 @@ export const processTickOfProblemSolving = <RootStateType>(
         }
 
         return {
-          newProblemSolveStatus: submitProblem<RootStateType>(
+          newProblemSolveStatus: submitProblem(
             user,
             problem,
             problemSolveStatus.submissions,

@@ -19,6 +19,7 @@ import type { NPC, User } from "../users/types";
 import { computeActiveProblemPosition } from "./active-problem";
 import type { ContestSlice, ContestUserData } from "./types";
 import { cloneDeep } from "lodash";
+import type { RootState } from "../store";
 
 const automaticallySwitchToAnotherProblem = (
   contestUserData: ContestUserData,
@@ -85,11 +86,11 @@ const automaticallySwitchToAnotherProblem = (
   }
 };
 
-export const processTickOfContest = <RootStateType>(
+export const processTickOfContest = (
   contestSlice: Exclude<ContestSlice, null>,
   numberOfMergedTicks: number,
   users: Array<User>,
-  dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch
+  dispatch: ThunkDispatch<RootState, void, AnyAction> | MockDispatch
 ): {
   newContestUsersData: Array<ContestUserData>;
   nextEventIn: number;
@@ -184,7 +185,7 @@ export const processTickOfContest = <RootStateType>(
       }
 
       const newProblemSolveStatusWithNextEventInAndBreaks =
-        processTickOfProblemSolving<RootStateType>(
+        processTickOfProblemSolving(
           user,
           userContestIndex,
           problems[

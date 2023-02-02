@@ -29,15 +29,16 @@ import type { User } from "../users/types";
 import { addEvent } from "../events/events-slice";
 import type { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import type { MockDispatch } from "../types";
+import type { RootState } from "../store";
 
-export const submitProblem = <RootStateType>(
+export const submitProblem = (
   user: User,
   problem: Problem,
   submissions: Array<ContestSubmission>,
   penPaperCorrect: boolean,
   implementationCorrect: boolean,
   ticksSinceBeginning: number,
-  dispatch: ThunkDispatch<RootStateType, void, AnyAction> | MockDispatch
+  dispatch: ThunkDispatch<RootState, void, AnyAction> | MockDispatch
 ):
   | ProblemSolveStatusAfterPassingPretests
   | ProblemSolveStatusDuringSearchingForMistake => {
