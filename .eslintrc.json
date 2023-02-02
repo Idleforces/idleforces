@@ -10,7 +10,7 @@
     "prettier",
     "plugin:react/jsx-runtime"
   ],
-  "ignorePatterns": ["dist", "node_modules", "coverage"],
+  "ignorePatterns": ["dist", "node_modules", "coverage", "*.config.ts"],
   "overrides": [],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
