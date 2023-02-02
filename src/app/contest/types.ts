@@ -10,13 +10,13 @@ import type { RatingPoint } from "../users/load-users";
 
 export type ContestProblems = Array<Problem>;
 export type ContestProblemNumberValues = Array<number>;
-export type NonBlockingBreaks = Record<
+type NonBlockingBreaks = Record<
   ProblemPlacement,
   BreakDataWithProblemPlacement | null
 >;
 export type ProblemSolveStatuses = Record<ProblemPlacement, ProblemSolveStatus>;
 
-export type ContestCoreData = {
+type ContestCoreData = {
   handle: string;
   blockingBreak: BreakDataWithProblemPlacement | null;
   nonBlockingBreaks: NonBlockingBreaks;

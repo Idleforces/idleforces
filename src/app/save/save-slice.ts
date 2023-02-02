@@ -1,7 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { USER_INITIAL_RATING } from "../users/constants";
 
 export type Activity =
   | "contest-simulation"
@@ -46,8 +45,6 @@ export const { setSaveData, resetSaveData, setActivity, setPlayerRating } =
   saveSlice.actions;
 export const selectSaveData = (state: RootState) => state.save;
 export const selectHandle = (state: RootState) => state.save?.handle;
-export const selectPlayerRating = (state: RootState) =>
-  state.save ? state.save.rating : USER_INITIAL_RATING;
 export const selectActivity = (state: RootState) =>
   state.save ? state.save.activity : null;
 export const saveReducer = saveSlice.reducer;

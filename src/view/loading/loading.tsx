@@ -1,3 +1,4 @@
+// ts-prune-ignore-next
 export const Loading = () => {
   return (
     <div id="loading-screen-container">

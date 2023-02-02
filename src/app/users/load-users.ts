@@ -92,7 +92,7 @@ export const generateNPC = (
   };
 };
 
-export const fetchUsers = () => {
+const fetchUsers = () => {
   const timeOfSnapshot = usersJSON.timeOfSnapshot;
   const users = usersJSON.result;
   return { users, timeOfSnapshot };

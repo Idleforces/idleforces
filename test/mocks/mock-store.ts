@@ -3,7 +3,7 @@ import { assert } from "vitest";
 import type { ContestEvent } from "../../src/app/events/types";
 
 const mockActionTypes = ["events/addEvent"] as const;
-export type MockActionTypes = typeof mockActionTypes[number];
+type MockActionTypes = typeof mockActionTypes[number];
 
 export const mockStore = {
   events: [] as Array<ContestEvent>,

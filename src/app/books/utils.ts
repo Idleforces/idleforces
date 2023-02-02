@@ -13,12 +13,12 @@ import type { ProgressPageInterval } from "./types";
 export const computeBookLengthByHoursToRead = (hoursToRead: number) =>
   Math.round(hoursToRead * 3600);
 
-export const computePrevPage = (page: number, bookLength: number) =>
+const computePrevPage = (page: number, bookLength: number) =>
   page > 0 ? page - 1 : bookLength - 1;
 export const computeNextPage = (page: number, bookLength: number) =>
   page < bookLength - 1 ? page + 1 : 0;
 
-export const computeXPGainMultiplierFromProgress = (progress: number) => {
+const computeXPGainMultiplierFromProgress = (progress: number) => {
   const XPGainMultiplier =
     (Math.pow(Math.E, -BOOK_XP_GAIN_EXPONENT) -
       Math.pow(Math.E, -progress * BOOK_XP_GAIN_EXPONENT)) /
@@ -47,7 +47,7 @@ export const computeXPGainFromProgressDiff = (
   return multiplyXPGainByScalar(baseXPGain, XPGainMultiplier);
 };
 
-export const isInsideProgressPageInterval = (
+const isInsideProgressPageInterval = (
   pageNumber: number,
   progressPageInterval: ProgressPageInterval
 ) =>

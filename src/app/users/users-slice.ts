@@ -24,7 +24,7 @@ const updateUserRatingHistory = (user: User, ratingPoints: RatingPoints) => {
     user.ratingHistory.shift();
 };
 
-export const usersSlice = createSlice({
+const usersSlice = createSlice({
   name: "users",
   initialState: null as UsersSlice,
   reducers: {

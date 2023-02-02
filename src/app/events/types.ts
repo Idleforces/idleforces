@@ -8,9 +8,8 @@ import type {
 import type { User } from "../users/types";
 
 export type ProblemSolvingPhase = ProblemSolveStatus["phase"];
-export type ProblemSolvingPhaseWhileActive =
-  ProblemSolveStatusWhileActive["phase"];
-export type ProblemSolvingPhaseConfigOptions =
+type ProblemSolvingPhaseWhileActive = ProblemSolveStatusWhileActive["phase"];
+type ProblemSolvingPhaseConfigOptions =
   | Array<ProblemSolvingPhaseWhileActive>
   | "all";
 
@@ -68,22 +67,22 @@ export interface EventProbabilityParams {
   submissions: Array<ContestSubmission>;
 }
 
-export interface EventSetProgressParams {
+interface EventSetProgressParams {
   progress: number;
 }
 
-export interface EventSetIncrementParams {
+interface EventSetIncrementParams {
   increment: number;
 }
 
-export interface EventSetBreakInTicksParams {
+interface EventSetBreakInTicksParams {
   tag: ProblemTag;
   user: User;
   penPaperDifficulty: number;
   implementationDifficulty: number;
 }
 
-export interface BreakData {
+interface BreakData {
   breakRemainingLength: number;
   messageOnEndOfBreak: string;
   /**

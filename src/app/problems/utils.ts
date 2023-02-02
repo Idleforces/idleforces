@@ -146,7 +146,7 @@ export const computeExpectedLogitOfImplementationDeceptiveness = (
   );
 };
 
-export const computeExpectedTimeToFullySolve = (
+const computeExpectedTimeToFullySolve = (
   user: User,
   placement: ProblemPlacement,
   division: ProblemDivision,

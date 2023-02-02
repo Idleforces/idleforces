@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import type { ContestEvent, EventsSlice } from "./types";
 
-export const eventsSlice = createSlice({
+const eventsSlice = createSlice({
   name: "events",
   initialState: null as EventsSlice,
   reducers: {

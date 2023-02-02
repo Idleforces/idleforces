@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { FriendsSlice } from "./types";
 import type { RootState } from "../store";
 
-export const friendsSlice = createSlice({
+const friendsSlice = createSlice({
   name: "friends",
   initialState: [] as FriendsSlice,
   reducers: {

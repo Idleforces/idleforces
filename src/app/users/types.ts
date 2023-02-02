@@ -1,7 +1,7 @@
 import { problemTags } from "../problems/types";
 import type { ProblemTag } from "../problems/types";
 import type { RatingPoint } from "./load-users";
-export type AttributeValue = number;
+type AttributeValue = number;
 
 export type AttributeConstant = {
   MAX_VALUE: number;
@@ -15,8 +15,7 @@ export const nonTechnicalAttributeNames = [
   "implementationSpeed",
   "implementationCare",
 ] as const;
-export type NonTechnicalAttributeNames =
-  typeof nonTechnicalAttributeNames[number];
+type NonTechnicalAttributeNames = typeof nonTechnicalAttributeNames[number];
 
 export type AttributeNames = ProblemTag | NonTechnicalAttributeNames;
 export const attributeNames: Array<AttributeNames> = [

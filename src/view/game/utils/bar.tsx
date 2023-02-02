@@ -1,7 +1,7 @@
 import "./bar.css";
 import { FormattedDiff } from "./formatted-diff";
 
-export type BarProps = {
+type BarProps = {
   kind: "gradient";
   gradientLeftColor: string;
   gradientMidColor: string;

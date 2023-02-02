@@ -8,7 +8,7 @@ import { computeBookLengthByHoursToRead } from "./utils";
 
 export type BooksSlice = Array<BookReadingData>;
 
-export const booksSlice = createSlice({
+const booksSlice = createSlice({
   name: "books",
   initialState: BOOKS_DATA.map((bookData) =>
     computeInitialBookReadingData(

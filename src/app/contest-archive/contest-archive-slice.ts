@@ -7,7 +7,7 @@ import { declareRecordByInitializer } from "../../utils/utils";
 import { problemPlacements } from "../problems/types";
 import { generateInitialProblemSolveStatus } from "../problems/solve-problem";
 
-export const contestArchiveSlice = createSlice({
+const contestArchiveSlice = createSlice({
   name: "contestArchive",
   initialState: [] as ContestArchiveSlice,
   reducers: {

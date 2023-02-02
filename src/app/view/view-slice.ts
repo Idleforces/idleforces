@@ -6,7 +6,7 @@ import type { RootState } from "../store";
 import type { XPGain } from "../XP/types";
 import { problemPlacements } from "../problems/types";
 
-export type ViewSlice = {
+type ViewSlice = {
   noPlayerContestSimSpeed: number;
   ratingRecomputeData: RatingRecomputeData;
   contestSubmissionsFilterData: ContestSubmissionsFilterData;
@@ -21,7 +21,7 @@ export type ViewSlice = {
   remainingTimesToSolve: Array<string>;
 };
 
-export const viewSlice = createSlice({
+const viewSlice = createSlice({
   name: "view",
   initialState: {
     noPlayerContestSimSpeed: 0,

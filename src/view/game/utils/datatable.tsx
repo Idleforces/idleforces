@@ -1,8 +1,8 @@
-export type AllowableTableClassNames =
+type AllowableTableClassNames =
   | "datatable-no-outer-border"
   | "datatable-no-header";
-export type AllowableTableIds = never;
-export type AllowableContainerIds = never;
+type AllowableTableIds = never;
+type AllowableContainerIds = never;
 
 export const DataTable = (props: {
   topText?: string;

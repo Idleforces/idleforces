@@ -6,7 +6,7 @@ import { generateContest } from "./generate-contest";
 import type { ContestSlice, ContestUserData } from "./types";
 import type { User } from "../users/types";
 
-export const contestSlice = createSlice({
+const contestSlice = createSlice({
   name: "contest",
   initialState: null as ContestSlice,
   reducers: {

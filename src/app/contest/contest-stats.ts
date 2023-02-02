@@ -60,7 +60,7 @@ export const computeRanksConsideringTies = (
   });
 };
 
-export const computeContestRanksConsideringTies = <
+const computeContestRanksConsideringTies = <
   T extends { scores: Array<number> }
 >(
   contestUsersStats: Array<T>
