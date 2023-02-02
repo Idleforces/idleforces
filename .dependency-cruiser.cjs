@@ -99,6 +99,7 @@ module.exports = {
       severity: "error",
       from: {},
       to: {
+        pathNot: "^/[^/]*.png$|^/[^/]*.svg$", // exclude imports resolved to public directory by vite
         couldNotResolve: true,
       },
     },
