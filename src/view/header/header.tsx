@@ -15,13 +15,12 @@ export const Header = (props: {
         onClick={(_e) => {
           leaveGame();
         }}
-        id="logo"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter") leaveGame();
         }}
       >
-        <img src={logoUrl} alt="Idleforces" />
+        <img src={logoUrl} alt="Idleforces" id="logo" />
       </Link>
       <a
         href="https://github.com/posij118/idleforces"
