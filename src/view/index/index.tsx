@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./index.css";
+import "../../fontawesome-styles.css";
 import { getSavesFromLocalStorage } from "../persist-data/persist-data";
 
 import { NewSaveForm } from "./new-save-form";

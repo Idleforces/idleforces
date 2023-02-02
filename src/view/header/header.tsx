@@ -1,6 +1,7 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
+import { Github } from "../../icons/github";
 import "./header.css";
+import "../../fontawesome-styles.css";
 import logoUrl from "/logo.svg";
 
 export const Header = (props: {
@@ -28,7 +29,7 @@ export const Header = (props: {
         rel="noreferrer"
         className="text-link"
       >
-        <FontAwesomeIcon icon={["fab", "github"]} />
+        <Github />
         Contribute!
       </a>
     </header>

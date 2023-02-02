@@ -99,3 +99,13 @@ a.text-link:hover {
 .bold {
   font-weight: bold;
 }
+
+.filter-dark-green {
+  filter: invert(16%) sepia(48%) saturate(6420%) hue-rotate(94deg)
+    brightness(99%) contrast(105%);
+}
+
+.filter-red {
+  filter: invert(18%) sepia(86%) saturate(6957%) hue-rotate(359deg)
+    brightness(94%) contrast(118%);
+}

@@ -24,8 +24,9 @@ import { RatingStyled } from "../game/utils/styled-rating";
 import { countriesCount, populateCountriesCount } from "./countries-count";
 import type { Dispatch, SetStateAction } from "react";
 import { getSavesFromLocalStorage } from "../persist-data/persist-data";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./index.css";
+import { RightToBracket } from "../../icons/right-to-bracket";
+import { TrashCan } from "../../icons/trash-can";
 
 export const SaveBox = (props: {
   saves: LocalStorageSavesValue;
@@ -147,10 +148,7 @@ export const SaveBox = (props: {
                 loadSave(save);
               }}
             >
-              <FontAwesomeIcon
-                icon={["fas", "right-to-bracket"]}
-                className="load-save-icon"
-              />
+              <RightToBracket />
             </button>
             <button
               type="button"
@@ -160,10 +158,7 @@ export const SaveBox = (props: {
                 deleteSave(save);
               }}
             >
-              <FontAwesomeIcon
-                icon={["fas", "trash-can"]}
-                className="delete-save-icon"
-              />
+              <TrashCan />
             </button>
           </span>
         </div>
