@@ -14,7 +14,7 @@
     "prepare": "husky install",
     "e2e": "npx playwright test",
     "show-report": " npx playwright show-report",
-    "codegen": "npx playwright codegen"
+    "codegen": "npx playwright codegen idleforces.com"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
