@@ -11,7 +11,10 @@
     "coverage": "vitest run --coverage",
     "lint": "npx eslint .",
     "find-deadcode": "ts-prune",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "e2e": "npx playwright test",
+    "show-report": " npx playwright show-report",
+    "codegen": "npx playwright codegen"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
@@ -35,6 +38,7 @@
     "redux": "^4.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.30.0",
     "@stdlib/types": "^0.0.14",
     "@types/hash-sum": "^1.0.0",
     "@types/lodash": "^4.14.191",

@@ -22,7 +22,8 @@
     "src/**/*",
     "test/**/*",
     "./vite.config.ts",
-    "./typings/country-flags-svg/index.d.ts"
+    "./typings/country-flags-svg/index.d.ts",
+    "./playwright.config.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }],
   "typeRoots": ["./typings", "./node_modules/@types"]

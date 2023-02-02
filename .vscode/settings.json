@@ -69,6 +69,7 @@
     "gonal",
     "graphviz",
     "HHMM",
+    "Hudec",
     "Idleforces",
     "infty",
     "IRL",
@@ -82,6 +83,7 @@
     "Logit",
     "maxx",
     "mktime",
+    "msedge",
     "mts",
     "navbars",
     "navlinks",
@@ -91,6 +93,7 @@
     "npx",
     "nutella",
     "Parens",
+    "Pavel",
     "pcorr",
     "peaceiris",
     "penwidth",
@@ -108,8 +111,10 @@
     "subpage",
     "systests",
     "tsc",
+    "tsup",
     "upsolve",
-    "UTF"
+    "UTF",
+    "viewports"
   ],
   "cSpell.ignorePaths": [
     "package-lock.json",

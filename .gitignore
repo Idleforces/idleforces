@@ -32,3 +32,8 @@ rating-graph-sample.svg
 
 # Environment variables
 .env
+
+# Playwright directories and files
+/test-results/
+/playwright-report/
+/playwright/.cache/
