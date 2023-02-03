@@ -87,19 +87,22 @@ export const Profile = () => {
           <h2>
             <Flag countryName={user.country} />
             <RatingStyled stringToStyle={user.handle} rating={rating} />
-            <span
-              id="toggle-friend-button"
-              tabIndex={0}
-              onClick={(_e) => dispatch(toggleFriend(handle))}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") dispatch(toggleFriend(handle));
-              }}
-            >
-              <FontAwesomeIcon
-                icon={[`fa${isFriend ? "s" : "r"}`, "star"]}
-                className={isFriend ? "friend" : "not-friend"}
-              />
-            </span>
+
+              <button
+                className="remove-default-styles"
+                id="toggle-friend-button"
+                type="button"
+                onClick={(_e) => dispatch(toggleFriend(handle))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") dispatch(toggleFriend(handle));
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={[`fa${isFriend ? "s" : "r"}`, "star"]}
+                  className={isFriend ? "friend" : "not-friend"}
+                />
+              </button>
+
           </h2>
           <p>
             Contest rating:{" "}

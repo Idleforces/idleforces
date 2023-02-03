@@ -183,8 +183,8 @@ export const Contests = () => {
       );
 
     return (
-      <a
-        className="dark-red-link"
+      <button
+        className="dark-red-link remove-default-styles"
         tabIndex={0}
         onClick={() => {
           handleContestStart(
@@ -205,7 +205,7 @@ export const Contests = () => {
         }}
       >
         {playerParticipating ? "Register" : "Simulate"}
-      </a>
+      </button>
     );
   };
 

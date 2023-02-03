@@ -45,16 +45,27 @@ input[type="submit"] {
 button.remove-default-styles {
   outline: none;
   background: transparent;
-  border: 1px solid transparent;
+  border: 0;
   min-width: 0;
+  display: inline;
+  height: 1em;
+  font-size: inherit;
+  border: 2px solid transparent;
+  border-radius: 0;
 }
 
-button.remove-default-styles:active,
 button.remove-default-styles:focus {
-  outline: none;
-  background: transparent;
   border: 2px solid blue;
-  min-width: 0;
+}
+
+button.remove-default-styles svg {
+  vertical-align: 0;
+  font-size: inherit;
+}
+
+button.remove-default-styles path {
+  max-height: 1em;
+  width: auto;
 }
 
 .text-button:hover,

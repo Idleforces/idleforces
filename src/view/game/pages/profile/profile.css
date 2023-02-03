@@ -34,7 +34,8 @@
   margin-bottom: 1rem;
 }
 
-#user-info-container h2 span {
+#user-info-container h2 span,
+#user-info-container h2 button {
   margin-left: 0.5rem;
 }
 
@@ -43,7 +44,7 @@
 }
 
 #toggle-friend-button {
-  cursor: pointer;
+  padding: 0;
 }
 
 svg.friend {

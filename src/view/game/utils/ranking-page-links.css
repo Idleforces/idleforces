@@ -1,0 +1,10 @@
+.ranking-page-link.ranking-page-link {
+  padding: 0 0.5rem;
+  height: auto;
+  border: 2px solid transparent;
+  color: gray;
+}
+
+.ranking-page-link.ranking-page-link:focus {
+  border-bottom: 2px solid darkblue;
+}

@@ -2,6 +2,7 @@ import type { ActionCreatorWithPayload } from "@reduxjs/toolkit";
 import type { Dispatch, SetStateAction } from "react";
 import React from "react";
 import { useAppDispatch } from "../../../app/hooks";
+import "./ranking-page-links.css";
 
 const powersOfTwo: Array<number> = [
   0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384,
@@ -46,7 +47,8 @@ export function RankingPageLinks<T>(props: {
           powersOfTwo.includes(Math.abs(selectedPage - (index + 1))) ||
           index === 0 ||
           index === arr.length - 1 ? (
-            <a
+            <button
+              className="remove-default-styles ranking-page-link"
               onClick={(_e) => {
                 if (setSelectedPage) setSelectedPage(index + 1);
 
@@ -64,7 +66,6 @@ export function RankingPageLinks<T>(props: {
                     }
                   );
               }}
-              tabIndex={0}
               key={index}
               style={
                 selectedPage === index + 1
@@ -78,7 +79,7 @@ export function RankingPageLinks<T>(props: {
                     dataLength
                   )}`
                 : index + 1}
-            </a>
+            </button>
           ) : (
             <React.Fragment key={index}></React.Fragment>
           )

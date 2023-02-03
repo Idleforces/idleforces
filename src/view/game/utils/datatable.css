@@ -64,9 +64,17 @@
 .datatable .dark-red-link {
   background-color: darkred;
   color: white !important;
+  border-radius: 0 !important;
+  border: 0;
   font-weight: 600;
   padding: 2px 4px;
   cursor: pointer;
+  height: auto;
+}
+
+.datatable .dark-red-link:active,
+.datatable .dark-red-link:focus {
+  background-color: darkred;
 }
 
 .datatable .gray {
