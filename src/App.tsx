@@ -61,7 +61,7 @@ function App() {
           <Route path="contest/" element={<Contest />}>
             <Route path="standings" element={<Standings />} />
             <Route path="my" element={<Status />} />
-            <Route path="status/:problemPlacement?" element={<Status />} />
+            <Route path="status/" element={<Status />} />
             <Route path="standings/friends" element={<Standings />} />
             <Route path="*" element={<Problems />} />
           </Route>
