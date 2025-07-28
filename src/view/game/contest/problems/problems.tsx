@@ -23,7 +23,10 @@ import { Link } from "react-router-dom";
 import "./problems.css";
 import { Events } from "../events/events";
 import { selectEvents } from "../../../../app/events/events-slice";
-import { selectRemainingTimesToSolve } from "../../../../app/view/view-slice";
+import {
+  selectRemainingTimesToSolve,
+  setContestSubmissionsFilterData,
+} from "../../../../app/view/view-slice";
 import { formatProblemSolvingPhase } from "../../utils/format-problem-solving-phase";
 
 export const Problems = () => {
@@ -146,9 +149,19 @@ export const Problems = () => {
         .concat([
           accepted.map((problemAccepted, problemPosition) => (
             <Link
-              to={`/game/contest/status/${computeProblemPlacementFromProblemPosition(
-                problemPosition
-              )}`}
+              to="/game/contest/status"
+              onClick={(_e) =>
+                dispatch(
+                  setContestSubmissionsFilterData({
+                    problemPlacement:
+                      computeProblemPlacementFromProblemPosition(
+                        problemPosition
+                      ),
+                    verdict: null,
+                    handle: "",
+                  })
+                )
+              }
             >
               <FontAwesomeIcon icon={["fas", "user"]} />x{problemAccepted}
             </Link>

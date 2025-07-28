@@ -21,6 +21,9 @@ import { DataTable } from "../../utils/datatable";
 import { RankingPageLinks } from "../../utils/ranking-page-links";
 import { RatingStyled } from "../../utils/styled-rating";
 
+/**
+ * Filters the contest submissions. If the handle is empty, it will not filter by handle.
+ */
 export type ContestSubmissionsFilterData = {
   problemPlacement: ProblemPlacement | null;
   verdict: ContestSubmissionVerdict | null;
