@@ -37,3 +37,6 @@ rating-graph-sample.svg
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# User data
+src/app/users/trimmed-users.json
