@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { cloneDeep, reverse } from "lodash";
+import { reverse } from "lodash";
 import { selectArchivedContests } from "../../../app/contest-archive/contest-archive-slice";
 import { selectContestDivision } from "../../../app/contest/contest-slice";
 import { useAppSelector } from "../../../app/hooks";
@@ -21,7 +21,7 @@ export const CooldownsInfoBox = () => {
   const runningContestDivision = useAppSelector(selectContestDivision);
 
   const divisionsColumn = [<>4</>, <>3</>, <>2</>, <>1</>];
-  const reverseProblemDivisions = reverse(cloneDeep(problemDivisions));
+  const reverseProblemDivisions = reverse([...problemDivisions]);
 
   const cooldownsColumn = reverseProblemDivisions
     .map((division) =>
