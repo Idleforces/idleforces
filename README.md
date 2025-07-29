@@ -10,8 +10,8 @@ The app is hosted at Netlify using the domain <https://idleforces.netlify.app>.
 - Participate in a contest to show off your skills.
 - Train on real problems from previous contests.
 - Read informative books to acquire skills.
-- Get a job that pays a fat paycheck.
-- Buy cool perks and upgrades.
+- Get a job that pays a fat paycheck. (currently just an idea, probably gonna be hard to balance or unfun or something inbetween)
+- Buy cool perks and upgrades. (just an idea, would require an economy that would be a whole new project with fun absolutely not guaranteed).
 - Watch detailed stats and see yourself improve.
 
 ## Dev setup
