@@ -1,4 +1,4 @@
-name: Monthly update trimmedUsers.json
+name: Monthly Update trimmed-users.json
 
 on:
   schedule:
@@ -46,5 +46,5 @@ jobs:
             GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
             git add -f src/app/users/trimmed-users.json
-            git commit -m "Update data directory with new CSV files" || echo "No changes to CSV files"
+            git commit -m "Update user data" || echo "No changes to user data"
             git push
