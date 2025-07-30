@@ -60,8 +60,15 @@ export const { resetUsers, setUsers, updateRatings, applyXPGain } =
   usersSlice.actions;
 
 export const selectUsersWithTimeOfSnapshot = (state: RootState) => state.users;
-export const selectUsers = (state: RootState) =>
-  state.users ? [state.users.player, ...state.users.NPCs] : null;
+const users: Array<User> = [];
+export const selectUsers = (state: RootState) => {
+  if (!state.users) return null;
+  users.splice(0, users.length);
+  users.push(state.users.player);
+  users.push(...state.users.NPCs);
+
+  return users;
+};
 export const selectTimeOfSnapshot = (state: RootState) =>
   state.users ? state.users.timeOfSnapshot : null;
 export const selectPlayer = (state: RootState) =>
