@@ -14,7 +14,7 @@ import { PROGRESS_BAR_DEFAULT_NOISE_STDEV } from "../../constants";
 import { SubNavBar } from "../navbars/sub-navbar";
 import { NoisyProgressBar } from "../utils/noisy-progress-bar";
 import "./contest.css";
-import React from "react";
+import React, { useEffect } from "react";
 
 export const Contest = () => {
   const events = useAppSelector(selectEvents);
@@ -22,34 +22,46 @@ export const Contest = () => {
 
   const dispatch = useAppDispatch();
 
-  if (!contest || !events) return <></>;
-
-  const contestUsersData = contest.contestUsersData;
-  const playerParticipating = contestUsersData[0].isPlayer;
+  const contestUsersData = contest?.contestUsersData;
+  const playerParticipating = contestUsersData
+    ? contestUsersData[0].isPlayer
+    : false;
 
   let playerProblemSolveStatuses: Array<ProblemSolveStatus | null> =
     problemPlacements.map((_placement) => null);
 
-  if (playerParticipating) {
-    playerProblemSolveStatuses = problemPlacements.map(
-      (placement) => contestUsersData[0].problemSolveStatuses[placement]
-    );
+  playerProblemSolveStatuses = problemPlacements.map((placement) =>
+    contestUsersData
+      ? contestUsersData[0].problemSolveStatuses[placement]
+      : null
+  );
 
-    playerProblemSolveStatuses.map((playerProblemSolveStatus, index) => {
-      if (
-        !playerProblemSolveStatus ||
-        (playerProblemSolveStatus.phase !== "during-implementing" &&
-          playerProblemSolveStatus.phase !== "during-reading")
-      ) {
-        dispatch(
-          setRemainingTimeToSolveByIndex({
-            remainingTime: "",
-            index,
-          })
-        );
-      }
-    });
-  }
+  useEffect(() => {
+    if (playerParticipating && contest && events) {
+      playerProblemSolveStatuses.map((playerProblemSolveStatus, index) => {
+        if (
+          !playerProblemSolveStatus ||
+          (playerProblemSolveStatus.phase !== "during-implementing" &&
+            playerProblemSolveStatus.phase !== "during-reading")
+        ) {
+          dispatch(
+            setRemainingTimeToSolveByIndex({
+              remainingTime: "",
+              index,
+            })
+          );
+        }
+      });
+    }
+  }, [
+    contest,
+    events,
+    playerParticipating,
+    playerProblemSolveStatuses,
+    dispatch,
+  ]);
+
+  if (!contest || !events) return <></>;
 
   return (
     <>
@@ -77,7 +89,7 @@ export const Contest = () => {
               </React.Fragment>
             );
           } else {
-            return <></>;
+            return <React.Fragment key={index}></React.Fragment>;
           }
         })
       ) : (

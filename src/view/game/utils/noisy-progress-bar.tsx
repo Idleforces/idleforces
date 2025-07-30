@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { normal } from "@stdlib/random/base";
 import { useAppDispatch } from "../../../app/hooks";
 import { setRemainingTimeToSolveByIndex } from "../../../app/view/view-slice";
@@ -41,12 +41,14 @@ export const NoisyProgressBar = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valMutatedAtUpdates]);
 
-  dispatch(
-    setRemainingTimeToSolveByIndex({
-      remainingTime: noisyTicksRemainingArray[ticksRemaining],
-      index,
-    })
-  );
+  useEffect(() => {
+    dispatch(
+      setRemainingTimeToSolveByIndex({
+        remainingTime: noisyTicksRemainingArray[ticksRemaining],
+        index,
+      })
+    );
+  }, [noisyTicksRemainingArray, ticksRemaining, index, dispatch]);
 
   return <></>;
 };
